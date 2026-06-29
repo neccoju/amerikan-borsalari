@@ -56,6 +56,23 @@
 - No transaction-cost modeling on model sleeves (intentional); the Active sleeve
   and the backtester both model costs.
 
+## Self-learning (Phase 4)
+
+- **Paper-only**, never overwrites the rule-based sleeves.
+- **Adaptive factor weights:** each month the sleeve computes a per-factor
+  information coefficient (Spearman rank corr of the *prior* month's factor
+  scores vs. the subsequently realized returns) and nudges its weights toward
+  factors that worked, via a bounded exponential-gradient (multiplicative
+  weights) update. Seeded from the static "balanced" weights.
+- **Look-ahead-safe:** IC always uses past scores vs. later returns; learned
+  weights are applied only to the *next* rebalance.
+- **Walk-forward validation:** `backtest.walk_forward_compare` runs adaptive vs.
+  static factor weighting out-of-sample on price-reconstructable factors
+  (momentum/trend/low-vol) through the same engine, so the adaptive mechanism is
+  validated without relying on unavailable point-in-time fundamental/news history.
+- Conservative by design (small learning rate, tight weight bounds). RL/FinRL
+  remain out of scope.
+
 ## Implementation-safe rules
 
 - LLM is decision-support only; it can never place a trade and is bounded to a

@@ -28,6 +28,7 @@ class LoadedState:
     history: list[dict] = field(default_factory=list)       # [{date, total_value, cash}]
     last_decision_date: str | None = None                   # active sleeve
     last_rebalance_date: str | None = None                  # model/self-learning sleeves
+    meta: dict = field(default_factory=dict)                # sleeve-specific extras (e.g. learned weights)
     existed: bool = False
 
 
@@ -91,6 +92,7 @@ class PortfolioStore:
             history=list(p.get("history", [])),
             last_decision_date=p.get("last_decision_date"),
             last_rebalance_date=p.get("last_rebalance_date"),
+            meta=dict(p.get("meta", {})),
             existed=True,
         )
 
@@ -99,6 +101,7 @@ class PortfolioStore:
               history: list[dict], *, ptype: str = "",
               last_decision_date: str | None = None,
               last_rebalance_date: str | None = None,
+              meta: dict | None = None,
               max_history: int = 750) -> tuple[list[dict], float]:
         total_value = state.total_value(prices)
         history = [h for h in history if h.get("date") != date]
@@ -116,6 +119,7 @@ class PortfolioStore:
             "history": history,
             "last_decision_date": last_decision_date,
             "last_rebalance_date": last_rebalance_date,
+            "meta": meta or {},
             "updated_at": dt.datetime.utcnow().isoformat(timespec="seconds") + "Z",
         }
         return history, total_value

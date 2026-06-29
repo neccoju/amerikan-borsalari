@@ -45,7 +45,8 @@ usbot.cli  ──►  usbot.orchestrator.run_daily()
 | `congress/` | congressional trades (free public datasets, keyless), per-symbol score (weak signal) |
 | `institutional/` | 13F holdings via SEC EDGAR (edgartools, experimental), q/q change detection, per-symbol score |
 | `llm/` | configurable provider (anthropic/openai/ollama/none) + monthly review |
-| `backtest/` | look-ahead-safe engine (T+1 execution, costs, walk-forward) + metrics |
+| `backtest/` | look-ahead-safe engine (T+1 execution, costs) + metrics + walk-forward adaptive-vs-static compare |
+| `learning/` | Phase 4 adaptive learning: factor IC (Spearman) + online exponential-gradient weight updates (bounded, paper-only) |
 
 ## Design guarantees
 

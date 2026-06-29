@@ -72,6 +72,11 @@ llm:
   monthly_only: true             # do NOT run on daily runs (cost control)
   max_adjustment_points: 5.0     # LLM can only nudge composite by +/- this
 
+learning:                        # adaptive Self-Learning sleeve (paper only)
+  learning_rate: 0.5             # online exponential-gradient step
+  min_weight: 0.05               # per-factor weight bounds
+  max_weight: 0.50
+
 backtest:
   start_date: "2015-01-01"
   benchmark: "SPY"
