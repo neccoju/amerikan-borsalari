@@ -92,6 +92,34 @@
   <div class="muted">{{ ctx.news_note }}</div>
   {% endif %}
 
+  {% if ctx.institutional_updates %}
+  <h2>Institutional (13F) Moves</h2>
+  <table>
+    <tr><th>Symbol</th><th>Change</th><th>Fund</th></tr>
+    {% for u in ctx.institutional_updates[:12] %}
+    <tr><td>{{ u.symbol }}</td>
+        <td class="{{ 'pos' if u.change_type in ['new','increased'] else 'neg' }}">{{ u.change_type }}</td>
+        <td>{{ u.fund }}</td></tr>
+    {% endfor %}
+  </table>
+  {% elif ctx.institutional_note %}
+  <h2>Institutional (13F)</h2><div class="muted">{{ ctx.institutional_note }}</div>
+  {% endif %}
+
+  {% if ctx.congress_updates %}
+  <h2>Congressional Trades</h2>
+  <table>
+    <tr><th>Symbol</th><th>Type</th><th>Amount</th><th>Member</th><th>Chamber</th></tr>
+    {% for u in ctx.congress_updates[:12] %}
+    <tr><td>{{ u.symbol }}</td>
+        <td class="{{ 'pos' if u.txn_type == 'buy' else 'neg' }}">{{ u.txn_type }}</td>
+        <td>{{ u.amount_range }}</td><td>{{ u.politician }}</td><td>{{ u.chamber }}</td></tr>
+    {% endfor %}
+  </table>
+  {% elif ctx.congress_note %}
+  <h2>Congressional Trades</h2><div class="muted">{{ ctx.congress_note }}</div>
+  {% endif %}
+
   <h2>LLM Review</h2>
   <div class="muted">{{ ctx.llm_note }}</div>
 

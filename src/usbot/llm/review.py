@@ -13,11 +13,37 @@ from .provider import LLMProvider
 
 log = get_logger(__name__)
 
+import re
+
 SYSTEM = (
     "You are a cautious quant analyst. Provide concise, balanced commentary. "
     "You are a decision-support layer only and must not issue direct buy/sell "
-    "orders. Highlight risks and uncertainties. Output is for a research tool."
+    "orders. Highlight risks and uncertainties. Output is for a research tool. "
+    "End your reply with a single line 'ADJUSTMENTS: TICKER:+N, TICKER:-N' giving "
+    "small conviction nudges in points (integers, small), or 'ADJUSTMENTS: none'."
 )
+
+
+def parse_adjustments(text: str, max_points: float) -> dict[str, float]:
+    """Extract bounded per-ticker score nudges from an LLM reply.
+
+    Looks for an 'ADJUSTMENTS:' line of 'TICKER:+N' pairs and clamps each to
+    +/- max_points. Returns {} when absent/none — the LLM can only *nudge*, never
+    decide. Defensive: malformed entries are ignored.
+    """
+    if not text:
+        return {}
+    m = re.search(r"ADJUSTMENTS:\s*(.+)$", text, re.IGNORECASE | re.MULTILINE)
+    if not m:
+        return {}
+    body = m.group(1).strip()
+    if body.lower().startswith("none"):
+        return {}
+    out: dict[str, float] = {}
+    for token in re.findall(r"([A-Z][A-Z.\-]{0,6})\s*:\s*([+-]?\d+(?:\.\d+)?)", body):
+        sym, val = token[0].upper(), float(token[1])
+        out[sym] = max(-max_points, min(max_points, val))
+    return out
 
 
 @dataclass

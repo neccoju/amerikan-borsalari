@@ -40,6 +40,17 @@
 - **News sentiment:** default model is VADER (lexicon-based), which mis-reads
   some financial jargon (e.g. "crushes earnings" → negative). FinBERT is the
   optional `[finbert]` upgrade for finance-aware sentiment.
+- **Congressional trades (Phase 3):** sourced from free community datasets
+  (house/senate stock-watcher). Delayed (up to ~45 days) and noisy; used as a
+  weak-to-moderate signal with a small weight, never a direct trigger. Source
+  availability is not guaranteed — the module skips gracefully if unreachable.
+- **Institutional 13F (Phase 3):** via SEC EDGAR (edgartools). 13F reports by
+  CUSIP/issuer, so ticker resolution is imperfect and the signal is experimental;
+  it is delayed quarterly and used only as slow-moving confirmation. Skips
+  gracefully when edgartools or ticker resolution is unavailable.
+- **LLM nudges (Phase 3):** the monthly review may emit bounded per-ticker
+  adjustments (±N points). They are surfaced in the report; feeding them back
+  into the live composite is a documented follow-up. The LLM never trades.
 - yfinance fundamentals are best-effort and occasionally stale/missing.
 - Macro relies on keyless proxies (VIX/^TNX) until FRED is enabled.
 - No transaction-cost modeling on model sleeves (intentional); the Active sleeve

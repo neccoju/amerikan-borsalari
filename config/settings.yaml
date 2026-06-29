@@ -55,6 +55,14 @@ news:
   max_per_symbol: 10
   sentiment_model: "vader"       # vader | finbert (finbert needs transformers)
 
+institutional:
+  enabled: true                  # 13F via SEC EDGAR (needs [sec] extra / edgartools)
+                                 # experimental: slow-moving quarterly confirmation
+
+congress:
+  enabled: true                  # keyless public datasets; auto-skips if unreachable
+  lookback_days: 90              # disclosure data is delayed; use a wide window
+
 email:
   enabled: true                  # auto-disabled if SMTP secrets are missing
   subject_prefix: "[usbot]"

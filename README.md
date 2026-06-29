@@ -94,7 +94,7 @@ in [`docs/cron_job_org_setup.md`](docs/cron_job_org_setup.md).
 |---|---|---|
 | 1 | Universe, prices, technical+fundamental+macro scoring, 5 portfolios, SQLite, report, email/LLM graceful skip, workflow, tests | ✅ done |
 | 2 | News ingestion + sentiment (VADER/FinBERT) wired into scoring, look-ahead-safe backtesting engine, richer report | ✅ done |
-| 3 | SEC 13F, congressional trades, monthly LLM adjustment | planned |
+| 3 | Congressional trades (keyless) + SEC 13F (experimental) + monthly LLM review with bounded nudges, all wired into scoring & report | ✅ done |
 | 4 | Adaptive self-learning (Bayesian/online), walk-forward, broad universe | planned |
 
 ---

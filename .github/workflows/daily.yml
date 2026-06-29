@@ -50,9 +50,10 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          # Include the [news] extra so Finnhub/Alpha Vantage ingestion works in CI.
-          # (Core deps stay light for library users; CI is the production runtime.)
-          pip install -e ".[news]"
+          # Include [news] (Finnhub/AV) and [sec] (EDGAR 13F) extras so the
+          # alternative-data signals work in CI. Core deps stay light for
+          # library users; CI is the production runtime.
+          pip install -e ".[news,sec]"
 
       - name: Optional sanity check of external trigger token
         if: ${{ github.event_name == 'repository_dispatch' }}
@@ -79,6 +80,8 @@ jobs:
           SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
           EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          # SEC EDGAR identity (no key). Falls back to a generic UA if unset.
+          EDGAR_IDENTITY: ${{ secrets.EDGAR_IDENTITY }}
         run: |
           FORCE_FLAG=""
           DRY_FLAG=""

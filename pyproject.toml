@@ -28,6 +28,7 @@ dependencies = [
 llm = ["anthropic>=0.39", "openai>=1.40"]
 macro = ["fredapi>=0.5"]
 news = ["finnhub-python>=2.4", "alpha_vantage>=2.3"]
+sec = ["edgartools>=2.30"]                        # 13F institutional holdings (EDGAR)
 finbert = ["transformers>=4.40", "torch>=2.0"]   # heavy; optional upgrade over VADER
 dev = ["pytest>=7.4", "pytest-cov>=4.1", "ruff>=0.5"]
 
