@@ -1,0 +1,60 @@
+# Global runtime settings for usbot. Safe defaults; no secrets here.
+
+run:
+  timezone: "America/New_York"   # market reference timezone
+  dry_run: false                 # if true, never sends email; logs only
+  log_level: "INFO"
+
+universe:
+  source: "sp500"                # sp500 | watchlist | both
+  include_watchlist: true
+  # Liquidity / size filters applied to the daily active universe.
+  min_market_cap: 2000000000     # 2B USD floor (relaxed for watchlist small/mid caps)
+  min_avg_dollar_volume: 5000000 # 5M USD/day
+  min_price: 3.0                 # exclude sub-$3 penny stocks
+  watchlist_relax_filters: true  # watchlist names bypass the market-cap floor
+  max_names: 600                 # safety cap on universe size
+
+data:
+  history_days: 420              # ~ enough for 200DMA + 12M momentum
+  cache_ttl_hours: 12
+  cache_dir: "data/raw"
+  benchmarks: ["SPY", "QQQ", "RSP"]
+  macro_tickers:                 # fetched via yfinance (keyless) as a fallback
+    spy: "SPY"
+    qqq: "QQQ"
+    iwm: "IWM"
+    vix: "^VIX"
+    tnx: "^TNX"                  # 10Y yield proxy
+
+database:
+  path: "data/usbot.db"
+
+portfolios:
+  model_capital: 1000.0
+  active_capital: 1600.0
+  active_txn_cost: 1.5           # USD per buy/sell
+  self_learning_capital: 1000.0  # paper only
+  rebalance: "month_end"         # model portfolios rebalance on last trading day
+  active_initial_deploy_pct: 0.25
+  min_cash_buffer_pct: 0.05
+
+risk:
+  growth:    { max_position: 0.12, max_sector: 0.30, max_names: 15 }
+  defensive: { max_position: 0.10, max_sector: 0.25, max_names: 15, max_beta: 0.80 }
+  balanced:  { max_position: 0.10, max_sector: 0.28, max_names: 15 }
+  active:    { max_position: 0.15, max_sector: 0.35, max_daily_turnover: 0.25,
+               min_expected_edge_after_cost: 0.0 }
+
+email:
+  enabled: true                  # auto-disabled if SMTP secrets are missing
+  subject_prefix: "[usbot]"
+
+llm:
+  enabled: true                  # auto-disabled if no key / provider=none
+  monthly_only: true             # do NOT run on daily runs (cost control)
+  max_adjustment_points: 5.0     # LLM can only nudge composite by +/- this
+
+backtest:
+  start_date: "2015-01-01"
+  benchmark: "SPY"

@@ -1,0 +1,72 @@
+# Multi-factor scoring weights. All sub-scores are normalized to 0..100.
+# Per-portfolio weight vectors; factors not yet implemented (news/institutional/
+# congress/llm) are present with their weights but contribute 0 until their phase
+# lands. The composite re-normalizes over the factors that actually have data,
+# so disabling a factor never silently shrinks the score range.
+
+factors:
+  growth:
+    macro: 0.10
+    fundamental: 0.25
+    technical: 0.35
+    news: 0.15
+    institutional: 0.08
+    congress: 0.04
+    llm: 0.03
+  defensive:
+    macro: 0.20
+    fundamental: 0.35
+    technical: 0.15
+    news: 0.10
+    institutional: 0.10
+    congress: 0.05
+    llm: 0.05
+  balanced:
+    macro: 0.15
+    fundamental: 0.30
+    technical: 0.25
+    news: 0.12
+    institutional: 0.10
+    congress: 0.05
+    llm: 0.03
+  active:
+    macro: 0.20
+    fundamental: 0.20
+    technical: 0.35
+    news: 0.15
+    institutional: 0.05
+    congress: 0.03
+    llm: 0.02
+
+# Which factors have a live data source in the current phase. Others -> weight
+# is redistributed proportionally among the live ones at runtime.
+enabled_factors: ["macro", "fundamental", "technical"]
+
+technical:
+  rsi_period: 14
+  rsi_low: 30
+  rsi_high: 70
+  macd_fast: 12
+  macd_slow: 26
+  macd_signal: 9
+  atr_period: 14
+  momentum_lookbacks: [21, 63, 126, 252]   # ~1M, 3M, 6M, 12M trading days
+  momentum_weights: [0.15, 0.25, 0.30, 0.30]
+
+fundamental:
+  # Each metric -> direction (higher_better) and weight within fundamental score.
+  weights:
+    revenue_growth: 0.20
+    earnings_growth: 0.20
+    profit_margin: 0.15
+    return_on_equity: 0.15
+    free_cash_flow_yield: 0.10
+    debt_to_equity: 0.10        # lower better (handled in code)
+    valuation_pe: 0.10          # lower better (handled in code)
+
+macro:
+  # Regime thresholds; macro produces both a 0..100 score and a regime label
+  # used as an exposure multiplier.
+  ma_period: 200
+  vix_risk_off: 25.0
+  vix_risk_on: 16.0

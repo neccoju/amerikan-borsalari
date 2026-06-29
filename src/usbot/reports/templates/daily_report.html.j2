@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  body { font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+         color: #1a1a1a; max-width: 760px; margin: 0 auto; padding: 16px; }
+  h1 { font-size: 20px; margin-bottom: 2px; }
+  h2 { font-size: 15px; margin-top: 22px; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+  .muted { color: #777; font-size: 12px; }
+  .regime { padding: 8px 12px; border-radius: 6px; display: inline-block; font-weight: 600; }
+  .risk_on { background:#e6f4ea; color:#137333; }
+  .risk_off { background:#fce8e6; color:#c5221f; }
+  .neutral { background:#fef7e0; color:#b06000; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; margin-top: 6px; }
+  th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid #f0f0f0; }
+  th { color:#555; font-weight:600; }
+  .pos { color:#137333; } .neg { color:#c5221f; }
+  .pill { background:#f1f3f4; border-radius:10px; padding:2px 8px; font-size:12px; }
+  .warn { color:#b06000; } .err { color:#c5221f; }
+  .footer { margin-top:24px; font-size:11px; color:#999; }
+</style>
+</head>
+<body>
+  <h1>usbot — Daily Report</h1>
+  <div class="muted">{{ ctx.date }} · Market: {{ ctx.market_status }}</div>
+
+  <h2>Macro Regime</h2>
+  <span class="regime {{ ctx.regime_label }}">{{ ctx.regime_label|upper }}</span>
+  <span class="muted">score {{ "%.0f"|format(ctx.regime_score) }}</span>
+  {% if ctx.regime_detail %}
+  <div class="muted" style="margin-top:6px;">
+    {% for k, v in ctx.regime_detail.items() %}<span class="pill">{{ k }}: {{ v }}</span> {% endfor %}
+  </div>
+  {% endif %}
+
+  {% for pf in ctx.portfolios %}
+  <h2>{{ pf.name }}</h2>
+  <div>
+    Value: <b>${{ "{:,.2f}".format(pf.total_value) }}</b> ·
+    Cash: ${{ "{:,.2f}".format(pf.cash) }} ·
+    Daily: <span class="{{ 'pos' if pf.daily_pl >= 0 else 'neg' }}">{{ "%+.2f"|format(pf.daily_pl) }}</span> ·
+    Total: <span class="{{ 'pos' if pf.total_pl >= 0 else 'neg' }}">{{ "%+.2f"|format(pf.total_pl) }}</span>
+  </div>
+  {% if pf.holdings %}
+  <table>
+    <tr><th>Symbol</th><th>Weight</th><th>Value</th></tr>
+    {% for h in pf.holdings[:15] %}
+    <tr><td>{{ h.symbol }}</td><td>{{ "%.1f"|format(h.weight*100) }}%</td>
+        <td>${{ "{:,.0f}".format(h.value) }}</td></tr>
+    {% endfor %}
+  </table>
+  {% else %}<div class="muted">No holdings (100% cash).</div>{% endif %}
+  {% if pf.actions %}
+  <div class="muted" style="margin-top:6px;">Actions:
+    {% for a in pf.actions %}<div>· {{ a }}</div>{% endfor %}
+  </div>{% endif %}
+  {% endfor %}
+
+  {% if ctx.top_scores %}
+  <h2>Top Scores</h2>
+  {% for pf_name, items in ctx.top_scores.items() %}
+  <div><b>{{ pf_name }}:</b>
+    {% for sym, val in items[:5] %}<span class="pill">{{ sym }} {{ "%.0f"|format(val) }}</span> {% endfor %}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <h2>LLM Review</h2>
+  <div class="muted">{{ ctx.llm_note }}</div>
+
+  {% if ctx.skipped %}
+  <h2>Skipped Modules</h2>
+  <div class="warn">{% for s in ctx.skipped %}<div>· {{ s }}</div>{% endfor %}</div>
+  {% endif %}
+
+  {% if ctx.errors %}
+  <h2>Data / API Errors</h2>
+  <div class="err">{% for e in ctx.errors[:15] %}<div>· {{ e }}</div>{% endfor %}</div>
+  {% endif %}
+
+  <div class="footer">
+    Research and monitoring tool. NOT financial advice. All portfolios are
+    simulated (paper trading). Self-Learning sleeve is paper-only.
+  </div>
+</body>
+</html>
