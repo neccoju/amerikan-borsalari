@@ -3,7 +3,7 @@ import datetime as dt
 
 from usbot.congress.model import CongressTrade, normalize_txn_type
 from usbot.congress.score import congress_scores
-from usbot.congress.ingest import _parse_quiver_rows
+from usbot.congress.ingest import _parse_quiver_rows, _parse_capitoltrades_rows
 from usbot.institutional.model import HoldingChange
 from usbot.institutional.score import institutional_scores
 from usbot.llm.review import parse_adjustments
@@ -55,6 +55,28 @@ def test_parse_quiver_rows_filters_and_maps():
     assert ("NVDA", "buy", "house") in syms
     assert ("AAPL", "sell", "senate") in syms
     assert len(out) == 2  # ZZZZ filtered, Exchange skipped, old skipped
+
+
+def test_parse_capitoltrades_rows():
+    rows = [
+        {"txType": "buy", "txDate": "2026-06-10", "pubDate": "2026-06-20", "value": 250000,
+         "size": "$100,001 - $250,000",
+         "issuer": {"issuerTicker": "NVDA:US"},
+         "politician": {"firstName": "Nancy", "lastName": "P", "party": "D", "chamber": "house"}},
+        {"txType": "sell", "txDate": "2026-06-11",
+         "asset": {"assetTicker": "AAPL:US"},
+         "politician": {"firstName": "Tom", "lastName": "T", "chamber": "senate"}},
+        {"txType": "exchange", "txDate": "2026-06-11", "issuer": {"issuerTicker": "NVDA:US"}},
+        {"txType": "buy", "txDate": "2019-01-01", "issuer": {"issuerTicker": "NVDA:US"}},  # old
+    ]
+    out = _parse_capitoltrades_rows(rows, {"NVDA", "AAPL"}, dt.date(2026, 4, 1))
+    assert len(out) == 2
+    nvda = [t for t in out if t.symbol == "NVDA"][0]
+    assert nvda.txn_type == "buy" and nvda.chamber == "house"
+    assert nvda.amount_value == 250000          # numeric value used as amount_mid
+    assert nvda.amount_mid == 250000
+    aapl = [t for t in out if t.symbol == "AAPL"][0]
+    assert aapl.txn_type == "sell" and aapl.chamber == "senate"
 
 
 def test_amount_midpoint_and_signed():

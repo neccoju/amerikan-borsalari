@@ -117,6 +117,88 @@ def _fetch_stockwatcher(universe: set[str], since: dt.date, res: CongressResult)
     return got
 
 
+def _ct_ticker(row: dict) -> str:
+    """Extract a bare ticker from a Capitol Trades row (handles 'AAPL:US')."""
+    for path in (("issuer", "issuerTicker"), ("asset", "assetTicker")):
+        node = row.get(path[0]) or {}
+        raw = (node.get(path[1]) or "") if isinstance(node, dict) else ""
+        if raw:
+            return raw.split(":")[0].strip().upper()
+    return ""
+
+
+def _parse_capitoltrades_rows(rows, universe: set[str], since: dt.date) -> list[CongressTrade]:
+    """Parse Capitol Trades BFF rows into CongressTrade records."""
+    out = []
+    for row in rows or []:
+        try:
+            sym = _ct_ticker(row)
+            if not sym or (universe and sym not in universe):
+                continue
+            ttype = normalize_txn_type(row.get("txType", ""))
+            if ttype is None:
+                continue
+            traded = _parse_date(row.get("txDate", ""))
+            if traded and traded < since:
+                continue
+            pol = row.get("politician") or {}
+            name = " ".join(p for p in (pol.get("firstName"), pol.get("lastName")) if p).strip()
+            chamber = "senate" if "senate" in (pol.get("chamber", "") or "").lower() else "house"
+            val = row.get("value")
+            out.append(CongressTrade(
+                symbol=sym, chamber=chamber, politician=name or "Unknown",
+                txn_type=ttype, traded_date=traded,
+                filed_date=_parse_date(row.get("pubDate", "")),
+                amount_range=row.get("size", "") or "",
+                party=pol.get("party", "") or "",
+                amount_value=float(val) if isinstance(val, (int, float)) else None,
+            ))
+        except Exception:  # noqa: BLE001 - skip malformed rows
+            continue
+    return out
+
+
+def _fetch_capitoltrades(universe: set[str], since: dt.date, res: CongressResult,
+                         max_pages: int = 6, page_size: int = 100) -> bool:
+    """Capitol Trades public BFF endpoint (keyless). Paginates recent trades."""
+    import requests
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (compatible; usbot/0.1; research)",
+        "Accept": "application/json",
+        "Referer": "https://www.capitoltrades.com/",
+        "Origin": "https://www.capitoltrades.com",
+    }
+    collected = []
+    for page in range(1, max_pages + 1):
+        try:
+            r = requests.get(
+                "https://bff.capitoltrades.com/trades",
+                params={"page": page, "pageSize": page_size, "sortBy": "-txDate"},
+                headers=headers, timeout=30,
+            )
+            if r.status_code != 200:
+                res.errors.append(f"capitoltrades p{page}: HTTP {r.status_code}")
+                break
+            data = (r.json() or {}).get("data", [])
+            if not data:
+                break
+            collected.extend(data)
+            # stop early once we've paged past the lookback window
+            oldest = _parse_date((data[-1] or {}).get("txDate", ""))
+            if oldest and oldest < since:
+                break
+        except Exception as exc:  # noqa: BLE001
+            res.errors.append(f"capitoltrades p{page}: {exc}")
+            break
+    trades = _parse_capitoltrades_rows(collected, universe, since)
+    if trades:
+        res.trades.extend(trades)
+        res.sources.append("capitoltrades")
+        return True
+    return False
+
+
 def _parse_quiver_rows(rows, universe: set[str], since: dt.date) -> list[CongressTrade]:
     """Parse Quiver Quant live/congresstrading rows into CongressTrade records."""
     out = []
@@ -231,11 +313,15 @@ def fetch_congress_trades(universe: list[str], *, lookback_days: int = 90,
     if secrets is not None and secrets.has("QUIVER_API_KEY"):
         got = _fetch_quiver(uni, since, secrets.get("QUIVER_API_KEY"), res)
 
-    # 2. Free public stock-watcher datasets.
+    # 2. Capitol Trades public BFF (keyless).
+    if not got:
+        got = _fetch_capitoltrades(uni, since, res)
+
+    # 3. Free public stock-watcher datasets.
     if not got:
         got = _fetch_stockwatcher(uni, since, res)
 
-    # 3. Finnhub (premium-gated; stops early on 401/403).
+    # 4. Finnhub (premium-gated; stops early on 401/403).
     if not got and secrets is not None and secrets.has("FINNHUB_API_KEY"):
         log.info("Congress: prior sources failed; trying Finnhub fallback")
         got = _fetch_finnhub(universe, since, secrets.get("FINNHUB_API_KEY"), res)
