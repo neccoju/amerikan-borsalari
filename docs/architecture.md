@@ -42,6 +42,8 @@ usbot.cli  ──►  usbot.orchestrator.run_daily()
 | `reports/` | HTML/text report builder + Jinja template |
 | `mailer/` | SMTP sender with log fallback |
 | `news/` | news ingestion (Finnhub/AV, graceful skip), dedup, VADER/FinBERT sentiment, per-symbol news score |
+| `congress/` | congressional trades (free public datasets, keyless), per-symbol score (weak signal) |
+| `institutional/` | 13F holdings via SEC EDGAR (edgartools, experimental), q/q change detection, per-symbol score |
 | `llm/` | configurable provider (anthropic/openai/ollama/none) + monthly review |
 | `backtest/` | look-ahead-safe engine (T+1 execution, costs, walk-forward) + metrics |
 

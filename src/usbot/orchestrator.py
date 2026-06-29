@@ -104,12 +104,21 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     macro = fetch_macro_series(scfg.get("macro_tickers", {}), period_days=history_days,
                                cache=cache)
 
-    # ---- news + sentiment (graceful skip if no key) ----
+    # ---- alternative-data signals (all graceful-skip) ----
+    extra_scores: dict = {}
     news_series = _run_news(settings, secrets, universe.symbols, ctx)
+    if news_series is not None:
+        extra_scores["news"] = news_series
+    inst_series = _run_institutional(settings, secrets, universe.symbols, ctx)
+    if inst_series is not None:
+        extra_scores["institutional"] = inst_series
+    congress_series = _run_congress(settings, secrets, universe.symbols, ctx)
+    if congress_series is not None:
+        extra_scores["congress"] = congress_series
 
     # ---- scoring ----
     scores = score_universe(indicators, fundamentals, macro, settings.scoring,
-                            news_score=news_series)
+                            extra_factor_scores=extra_scores)
     if scores.macro:
         ctx.regime_label = scores.macro.label
         ctx.regime_score = scores.macro.score
@@ -155,8 +164,17 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
         monthly_only=settings.get("llm", {}).get("monthly_only", True),
         is_month_end=is_month_end,
     )
-    ctx.llm_note = review.text if review.ran else review.note
-    if not review.ran:
+    if review.ran:
+        from .llm.review import parse_adjustments
+
+        max_pts = float(settings.get("llm", {}).get("max_adjustment_points", 5.0))
+        adj = parse_adjustments(review.text, max_pts)
+        ctx.llm_note = review.text
+        if adj:
+            nudges = ", ".join(f"{k}{v:+g}" for k, v in list(adj.items())[:12])
+            ctx.llm_note += f"\n[bounded nudges (±{max_pts:g}): {nudges}]"
+    else:
+        ctx.llm_note = review.note
         ctx.skipped.append(review.note)
 
 
@@ -199,6 +217,75 @@ def _run_news(settings: Settings, secrets: Secrets, symbols: list[str],
     ][:12]
     ctx.news_note = f"{result.total} items via {result.provider} (sentiment={sent.model})"
     log.info("News: %s", ctx.news_note)
+    return series
+
+
+def _run_institutional(settings: Settings, secrets: Secrets, symbols: list[str],
+                       ctx: ReportContext) -> "pd.Series | None":
+    """Fetch 13F changes for tracked funds and score them. Graceful skip."""
+    icfg = settings.get("institutional", {})
+    if not icfg.get("enabled", True):
+        ctx.institutional_note = "Institutional disabled in settings"
+        return None
+    try:
+        from .institutional import fetch_institutional_changes, institutional_scores
+
+        result = fetch_institutional_changes(symbols)
+    except Exception as exc:  # noqa: BLE001
+        ctx.institutional_note = f"Institutional skipped: {exc}"
+        ctx.skipped.append(ctx.institutional_note)
+        return None
+
+    if not result.enabled or not result.changes:
+        ctx.institutional_note = result.skip_reason or "No 13F changes"
+        ctx.skipped.append(f"institutional: {ctx.institutional_note}")
+        ctx.errors.extend(result.errors[:5])
+        return None
+
+    series = institutional_scores(result.changes, symbols)
+    notable = sorted(result.changes, key=lambda c: abs(c.signed_weight), reverse=True)
+    ctx.institutional_updates = [
+        {"symbol": c.symbol, "fund": c.fund, "change_type": c.change_type}
+        for c in notable if c.change_type in ("new", "exited", "increased", "decreased")
+    ][:12]
+    ctx.institutional_note = (f"{len(result.changes)} changes across "
+                              f"{len(result.funds_seen)} funds")
+    log.info("Institutional: %s", ctx.institutional_note)
+    return series
+
+
+def _run_congress(settings: Settings, secrets: Secrets, symbols: list[str],
+                  ctx: ReportContext) -> "pd.Series | None":
+    """Fetch recent congressional trades and score them. Graceful skip."""
+    ccfg = settings.get("congress", {})
+    if not ccfg.get("enabled", True):
+        ctx.congress_note = "Congress disabled in settings"
+        return None
+    try:
+        from .congress import congress_scores, fetch_congress_trades
+
+        result = fetch_congress_trades(symbols, lookback_days=int(ccfg.get("lookback_days", 90)))
+    except Exception as exc:  # noqa: BLE001
+        ctx.congress_note = f"Congress skipped: {exc}"
+        ctx.skipped.append(ctx.congress_note)
+        return None
+
+    if not result.enabled or not result.trades:
+        ctx.congress_note = result.skip_reason or "No congressional trades in window"
+        if result.skip_reason:
+            ctx.skipped.append(f"congress: {result.skip_reason}")
+        ctx.errors.extend(result.errors[:5])
+        return None
+
+    series = congress_scores(result.trades, symbols)
+    recent = sorted(result.trades, key=lambda t: (t.traded_date or dt.date.min), reverse=True)
+    ctx.congress_updates = [
+        {"symbol": t.symbol, "politician": t.politician, "txn_type": t.txn_type,
+         "amount_range": t.amount_range, "chamber": t.chamber}
+        for t in recent
+    ][:12]
+    ctx.congress_note = f"{len(result.trades)} trades via {'+'.join(result.sources)}"
+    log.info("Congress: %s", ctx.congress_note)
     return series
 
 

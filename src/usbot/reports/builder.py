@@ -36,6 +36,12 @@ class ReportContext:
     # News highlights: list of {symbol, headline, label, category, sentiment}
     news_highlights: list[dict] = field(default_factory=list)
     news_note: str = ""
+    # Institutional (13F) updates: list of {symbol, fund, change_type}
+    institutional_updates: list[dict] = field(default_factory=list)
+    institutional_note: str = ""
+    # Congressional updates: list of {symbol, politician, txn_type, amount_range, chamber}
+    congress_updates: list[dict] = field(default_factory=list)
+    congress_note: str = ""
     llm_note: str = ""
     skipped: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
@@ -92,6 +98,21 @@ def _build_text(ctx: ReportContext) -> str:
         lines.append("")
     elif ctx.news_note:
         lines.append(f"News: {ctx.news_note}")
+    if ctx.institutional_updates:
+        lines.append("Institutional (13F) moves:")
+        for u in ctx.institutional_updates[:8]:
+            lines.append(f"    {u['symbol']}: {u['change_type']} by {u['fund']}")
+        lines.append("")
+    elif ctx.institutional_note:
+        lines.append(f"Institutional: {ctx.institutional_note}")
+    if ctx.congress_updates:
+        lines.append("Congressional trades:")
+        for u in ctx.congress_updates[:8]:
+            lines.append(f"    {u['symbol']}: {u['txn_type']} {u.get('amount_range','')} "
+                         f"by {u['politician']} ({u['chamber']})")
+        lines.append("")
+    elif ctx.congress_note:
+        lines.append(f"Congress: {ctx.congress_note}")
     if ctx.llm_note:
         lines.append(f"LLM: {ctx.llm_note}")
     if ctx.skipped:
