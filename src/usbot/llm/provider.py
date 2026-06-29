@@ -84,15 +84,20 @@ def get_provider(secrets: Secrets) -> LLMProvider:
     if provider in ("none", ""):
         return LLMProvider("none", False, "", "provider=none")
 
+    # Model is configurable via LLM_MODEL so the exact string your account
+    # supports can be set without code changes; sensible defaults otherwise.
+    model_override = secrets.get("LLM_MODEL")
+
     if provider == "anthropic":
         if not secrets.has("ANTHROPIC_API_KEY"):
             return LLMProvider("anthropic", False, "", "missing ANTHROPIC_API_KEY")
-        return LLMProvider("anthropic", True, "claude-opus-4-8", "")
+        return LLMProvider("anthropic", True,
+                           model_override or "claude-3-5-sonnet-latest", "")
 
     if provider == "openai":
         if not secrets.has("OPENAI_API_KEY"):
             return LLMProvider("openai", False, "", "missing OPENAI_API_KEY")
-        return LLMProvider("openai", True, "gpt-4o", "")
+        return LLMProvider("openai", True, model_override or "gpt-4o-mini", "")
 
     if provider == "ollama":
         model = secrets.get("OLLAMA_MODEL", "llama3.1")
