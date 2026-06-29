@@ -27,9 +27,12 @@ class CongressTrade:
     filed_date: dt.date | None
     amount_range: str = ""
     party: str = ""
+    amount_value: float | None = None   # exact/estimated USD when a source provides it
 
     @property
     def amount_mid(self) -> float:
+        if self.amount_value and self.amount_value > 0:
+            return float(self.amount_value)
         return float(_AMOUNT_MIDPOINTS.get(self.amount_range.strip(), 10000))
 
     @property
