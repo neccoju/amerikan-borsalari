@@ -1,0 +1,414 @@
+{
+  "portfolios": {
+    "Active Entry": {
+      "ptype": "active",
+      "starting_capital": 1600.0,
+      "cash": 775.393737,
+      "holdings": [
+        {
+          "symbol": "AMAT",
+          "shares": 0.19053861,
+          "avg_cost": 646.940002
+        },
+        {
+          "symbol": "AMD",
+          "shares": 0.25747707,
+          "avg_cost": 508.890015
+        },
+        {
+          "symbol": "C",
+          "shares": 1.68203617,
+          "avg_cost": 142.940002
+        },
+        {
+          "symbol": "LLY",
+          "shares": 0.19618422,
+          "avg_cost": 1223.339966
+        },
+        {
+          "symbol": "MU",
+          "shares": 0.07821494,
+          "avg_cost": 1053.27002
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-06-29",
+          "total_value": 1598.37,
+          "cash": 775.39
+        }
+      ],
+      "last_decision_date": "2026-06-29",
+      "last_rebalance_date": null,
+      "updated_at": "2026-06-29T14:39:46Z"
+    },
+    "Growth": {
+      "ptype": "growth",
+      "starting_capital": 1000.0,
+      "cash": 0.0,
+      "holdings": [
+        {
+          "symbol": "AMAT",
+          "shares": 0.05915528,
+          "avg_cost": 669.789978
+        },
+        {
+          "symbol": "AMD",
+          "shares": 0.0756884,
+          "avg_cost": 508.890015
+        },
+        {
+          "symbol": "C",
+          "shares": 0.5579682,
+          "avg_cost": 142.940002
+        },
+        {
+          "symbol": "CRWD",
+          "shares": 0.04887371,
+          "avg_cost": 750.180115
+        },
+        {
+          "symbol": "CSCO",
+          "shares": 0.31320436,
+          "avg_cost": 115.860001
+        },
+        {
+          "symbol": "DDOG",
+          "shares": 0.14237377,
+          "avg_cost": 250.860001
+        },
+        {
+          "symbol": "GS",
+          "shares": 0.07275846,
+          "avg_cost": 1025.439941
+        },
+        {
+          "symbol": "KO",
+          "shares": 1.10705648,
+          "avg_cost": 83.315102
+        },
+        {
+          "symbol": "LLY",
+          "shares": 0.11628533,
+          "avg_cost": 1231.060059
+        },
+        {
+          "symbol": "MO",
+          "shares": 1.27258342,
+          "avg_cost": 73.43
+        },
+        {
+          "symbol": "MS",
+          "shares": 0.35296057,
+          "avg_cost": 214.190002
+        },
+        {
+          "symbol": "MU",
+          "shares": 0.03778908,
+          "avg_cost": 1053.27002
+        },
+        {
+          "symbol": "NVDA",
+          "shares": 0.18827006,
+          "avg_cost": 194.110001
+        },
+        {
+          "symbol": "PANW",
+          "shares": 0.11286616,
+          "avg_cost": 326.459991
+        },
+        {
+          "symbol": "SPG",
+          "shares": 0.62273716,
+          "avg_cost": 226.740005
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-06-29",
+          "total_value": 1000.0,
+          "cash": 0.0
+        }
+      ],
+      "last_decision_date": null,
+      "last_rebalance_date": "2026-06-29",
+      "updated_at": "2026-06-29T14:39:46Z"
+    },
+    "Defensive": {
+      "ptype": "defensive",
+      "starting_capital": 1000.0,
+      "cash": -0.0,
+      "holdings": [
+        {
+          "symbol": "BRK-B",
+          "shares": 0.12672221,
+          "avg_cost": 497.915009
+        },
+        {
+          "symbol": "D",
+          "shares": 0.92568173,
+          "avg_cost": 68.900002
+        },
+        {
+          "symbol": "EOG",
+          "shares": 0.49272134,
+          "avg_cost": 133.875
+        },
+        {
+          "symbol": "IBM",
+          "shares": 0.22681138,
+          "avg_cost": 274.5
+        },
+        {
+          "symbol": "JNJ",
+          "shares": 0.23974633,
+          "avg_cost": 256.209991
+        },
+        {
+          "symbol": "KO",
+          "shares": 0.82751771,
+          "avg_cost": 83.315102
+        },
+        {
+          "symbol": "LIN",
+          "shares": 0.1263222,
+          "avg_cost": 514.982483
+        },
+        {
+          "symbol": "LLY",
+          "shares": 0.06153408,
+          "avg_cost": 1231.060059
+        },
+        {
+          "symbol": "MA",
+          "shares": 0.12757178,
+          "avg_cost": 514.349976
+        },
+        {
+          "symbol": "MO",
+          "shares": 0.97799818,
+          "avg_cost": 73.43
+        },
+        {
+          "symbol": "NEE",
+          "shares": 0.71724696,
+          "avg_cost": 87.239998
+        },
+        {
+          "symbol": "NEM",
+          "shares": 0.8078046,
+          "avg_cost": 94.389999
+        },
+        {
+          "symbol": "PM",
+          "shares": 0.34604914,
+          "avg_cost": 180.610001
+        },
+        {
+          "symbol": "TJX",
+          "shares": 0.41377852,
+          "avg_cost": 154.139999
+        },
+        {
+          "symbol": "V",
+          "shares": 0.20614098,
+          "avg_cost": 345.359985
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-06-29",
+          "total_value": 1000.0,
+          "cash": -0.0
+        }
+      ],
+      "last_decision_date": null,
+      "last_rebalance_date": "2026-06-29",
+      "updated_at": "2026-06-29T14:39:46Z"
+    },
+    "Balanced": {
+      "ptype": "balanced",
+      "starting_capital": 1000.0,
+      "cash": 0.0,
+      "holdings": [
+        {
+          "symbol": "AMAT",
+          "shares": 0.0844326,
+          "avg_cost": 669.789978
+        },
+        {
+          "symbol": "AMD",
+          "shares": 0.10876029,
+          "avg_cost": 508.890015
+        },
+        {
+          "symbol": "AVGO",
+          "shares": 0.14321592,
+          "avg_cost": 368.790009
+        },
+        {
+          "symbol": "C",
+          "shares": 0.48275469,
+          "avg_cost": 142.940002
+        },
+        {
+          "symbol": "GOOG",
+          "shares": 0.19694952,
+          "avg_cost": 348.13501
+        },
+        {
+          "symbol": "GOOGL",
+          "shares": 0.19577023,
+          "avg_cost": 350.575012
+        },
+        {
+          "symbol": "KO",
+          "shares": 0.83123712,
+          "avg_cost": 83.315102
+        },
+        {
+          "symbol": "LLY",
+          "shares": 0.06716281,
+          "avg_cost": 1231.060059
+        },
+        {
+          "symbol": "MO",
+          "shares": 0.96977364,
+          "avg_cost": 73.43
+        },
+        {
+          "symbol": "MS",
+          "shares": 0.30760278,
+          "avg_cost": 214.190002
+        },
+        {
+          "symbol": "MU",
+          "shares": 0.05635481,
+          "avg_cost": 1053.27002
+        },
+        {
+          "symbol": "NEM",
+          "shares": 0.83727997,
+          "avg_cost": 94.389999
+        },
+        {
+          "symbol": "NVDA",
+          "shares": 0.28812234,
+          "avg_cost": 194.110001
+        },
+        {
+          "symbol": "SPG",
+          "shares": 0.35267591,
+          "avg_cost": 226.740005
+        },
+        {
+          "symbol": "V",
+          "shares": 0.19043692,
+          "avg_cost": 345.359985
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-06-29",
+          "total_value": 1000.0,
+          "cash": 0.0
+        }
+      ],
+      "last_decision_date": null,
+      "last_rebalance_date": "2026-06-29",
+      "updated_at": "2026-06-29T14:39:46Z"
+    },
+    "Self-Learning (paper)": {
+      "ptype": "self_learning",
+      "starting_capital": 1000.0,
+      "cash": 0.0,
+      "holdings": [
+        {
+          "symbol": "AMAT",
+          "shares": 0.0904635,
+          "avg_cost": 669.789978
+        },
+        {
+          "symbol": "AMD",
+          "shares": 0.11652888,
+          "avg_cost": 508.890015
+        },
+        {
+          "symbol": "AVGO",
+          "shares": 0.15344563,
+          "avg_cost": 368.790009
+        },
+        {
+          "symbol": "C",
+          "shares": 0.47963072,
+          "avg_cost": 142.940002
+        },
+        {
+          "symbol": "GOOG",
+          "shares": 0.19278724,
+          "avg_cost": 348.13501
+        },
+        {
+          "symbol": "GOOGL",
+          "shares": 0.19163287,
+          "avg_cost": 350.575012
+        },
+        {
+          "symbol": "KO",
+          "shares": 0.81456651,
+          "avg_cost": 83.315102
+        },
+        {
+          "symbol": "LLY",
+          "shares": 0.06369037,
+          "avg_cost": 1231.060059
+        },
+        {
+          "symbol": "MO",
+          "shares": 0.95032466,
+          "avg_cost": 73.43
+        },
+        {
+          "symbol": "MS",
+          "shares": 0.30561224,
+          "avg_cost": 214.190002
+        },
+        {
+          "symbol": "MU",
+          "shares": 0.06038016,
+          "avg_cost": 1053.27002
+        },
+        {
+          "symbol": "NEM",
+          "shares": 0.79101575,
+          "avg_cost": 94.389999
+        },
+        {
+          "symbol": "NVDA",
+          "shares": 0.30870251,
+          "avg_cost": 194.110001
+        },
+        {
+          "symbol": "SPG",
+          "shares": 0.33352051,
+          "avg_cost": 226.740005
+        },
+        {
+          "symbol": "V",
+          "shares": 0.18920458,
+          "avg_cost": 345.359985
+        }
+      ],
+      "history": [
+        {
+          "date": "2026-06-29",
+          "total_value": 1000.0,
+          "cash": 0.0
+        }
+      ],
+      "last_decision_date": null,
+      "last_rebalance_date": "2026-06-29",
+      "updated_at": "2026-06-29T14:39:46Z"
+    }
+  }
+}
