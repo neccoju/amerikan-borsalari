@@ -264,7 +264,8 @@ def _run_congress(settings: Settings, secrets: Secrets, symbols: list[str],
     try:
         from .congress import congress_scores, fetch_congress_trades
 
-        result = fetch_congress_trades(symbols, lookback_days=int(ccfg.get("lookback_days", 90)))
+        result = fetch_congress_trades(symbols, lookback_days=int(ccfg.get("lookback_days", 90)),
+                                       secrets=secrets)
     except Exception as exc:  # noqa: BLE001
         ctx.congress_note = f"Congress skipped: {exc}"
         ctx.skipped.append(ctx.congress_note)

@@ -1,25 +1,35 @@
-"""Congressional trade ingestion from free public datasets.
+"""Congressional trade ingestion with multiple fallback sources.
 
-Primary sources are the community-maintained house/senate stock-watcher JSON
-dumps (keyless). These can change or rate-limit, so every failure degrades to
-"no data" and the report notes it. Per-record parsing is defensive: a malformed
-row is skipped, never fatal.
+Order of attempts (each graceful):
+  1. House/Senate stock-watcher public JSON (keyless) — tries the modern
+     virtual-hosted ``s3.<region>`` host first, then the legacy ``s3-<region>``.
+  2. Finnhub ``congressional-trading`` endpoint (if FINNHUB_API_KEY present) —
+     per-symbol over the universe; works only if the tier exposes it.
+
+Every failure degrades to "no data" and the report notes it; per-record parsing
+is defensive so a malformed row is skipped, never fatal.
 """
 from __future__ import annotations
 
 import datetime as dt
 from dataclasses import dataclass, field
 
+from ..config.secrets import Secrets
 from ..utils.logging import get_logger
 from ..utils.retry import with_retry
 from .model import CongressTrade, normalize_txn_type
 
 log = get_logger(__name__)
 
-HOUSE_URL = ("https://house-stock-watcher-data.s3-us-west-2.amazonaws.com/"
-             "data/all_transactions.json")
-SENATE_URL = ("https://senate-stock-watcher-data.s3-us-west-2.amazonaws.com/"
-              "aggregate/all_transactions.json")
+# Modern virtual-hosted host (dot) first, then legacy (dash) as fallback.
+HOUSE_URLS = [
+    "https://house-stock-watcher-data.s3.us-west-2.amazonaws.com/data/all_transactions.json",
+    "https://house-stock-watcher-data.s3-us-west-2.amazonaws.com/data/all_transactions.json",
+]
+SENATE_URLS = [
+    "https://senate-stock-watcher-data.s3.us-west-2.amazonaws.com/aggregate/all_transactions.json",
+    "https://senate-stock-watcher-data.s3-us-west-2.amazonaws.com/aggregate/all_transactions.json",
+]
 
 
 @dataclass
@@ -36,7 +46,7 @@ def _parse_date(s: str) -> dt.date | None:
         return None
     for fmt in ("%Y-%m-%d", "%m/%d/%Y", "%Y-%m-%dT%H:%M:%S"):
         try:
-            return dt.datetime.strptime(s[:len(fmt) + 2] if "T" in fmt else s, fmt).date()
+            return dt.datetime.strptime(s.split("T")[0] if fmt == "%Y-%m-%d" else s, fmt).date()
         except (ValueError, TypeError):
             continue
     return None
@@ -46,39 +56,28 @@ def _parse_date(s: str) -> dt.date | None:
 def _get_json(url: str):
     import requests
 
-    r = requests.get(url, timeout=45, headers={"User-Agent": "usbot/0.1 (research)"})
+    r = requests.get(url, timeout=45, headers={
+        "User-Agent": "Mozilla/5.0 (compatible; usbot/0.1; research)",
+        "Accept": "application/json,*/*",
+    })
     r.raise_for_status()
     return r.json()
 
 
-def _parse_house(rows, universe: set[str], since: dt.date) -> list[CongressTrade]:
-    out = []
-    for row in rows:
+def _first_working(urls: list[str], errors: list[str], label: str):
+    """Return JSON from the first URL that succeeds, else None."""
+    for url in urls:
         try:
-            sym = (row.get("ticker") or "").strip().upper()
-            if not sym or sym in ("--", "N/A") or (universe and sym not in universe):
-                continue
-            ttype = normalize_txn_type(row.get("type", ""))
-            if ttype is None:
-                continue
-            traded = _parse_date(row.get("transaction_date", ""))
-            if traded and traded < since:
-                continue
-            out.append(CongressTrade(
-                symbol=sym, chamber="house",
-                politician=row.get("representative", "") or "",
-                txn_type=ttype, traded_date=traded,
-                filed_date=_parse_date(row.get("disclosure_date", "")),
-                amount_range=row.get("amount", "") or "",
-            ))
-        except Exception:  # noqa: BLE001 - skip malformed rows
-            continue
-    return out
+            return _get_json(url)
+        except Exception as exc:  # noqa: BLE001
+            errors.append(f"congress {label} ({url.split('//')[1].split('/')[0]}): {exc}")
+    return None
 
 
-def _parse_senate(rows, universe: set[str], since: dt.date) -> list[CongressTrade]:
+def _parse_rows(rows, chamber: str, member_key: str, universe: set[str],
+                since: dt.date) -> list[CongressTrade]:
     out = []
-    for row in rows:
+    for row in rows or []:
         try:
             sym = (row.get("ticker") or "").strip().upper()
             if not sym or sym in ("--", "N/A") or (universe and sym not in universe):
@@ -90,44 +89,99 @@ def _parse_senate(rows, universe: set[str], since: dt.date) -> list[CongressTrad
             if traded and traded < since:
                 continue
             out.append(CongressTrade(
-                symbol=sym, chamber="senate",
-                politician=row.get("senator", "") or "",
+                symbol=sym, chamber=chamber,
+                politician=row.get(member_key, "") or "",
                 txn_type=ttype, traded_date=traded,
                 filed_date=_parse_date(row.get("disclosure_date", "")),
                 amount_range=row.get("amount", "") or "",
             ))
-        except Exception:  # noqa: BLE001
+        except Exception:  # noqa: BLE001 - skip malformed rows
             continue
     return out
 
 
+def _fetch_stockwatcher(universe: set[str], since: dt.date, res: CongressResult) -> bool:
+    got = False
+    house = _first_working(HOUSE_URLS, res.errors, "house")
+    if house is not None:
+        rows = house if isinstance(house, list) else house.get("transactions", house)
+        res.trades.extend(_parse_rows(rows, "house", "representative", universe, since))
+        res.sources.append("house")
+        got = True
+    senate = _first_working(SENATE_URLS, res.errors, "senate")
+    if senate is not None:
+        rows = senate if isinstance(senate, list) else senate.get("transactions", senate)
+        res.trades.extend(_parse_rows(rows, "senate", "senator", universe, since))
+        res.sources.append("senate")
+        got = True
+    return got
+
+
+def _fetch_finnhub(universe: list[str], since: dt.date, api_key: str,
+                   res: CongressResult, max_symbols: int = 80) -> bool:
+    """Per-symbol Finnhub congressional-trading. Works only if the tier allows it."""
+    import requests
+
+    to = dt.date.today()
+    got = False
+    for sym in list(universe)[:max_symbols]:
+        try:
+            r = requests.get(
+                "https://finnhub.io/api/v1/stock/congressional-trading",
+                params={"symbol": sym, "from": since.isoformat(), "to": to.isoformat(),
+                        "token": api_key},
+                timeout=20,
+            )
+            if r.status_code != 200:
+                res.errors.append(f"finnhub congress {sym}: HTTP {r.status_code}")
+                if r.status_code in (401, 403):
+                    break  # tier doesn't expose it — stop trying
+                continue
+            data = (r.json() or {}).get("data", [])
+            for a in data:
+                ttype = normalize_txn_type(a.get("transactionType", ""))
+                if ttype is None:
+                    continue
+                res.trades.append(CongressTrade(
+                    symbol=sym, chamber="congress", politician=a.get("name", "") or "",
+                    txn_type=ttype, traded_date=_parse_date(a.get("transactionDate", "")),
+                    filed_date=_parse_date(a.get("filingDate", "")),
+                    amount_range=_finnhub_amount(a),
+                ))
+                got = True
+        except Exception as exc:  # noqa: BLE001
+            res.errors.append(f"finnhub congress {sym}: {exc}")
+            continue
+    if got:
+        res.sources.append("finnhub")
+    return got
+
+
+def _finnhub_amount(a: dict) -> str:
+    lo, hi = a.get("amountFrom"), a.get("amountTo")
+    if lo and hi:
+        return f"${int(lo):,} - ${int(hi):,}"
+    return a.get("amount", "") or ""
+
+
 def fetch_congress_trades(universe: list[str], *, lookback_days: int = 90,
-                          house_url: str = HOUSE_URL,
-                          senate_url: str = SENATE_URL) -> CongressResult:
+                          secrets: Secrets | None = None) -> CongressResult:
     """Fetch recent congressional trades filtered to ``universe``. Graceful skip."""
     uni = {s.upper() for s in universe}
     since = dt.date.today() - dt.timedelta(days=lookback_days)
     res = CongressResult()
-    got_any = False
 
-    for label, url, parser in (("house", house_url, _parse_house),
-                               ("senate", senate_url, _parse_senate)):
-        try:
-            data = _get_json(url)
-            rows = data if isinstance(data, list) else data.get("transactions", data)
-            trades = parser(rows, uni, since)
-            res.trades.extend(trades)
-            res.sources.append(label)
-            got_any = True
-            log.info("Congress %s: %d trades in universe (last %dd)",
-                     label, len(trades), lookback_days)
-        except Exception as exc:  # noqa: BLE001
-            res.errors.append(f"congress {label}: {exc}")
-            log.warning("Congress %s fetch failed: %s", label, exc)
+    got = _fetch_stockwatcher(uni, since, res)
 
-    if not got_any:
+    # Fallback to Finnhub if the public datasets failed and a key is available.
+    if not got and secrets is not None and secrets.has("FINNHUB_API_KEY"):
+        log.info("Congress: public datasets failed; trying Finnhub fallback")
+        got = _fetch_finnhub(universe, since, secrets.get("FINNHUB_API_KEY"), res)
+
+    if not got:
         res.enabled = False
-        res.skip_reason = "congress sources unreachable"
+        res.skip_reason = "congress sources unreachable (public datasets + finnhub)"
     else:
         res.enabled = True
+        log.info("Congress: %d trades via %s", len(res.trades), "+".join(res.sources))
     return res
