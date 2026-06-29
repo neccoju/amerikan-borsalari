@@ -3,6 +3,7 @@ import datetime as dt
 
 from usbot.congress.model import CongressTrade, normalize_txn_type
 from usbot.congress.score import congress_scores
+from usbot.congress.ingest import _parse_quiver_rows
 from usbot.institutional.model import HoldingChange
 from usbot.institutional.score import institutional_scores
 from usbot.llm.review import parse_adjustments
@@ -36,6 +37,24 @@ def test_congress_consensus_buyers_strengthen_score():
     many = congress_scores(
         [_trade("AAA", "buy", f"Rep {i}") for i in range(5)], ["AAA"])
     assert many["AAA"] > one["AAA"]
+
+
+def test_parse_quiver_rows_filters_and_maps():
+    rows = [
+        {"Ticker": "NVDA", "Transaction": "Purchase", "Representative": "Rep A",
+         "Range": "$1,000,001 - $5,000,000", "TransactionDate": "2026-06-10",
+         "ReportDate": "2026-06-20", "House": "Representatives", "Party": "D"},
+        {"Ticker": "AAPL", "Transaction": "Sale", "Senator": "Sen B",
+         "Range": "$15,001 - $50,000", "TransactionDate": "2026-06-12", "House": "Senate"},
+        {"Ticker": "ZZZZ", "Transaction": "Purchase", "TransactionDate": "2026-06-12"},  # not in uni
+        {"Ticker": "NVDA", "Transaction": "Exchange", "TransactionDate": "2026-06-12"},  # not a trade
+        {"Ticker": "NVDA", "Transaction": "Purchase", "TransactionDate": "2020-01-01"},  # too old
+    ]
+    out = _parse_quiver_rows(rows, {"NVDA", "AAPL"}, dt.date(2026, 4, 1))
+    syms = {(t.symbol, t.txn_type, t.chamber) for t in out}
+    assert ("NVDA", "buy", "house") in syms
+    assert ("AAPL", "sell", "senate") in syms
+    assert len(out) == 2  # ZZZZ filtered, Exchange skipped, old skipped
 
 
 def test_amount_midpoint_and_signed():

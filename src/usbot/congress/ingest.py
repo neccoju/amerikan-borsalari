@@ -117,6 +117,61 @@ def _fetch_stockwatcher(universe: set[str], since: dt.date, res: CongressResult)
     return got
 
 
+def _parse_quiver_rows(rows, universe: set[str], since: dt.date) -> list[CongressTrade]:
+    """Parse Quiver Quant live/congresstrading rows into CongressTrade records."""
+    out = []
+    for a in rows or []:
+        try:
+            sym = (a.get("Ticker") or "").strip().upper()
+            if not sym or (universe and sym not in universe):
+                continue
+            ttype = normalize_txn_type(a.get("Transaction", ""))
+            if ttype is None:
+                continue
+            traded = _parse_date(a.get("TransactionDate", ""))
+            if traded and traded < since:
+                continue
+            house = (a.get("House", "") or "").lower()
+            chamber = "senate" if "senate" in house else "house"
+            out.append(CongressTrade(
+                symbol=sym, chamber=chamber,
+                politician=a.get("Representative", "") or a.get("Senator", "") or "",
+                txn_type=ttype, traded_date=traded,
+                filed_date=_parse_date(a.get("ReportDate", "")),
+                amount_range=a.get("Range", "") or "",
+                party=a.get("Party", "") or "",
+            ))
+        except Exception:  # noqa: BLE001 - skip malformed rows
+            continue
+    return out
+
+
+def _fetch_quiver(universe: set[str], since: dt.date, api_key: str,
+                  res: CongressResult) -> bool:
+    """Quiver Quantitative bulk congressional-trading (one call). Graceful."""
+    import requests
+
+    try:
+        r = requests.get(
+            "https://api.quiverquant.com/beta/live/congresstrading",
+            headers={"Authorization": f"Bearer {api_key}", "Accept": "application/json"},
+            timeout=45,
+        )
+        if r.status_code != 200:
+            res.errors.append(f"quiver congress: HTTP {r.status_code}")
+            return False
+        rows = r.json()
+    except Exception as exc:  # noqa: BLE001
+        res.errors.append(f"quiver congress: {exc}")
+        return False
+    trades = _parse_quiver_rows(rows, universe, since)
+    if trades:
+        res.trades.extend(trades)
+        res.sources.append("quiver")
+        return True
+    return False
+
+
 def _fetch_finnhub(universe: list[str], since: dt.date, api_key: str,
                    res: CongressResult, max_symbols: int = 80) -> bool:
     """Per-symbol Finnhub congressional-trading. Works only if the tier allows it."""
@@ -171,16 +226,23 @@ def fetch_congress_trades(universe: list[str], *, lookback_days: int = 90,
     since = dt.date.today() - dt.timedelta(days=lookback_days)
     res = CongressResult()
 
-    got = _fetch_stockwatcher(uni, since, res)
+    # 1. Quiver Quantitative (preferred when a key is configured — single bulk call).
+    got = False
+    if secrets is not None and secrets.has("QUIVER_API_KEY"):
+        got = _fetch_quiver(uni, since, secrets.get("QUIVER_API_KEY"), res)
 
-    # Fallback to Finnhub if the public datasets failed and a key is available.
+    # 2. Free public stock-watcher datasets.
+    if not got:
+        got = _fetch_stockwatcher(uni, since, res)
+
+    # 3. Finnhub (premium-gated; stops early on 401/403).
     if not got and secrets is not None and secrets.has("FINNHUB_API_KEY"):
-        log.info("Congress: public datasets failed; trying Finnhub fallback")
+        log.info("Congress: prior sources failed; trying Finnhub fallback")
         got = _fetch_finnhub(universe, since, secrets.get("FINNHUB_API_KEY"), res)
 
     if not got:
         res.enabled = False
-        res.skip_reason = "congress sources unreachable (public datasets + finnhub)"
+        res.skip_reason = "congress sources unreachable (quiver/public datasets/finnhub)"
     else:
         res.enabled = True
         log.info("Congress: %d trades via %s", len(res.trades), "+".join(res.sources))
