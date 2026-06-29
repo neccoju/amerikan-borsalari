@@ -38,6 +38,8 @@ portfolios:
   rebalance: "month_end"         # model portfolios rebalance on last trading day
   active_initial_deploy_pct: 0.25
   min_cash_buffer_pct: 0.05
+  # Active sleeve persists here across runs (committed back by the workflow).
+  active_state_path: "state/active_portfolio.json"
 
 risk:
   growth:    { max_position: 0.12, max_sector: 0.30, max_names: 15 }

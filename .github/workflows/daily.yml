@@ -26,7 +26,7 @@ on:
     types: [daily-run]
 
 permissions:
-  contents: read
+  contents: write   # needed to commit the Active portfolio state back to the repo
 
 concurrency:
   # Prevent overlapping runs from double-processing the simulated books.
@@ -94,3 +94,23 @@ jobs:
           path: reports/
           if-no-files-found: ignore
           retention-days: 14
+
+      - name: Persist Active portfolio state
+        # Only on real runs (not dry-run previews). repository_dispatch has no
+        # inputs, so the condition is true for the cron-driven production runs.
+        if: ${{ github.event.inputs.dry_run != 'true' }}
+        run: |
+          git config user.name "usbot[bot]"
+          git config user.email "usbot@users.noreply.github.com"
+          if [ -n "$(git status --porcelain state/)" ]; then
+            git add state/
+            git commit -m "chore(state): update active portfolio book [skip ci]"
+            # Push to the default branch; retry briefly on transient races.
+            for i in 1 2 3; do
+              if git push origin HEAD:main; then break; fi
+              echo "push failed, refreshing and retrying ($i)"; git pull --rebase origin main || true
+              sleep 2
+            done
+          else
+            echo "No active-portfolio state change to commit."
+          fi
