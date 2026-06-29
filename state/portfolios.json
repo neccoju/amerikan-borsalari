@@ -34,13 +34,14 @@
       "history": [
         {
           "date": "2026-06-29",
-          "total_value": 1598.37,
+          "total_value": 1616.16,
           "cash": 775.39
         }
       ],
       "last_decision_date": "2026-06-29",
       "last_rebalance_date": null,
-      "updated_at": "2026-06-29T14:39:46Z"
+      "meta": {},
+      "updated_at": "2026-06-29T18:33:43Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -126,13 +127,14 @@
       "history": [
         {
           "date": "2026-06-29",
-          "total_value": 1000.0,
+          "total_value": 1005.07,
           "cash": 0.0
         }
       ],
       "last_decision_date": null,
       "last_rebalance_date": "2026-06-29",
-      "updated_at": "2026-06-29T14:39:46Z"
+      "meta": {},
+      "updated_at": "2026-06-29T18:33:43Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -218,13 +220,14 @@
       "history": [
         {
           "date": "2026-06-29",
-          "total_value": 1000.0,
+          "total_value": 997.73,
           "cash": -0.0
         }
       ],
       "last_decision_date": null,
       "last_rebalance_date": "2026-06-29",
-      "updated_at": "2026-06-29T14:39:46Z"
+      "meta": {},
+      "updated_at": "2026-06-29T18:33:43Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -310,13 +313,14 @@
       "history": [
         {
           "date": "2026-06-29",
-          "total_value": 1000.0,
+          "total_value": 1009.86,
           "cash": 0.0
         }
       ],
       "last_decision_date": null,
       "last_rebalance_date": "2026-06-29",
-      "updated_at": "2026-06-29T14:39:46Z"
+      "meta": {},
+      "updated_at": "2026-06-29T18:33:43Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -402,13 +406,30 @@
       "history": [
         {
           "date": "2026-06-29",
-          "total_value": 1000.0,
+          "total_value": 1010.57,
           "cash": 0.0
         }
       ],
       "last_decision_date": null,
       "last_rebalance_date": "2026-06-29",
-      "updated_at": "2026-06-29T14:39:46Z"
+      "meta": {
+        "factor_weights": {
+          "macro": 0.163043,
+          "fundamental": 0.326087,
+          "technical": 0.271739,
+          "news": 0.130435,
+          "institutional": 0.108696
+        },
+        "static_weights": {
+          "macro": 0.163043,
+          "fundamental": 0.326087,
+          "technical": 0.271739,
+          "news": 0.130435,
+          "institutional": 0.108696
+        },
+        "weight_history": []
+      },
+      "updated_at": "2026-06-29T18:33:43Z"
     }
   }
 }
