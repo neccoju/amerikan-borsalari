@@ -1,0 +1,26 @@
+{
+  "name": "Active Entry",
+  "starting_capital": 1600.0,
+  "cash": 1233.732949,
+  "holdings": [
+    {
+      "symbol": "AMAT",
+      "shares": 0.19053861,
+      "avg_cost": 646.940002
+    },
+    {
+      "symbol": "LLY",
+      "shares": 0.19618422,
+      "avg_cost": 1223.339966
+    }
+  ],
+  "history": [
+    {
+      "date": "2026-06-29",
+      "total_value": 1597.0,
+      "cash": 1233.73
+    }
+  ],
+  "last_decision_date": "2026-06-29",
+  "updated_at": "2026-06-29T14:20:48Z"
+}
