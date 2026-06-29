@@ -50,10 +50,10 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          # Include [news] (Finnhub/AV) and [sec] (EDGAR 13F) extras so the
-          # alternative-data signals work in CI. Core deps stay light for
-          # library users; CI is the production runtime.
-          pip install -e ".[news,sec]"
+          # Include [news] (Finnhub/AV), [sec] (EDGAR 13F) and [llm]
+          # (anthropic/openai) extras so all key-gated modules work in CI. Core
+          # deps stay light for library users; CI is the production runtime.
+          pip install -e ".[news,sec,llm]"
 
       - name: Optional sanity check of external trigger token
         if: ${{ github.event_name == 'repository_dispatch' }}
