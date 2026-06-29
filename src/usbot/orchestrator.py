@@ -26,7 +26,7 @@ from .reports import ReportContext, build_report
 from .reports.builder import PortfolioReport, save_report
 from .scoring import score_universe
 from .universe import build_universe
-from .universe.build import apply_liquidity_filters
+from .universe.build import apply_marketcap_filter, apply_price_liquidity_filter
 from .utils.dates import is_last_trading_day_of_month, is_trading_day, market_status
 from .utils.logging import get_logger, setup_logging
 
@@ -83,12 +83,13 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     pdata = fetch_prices(universe.all_symbols, period_days=history_days, cache=cache)
     ctx.errors.extend(pdata.errors)
 
-    # ---- fundamentals (best-effort) ----
+    # ---- price/volume pre-filter + cap (bounds the later fundamentals fetch) ----
+    universe = apply_price_liquidity_filter(universe, pdata, settings.settings)
+
+    # ---- fundamentals (best-effort, only for survivors) + market-cap filter ----
     fundamentals = fetch_fundamentals(universe.symbols)
     sectors = {s: m.get("sector", "Unknown") for s, m in fundamentals.items()}
-
-    # ---- liquidity filters ----
-    universe = apply_liquidity_filters(universe, pdata, fundamentals, settings.settings)
+    universe = apply_marketcap_filter(universe, fundamentals, settings.settings)
 
     # ---- indicators ----
     indicators: dict[str, dict] = {}
@@ -104,11 +105,17 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     macro = fetch_macro_series(scfg.get("macro_tickers", {}), period_days=history_days,
                                cache=cache)
 
+    # ---- preliminary score (no news) to pick which names to pull news for ----
+    prelim = score_universe(indicators, fundamentals, macro, settings.scoring)
+    news_top_n = int(settings.get("news", {}).get("top_n", 50))
+    news_targets = _news_targets(prelim, news_top_n)
+
     # ---- alternative-data signals (all graceful-skip) ----
     extra_scores: dict = {}
-    news_series = _run_news(settings, secrets, universe.symbols, ctx)
+    news_series = _run_news(settings, secrets, news_targets, ctx)
     if news_series is not None:
-        extra_scores["news"] = news_series
+        extra_scores["news"] = news_series.reindex(
+            sorted(set(indicators))).fillna(50.0) if len(news_series) else news_series
     inst_series = _run_institutional(settings, secrets, universe.symbols, ctx)
     if inst_series is not None:
         extra_scores["institutional"] = inst_series
@@ -116,7 +123,7 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     if congress_series is not None:
         extra_scores["congress"] = congress_series
 
-    # ---- scoring ----
+    # ---- final scoring (with alternative-data factors) ----
     scores = score_universe(indicators, fundamentals, macro, settings.scoring,
                             extra_factor_scores=extra_scores)
     if scores.macro:
@@ -176,6 +183,18 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     else:
         ctx.llm_note = review.note
         ctx.skipped.append(review.note)
+
+
+def _news_targets(prelim, top_n: int) -> list[str]:
+    """Union of the top-n names across portfolios from the prelim (news-free) score.
+
+    Bounds per-symbol news fetching so a broad universe doesn't blow API limits.
+    """
+    targets: set[str] = set()
+    for pf in ("growth", "defensive", "balanced", "active"):
+        comp = prelim.composite.get(pf, pd.Series(dtype=float))
+        targets.update(comp.sort_values(ascending=False).head(top_n).index)
+    return sorted(targets)
 
 
 def _run_news(settings: Settings, secrets: Secrets, symbols: list[str],

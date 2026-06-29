@@ -6,14 +6,18 @@ run:
   log_level: "INFO"
 
 universe:
-  source: "sp500"                # sp500 | watchlist | both
+  source: "sp1500"               # sp500 | sp1500 | broad | watchlist | both
+                                 # sp1500/broad = S&P 500 + 400 (mid) + 600 (small)
   include_watchlist: true
   # Liquidity / size filters applied to the daily active universe.
-  min_market_cap: 2000000000     # 2B USD floor (relaxed for watchlist small/mid caps)
+  min_market_cap: 1000000000     # 1B floor (lower so mid/small caps qualify)
   min_avg_dollar_volume: 5000000 # 5M USD/day
   min_price: 3.0                 # exclude sub-$3 penny stocks
   watchlist_relax_filters: true  # watchlist names bypass the market-cap floor
-  max_names: 600                 # safety cap on universe size
+  # Practical ceiling: after the price/volume filter we keep the N most liquid
+  # names (then fetch fundamentals only for those). Raise for broader coverage at
+  # the cost of runtime / API usage.
+  max_names: 750
 
 data:
   history_days: 420              # ~ enough for 200DMA + 12M momentum
@@ -54,6 +58,8 @@ news:
   lookback_days: 3
   max_per_symbol: 10
   sentiment_model: "vader"       # vader | finbert (finbert needs transformers)
+  top_n: 50                      # only fetch news for the top-N names by prelim score
+                                 # (bounds per-symbol API calls on a broad universe)
 
 institutional:
   enabled: true                  # 13F via SEC EDGAR (needs [sec] extra / edgartools)
