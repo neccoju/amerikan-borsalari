@@ -20,7 +20,8 @@ from .llm.provider import get_provider
 from .llm.review import run_monthly_review
 from .mailer import send_report
 from .news import fetch_news, news_scores, score_sentiment
-from .portfolio import ActivePortfolio, SelfLearningPortfolio, build_model_portfolio
+# Portfolio classes/helpers are imported locally in the sleeve functions to keep
+# this module's import surface small and avoid unused-import churn.
 from .reports import ReportContext, build_report
 from .reports.builder import PortfolioReport, save_report
 from .scoring import score_universe
@@ -122,13 +123,22 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     prices = {s: float(pdata[s]["close"].iloc[-1]) for s in pdata.symbols
               if not pdata[s].empty}
 
-    # ---- portfolios ----
+    # ---- portfolios (persisted: real prices, real positions, real P/L) ----
+    from .portfolio import PortfolioStore
+
     pcfg = settings.get("portfolios", {})
     rcfg = settings.get("risk", {})
-    _build_model_sleeves(ctx, scores, prices, sectors, fundamentals, pcfg, rcfg, is_month_end)
-    _run_active(ctx, scores, prices, indicators, pcfg, rcfg, settings, ctx.date,
-                force=force, persist=persist)
-    _build_self_learning(ctx, scores, prices, sectors, settings, pcfg)
+    store = PortfolioStore(pcfg.get("state_path", "state/portfolios.json"))
+
+    _build_model_sleeves(ctx, store, scores, prices, sectors, fundamentals, pcfg, rcfg,
+                         ctx.date, is_month_end)
+    _run_active(ctx, store, scores, prices, indicators, pcfg, rcfg, ctx.date,
+                force=force)
+    _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, ctx.date,
+                         is_month_end)
+
+    if persist:
+        store.commit()
 
     # ---- LLM monthly review ----
     provider = get_provider(secrets)
@@ -192,53 +202,61 @@ def _run_news(settings: Settings, secrets: Secrets, symbols: list[str],
     return series
 
 
-def _build_model_sleeves(ctx, scores, prices, sectors, fundamentals, pcfg, rcfg,
-                         is_month_end) -> None:
+def _holding_rows(state, prices: dict[str, float]) -> list[dict]:
+    """Detailed holding rows: shares, fill price, live price, value, weight, P/L%."""
+    w = state.weights(prices)
+    rows = []
+    for sym, h in state.holdings.items():
+        price = float(prices.get(sym, h.avg_cost))
+        value = h.shares * price
+        pl_pct = (price / h.avg_cost - 1.0) if h.avg_cost else 0.0
+        rows.append({"symbol": sym, "shares": h.shares, "avg_cost": h.avg_cost,
+                     "price": price, "value": value, "weight": w.get(sym, 0.0),
+                     "pl_pct": pl_pct})
+    rows.sort(key=lambda r: -r["value"])
+    return rows
+
+
+def _build_model_sleeves(ctx, store, scores, prices, sectors, fundamentals, pcfg, rcfg,
+                         date: str, is_month_end: bool) -> None:
+    """Model sleeves hold real positions; rebalance at month-end, hold otherwise."""
+    from .portfolio import compute_model_targets, performance_from_history, rebalance_to_targets
+
     capital = float(pcfg.get("model_capital", 1000.0))
-    sleeves = [
-        ("Growth", "growth"),
-        ("Defensive", "defensive"),
-        ("Balanced", "balanced"),
-    ]
-    for display, key in sleeves:
+    for display, key in [("Growth", "growth"), ("Defensive", "defensive"),
+                         ("Balanced", "balanced")]:
+        loaded = store.load(display, capital, txn_cost=0.0)
+        state = loaded.state
         comp = scores.composite.get(key, pd.Series(dtype=float))
-        state, weights = build_model_portfolio(
-            name=display, ptype=key, scores=comp, prices=prices, sectors=sectors,
-            fundamentals=fundamentals, risk_cfg=rcfg.get(key, {}), capital=capital,
-            regime_label=ctx.regime_label,
-        )
-        tv = state.total_value(prices)
-        w = state.weights(prices)
-        holdings = [
-            {"symbol": s, "weight": w.get(s, 0.0), "value": h.market_value(prices.get(s, h.avg_cost))}
-            for s, h in sorted(state.holdings.items(), key=lambda kv: -w.get(kv[0], 0))
-        ]
-        actions = []
-        if is_month_end:
-            actions.append(f"Month-end rebalance into {len(state.holdings)} names")
+
+        # Rebalance on month-end, on the first ever run, or if somehow empty.
+        do_rebalance = is_month_end or not loaded.existed or not state.holdings
+        if do_rebalance:
+            targets = compute_model_targets(key, comp, sectors, fundamentals, rcfg.get(key, {}))
+            n = rebalance_to_targets(state, targets, prices, txn_cost=0.0)
+            action = (f"{'Initial allocation' if not loaded.existed else 'Month-end rebalance'} "
+                      f"into {len(state.holdings)} names at live prices")
         else:
-            actions.append("Hold (rebalance only at month-end)")
+            action = "Hold (rebalance only at month-end)"
+
+        history, tv = store.stage(state, prices, date, loaded.history, ptype=key,
+                                  last_rebalance_date=date if do_rebalance
+                                  else loaded.last_rebalance_date)
+        perf = performance_from_history(history, tv, capital)
         ctx.portfolios.append(PortfolioReport(
             name=display, total_value=tv, cash=state.cash,
-            daily_pl=0.0, total_pl=tv - capital, holdings=holdings, actions=actions,
+            daily_pl=perf["daily_pl"], total_pl=perf["total_pl"],
+            holdings=_holding_rows(state, prices), actions=[action],
         ))
 
 
-def _run_active(ctx, scores, prices, indicators, pcfg, rcfg, settings, date: str,
-                *, force: bool = False, persist: bool = False) -> None:
-    """Active sleeve with day-to-day persistence.
-
-    Loads prior state, decides (buy/sell) once per day, revalues, and (on real
-    runs) saves state back so it accumulates over time. A same-day guard prevents
-    duplicate triggers from double-trading.
-    """
-    from .portfolio import ActivePortfolioStore, performance_from_history
+def _run_active(ctx, store, scores, prices, indicators, pcfg, rcfg, date: str,
+                *, force: bool = False) -> None:
+    """Active sleeve: loads prior book, decides once/day, accumulates over time."""
+    from .portfolio import ActivePortfolio, performance_from_history
 
     capital = float(pcfg.get("active_capital", 1600.0))
     txn_cost = float(pcfg.get("active_txn_cost", 1.5))
-    state_path = settings.get("portfolios", {}).get("active_state_path",
-                                                    "state/active_portfolio.json")
-    store = ActivePortfolioStore(state_path)
     loaded = store.load("Active Entry", capital, txn_cost)
     state = loaded.state
 
@@ -250,62 +268,58 @@ def _run_active(ctx, scores, prices, indicators, pcfg, rcfg, settings, date: str
     )
     comp = scores.composite.get("active", pd.Series(dtype=float))
 
-    # Same-day guard: don't re-decide if we already decided today (unless forced).
     already_decided_today = (loaded.last_decision_date == date) and not force
     actions: list[str] = []
-    trades = []
     if already_decided_today:
         actions.append("Already decided today — revalue only (no new trades)")
     else:
         decision = active.decide(state, comp, prices, indicators, ctx.regime_label)
-        trades = decision.trades
-        actions = [f"{t.side.upper()} {t.symbol} ({t.reason})" for t in trades[:10]]
+        actions = [f"{t.side.upper()} {t.symbol} ({t.reason})" for t in decision.trades[:10]]
         actions += decision.notes
-        total_cost = sum(t.cost for t in trades)
+        total_cost = sum(t.cost for t in decision.trades)
         if total_cost:
             actions.append(f"Transaction costs paid: ${total_cost:.2f}")
 
-    # Revalue and persist (real runs only; dry-run is a read-only preview).
-    history = loaded.history
-    if persist:
-        history, tv = store.save(state, prices, date, history,
-                                 decided_today=not already_decided_today)
-    else:
-        tv = state.total_value(prices)
-        history = [h for h in history if h.get("date") != date]
-        history.append({"date": date, "total_value": round(tv, 2), "cash": round(state.cash, 2)})
-        if not loaded.existed:
-            actions.append("(preview — state not persisted on dry-run)")
-
+    history, tv = store.stage(state, prices, date, loaded.history, ptype="active",
+                              last_decision_date=date if not already_decided_today
+                              else loaded.last_decision_date)
     perf = performance_from_history(history, tv, state.starting_capital)
-    w = state.weights(prices)
-    holdings = [
-        {"symbol": s, "weight": w.get(s, 0.0), "value": h.market_value(prices.get(s, h.avg_cost))}
-        for s, h in sorted(state.holdings.items(), key=lambda kv: -w.get(kv[0], 0))
-    ]
     ctx.portfolios.append(PortfolioReport(
         name="Active Entry", total_value=tv, cash=state.cash,
         daily_pl=perf["daily_pl"], total_pl=perf["total_pl"],
-        holdings=holdings, actions=actions,
+        holdings=_holding_rows(state, prices), actions=actions,
     ))
 
 
-def _build_self_learning(ctx, scores, prices, sectors, settings, pcfg) -> None:
+def _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, date: str,
+                         is_month_end: bool) -> None:
+    """Self-Learning paper sleeve: holds real positions, rebuilds monthly."""
+    from .portfolio import performance_from_history, rebalance_to_targets
+    from .portfolio.risk import target_weights_from_scores
+
+    name = "Self-Learning (paper)"
     capital = float(pcfg.get("self_learning_capital", 1000.0))
-    base_weights = settings.scoring.get("factors", {}).get("balanced", {})
-    sl = SelfLearningPortfolio(base_weights=base_weights, capital=capital)
+    loaded = store.load(name, capital, txn_cost=0.0)
+    state = loaded.state
     comp = scores.composite.get("balanced", pd.Series(dtype=float))
-    state = sl.build(comp, prices, sectors)
-    tv = state.total_value(prices)
-    w = state.weights(prices)
-    holdings = [
-        {"symbol": s, "weight": w.get(s, 0.0), "value": h.market_value(prices.get(s, h.avg_cost))}
-        for s, h in sorted(state.holdings.items(), key=lambda kv: -w.get(kv[0], 0))
-    ]
+
+    do_rebalance = is_month_end or not loaded.existed or not state.holdings
+    if do_rebalance:
+        targets = target_weights_from_scores(comp.dropna(), n=15, max_position=0.12,
+                                             sectors=sectors, max_sector=0.30)
+        rebalance_to_targets(state, targets, prices, txn_cost=0.0)
+        action = "PAPER ONLY — rebuilt at live prices (adaptive weights deferred to Phase 4)"
+    else:
+        action = "PAPER ONLY — hold (rebuild monthly)"
+
+    history, tv = store.stage(state, prices, date, loaded.history, ptype="self_learning",
+                              last_rebalance_date=date if do_rebalance
+                              else loaded.last_rebalance_date)
+    perf = performance_from_history(history, tv, capital)
     ctx.portfolios.append(PortfolioReport(
-        name="Self-Learning (paper)", total_value=tv, cash=state.cash,
-        daily_pl=0.0, total_pl=tv - capital, holdings=holdings,
-        actions=["PAPER ONLY — seed weights; adaptive update deferred to Phase 4"],
+        name=name, total_value=tv, cash=state.cash,
+        daily_pl=perf["daily_pl"], total_pl=perf["total_pl"],
+        holdings=_holding_rows(state, prices), actions=[action],
     ))
 
 
