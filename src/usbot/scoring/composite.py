@@ -27,6 +27,10 @@ class ScoreResult:
     macro: MacroRegime | None = None
     # composite[portfolio] -> Series(symbol -> score)
     composite: dict[str, pd.Series] = field(default_factory=dict)
+    # factor_scores[factor] -> Series(symbol -> 0..100); the sub-scores used,
+    # exposed so the adaptive sleeve can recombine them with learned weights.
+    factor_scores: dict[str, pd.Series] = field(default_factory=dict)
+    enabled_factors: list[str] = field(default_factory=list)
 
     def top(self, portfolio: str, n: int = 10) -> pd.Series:
         s = self.composite.get(portfolio, pd.Series(dtype=float))
@@ -83,7 +87,8 @@ def score_universe(indicators: dict[str, dict], fundamentals: dict[str, dict],
     for factor, series in extra.items():
         sub_values[factor] = series.reindex(symbols).fillna(50.0)
 
-    result = ScoreResult(technical=tech, fundamental=fund, macro=regime)
+    result = ScoreResult(technical=tech, fundamental=fund, macro=regime,
+                         factor_scores=sub_values, enabled_factors=list(enabled))
     for pf in PORTFOLIO_KEYS:
         weights = _effective_weights(factor_table.get(pf, {}), enabled)
         composite = pd.Series(0.0, index=symbols)

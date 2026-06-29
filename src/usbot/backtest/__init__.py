@@ -7,6 +7,7 @@ from .engine import (
     walk_forward_windows,
 )
 from .metrics import Metrics, compute_metrics
+from .walkforward import WalkForwardComparison, walk_forward_compare
 
 __all__ = [
     "BacktestConfig",
@@ -16,4 +17,6 @@ __all__ = [
     "walk_forward_windows",
     "Metrics",
     "compute_metrics",
+    "WalkForwardComparison",
+    "walk_forward_compare",
 ]

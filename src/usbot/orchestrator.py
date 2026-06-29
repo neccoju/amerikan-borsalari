@@ -144,7 +144,7 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     _run_active(ctx, store, scores, prices, indicators, pcfg, rcfg, ctx.date,
                 force=force)
     _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, ctx.date,
-                         is_month_end)
+                         is_month_end, price_history=pdata.history)
 
     if persist:
         store.commit()
@@ -380,35 +380,105 @@ def _run_active(ctx, store, scores, prices, indicators, pcfg, rcfg, date: str,
 
 
 def _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, date: str,
-                         is_month_end: bool) -> None:
-    """Self-Learning paper sleeve: holds real positions, rebuilds monthly."""
+                         is_month_end: bool, price_history: dict | None = None) -> None:
+    """Adaptive Self-Learning paper sleeve (Phase 4).
+
+    Monthly it (1) scores how each factor's *previous* scores predicted the
+    realized returns since then (information coefficient), (2) nudges its factor
+    weights toward what worked (online exponential-gradient update, bounded),
+    then (3) rebuilds holdings from a composite using the LEARNED weights. It
+    stores the current factor scores for next month's IC. Paper-only, no
+    look-ahead (IC uses only past scores vs. later returns). Logs adaptive vs
+    static for comparison.
+    """
+    from .learning import compute_factor_ic, realized_returns, update_weights
     from .portfolio import performance_from_history, rebalance_to_targets
     from .portfolio.risk import target_weights_from_scores
 
     name = "Self-Learning (paper)"
     capital = float(pcfg.get("self_learning_capital", 1000.0))
+    lcfg = settings.get("learning", {})
     loaded = store.load(name, capital, txn_cost=0.0)
     state = loaded.state
-    comp = scores.composite.get("balanced", pd.Series(dtype=float))
+    meta = loaded.meta or {}
+
+    factor_scores = scores.factor_scores or {}
+    enabled = [f for f in (scores.enabled_factors or []) if f in factor_scores]
+    static_weights = {f: float(scores_cfg_weight(settings, "balanced", f)) for f in enabled}
+    static_weights = _renorm(static_weights)
+
+    # Current learned weights (seeded from static on first run).
+    weights = {f: float(meta.get("factor_weights", {}).get(f, static_weights.get(f, 0.0)))
+               for f in enabled}
+    weights = _renorm(weights) if weights else dict(static_weights)
 
     do_rebalance = is_month_end or not loaded.existed or not state.holdings
+    actions: list[str] = []
+    weight_history = list(meta.get("weight_history", []))
+
+    # ---- monthly learning step (only with a prior snapshot + history) ----
+    if do_rebalance and meta.get("last_scores") and price_history and meta.get("last_scored_date"):
+        prev_scores = {f: pd.Series(v, dtype=float) for f, v in meta["last_scores"].items()
+                       if f in enabled}
+        rets = realized_returns(price_history, meta["last_scored_date"],
+                                list({s for v in prev_scores.values() for s in v.index}))
+        if len(rets) >= 5 and prev_scores:
+            ic = compute_factor_ic(prev_scores, rets)
+            weights = update_weights(weights, ic,
+                                     lr=float(lcfg.get("learning_rate", 0.5)),
+                                     min_w=float(lcfg.get("min_weight", 0.05)),
+                                     max_w=float(lcfg.get("max_weight", 0.50)))
+            top_ic = sorted(ic.items(), key=lambda kv: kv[1], reverse=True)
+            actions.append("Learned from IC: " +
+                           ", ".join(f"{f}={v:+.2f}" for f, v in top_ic[:4]))
+            weight_history.append({"date": date, "weights": {k: round(v, 4)
+                                   for k, v in weights.items()},
+                                   "ic": {k: round(v, 3) for k, v in ic.items()}})
+
+    # ---- build composite with LEARNED weights, then rebalance (monthly) ----
     if do_rebalance:
+        symbols = sorted({s for v in factor_scores.values() for s in v.index})
+        comp = pd.Series(0.0, index=symbols)
+        for f, w in weights.items():
+            comp = comp.add(factor_scores[f].reindex(symbols).fillna(50.0) * w, fill_value=0.0)
         targets = target_weights_from_scores(comp.dropna(), n=15, max_position=0.12,
                                              sectors=sectors, max_sector=0.30)
         rebalance_to_targets(state, targets, prices, txn_cost=0.0)
-        action = "PAPER ONLY — rebuilt at live prices (adaptive weights deferred to Phase 4)"
+        wtxt = ", ".join(f"{f}:{w:.2f}" for f, w in sorted(weights.items(),
+                                                           key=lambda kv: -kv[1])[:4])
+        actions.append(f"PAPER — rebuilt with learned weights ({wtxt})")
+        # snapshot current scores for next month's IC
+        meta["last_scores"] = {f: {s: round(float(v), 3) for s, v in
+                                   factor_scores[f].dropna().items()} for f in enabled}
+        meta["last_scored_date"] = date
     else:
-        action = "PAPER ONLY — hold (rebuild monthly)"
+        actions.append("PAPER — hold (adaptive rebuild monthly)")
+
+    meta["factor_weights"] = {k: round(v, 6) for k, v in weights.items()}
+    meta["static_weights"] = {k: round(v, 6) for k, v in static_weights.items()}
+    meta["weight_history"] = weight_history[-36:]
 
     history, tv = store.stage(state, prices, date, loaded.history, ptype="self_learning",
                               last_rebalance_date=date if do_rebalance
-                              else loaded.last_rebalance_date)
+                              else loaded.last_rebalance_date, meta=meta)
     perf = performance_from_history(history, tv, capital)
     ctx.portfolios.append(PortfolioReport(
         name=name, total_value=tv, cash=state.cash,
         daily_pl=perf["daily_pl"], total_pl=perf["total_pl"],
-        holdings=_holding_rows(state, prices), actions=[action],
+        holdings=_holding_rows(state, prices), actions=actions,
     ))
+
+
+def _renorm(weights: dict[str, float]) -> dict[str, float]:
+    total = sum(weights.values())
+    if total <= 0:
+        n = len(weights) or 1
+        return {k: 1.0 / n for k in weights}
+    return {k: v / total for k, v in weights.items()}
+
+
+def scores_cfg_weight(settings: Settings, portfolio: str, factor: str) -> float:
+    return settings.scoring.get("factors", {}).get(portfolio, {}).get(factor, 0.0)
 
 
 def _emit(secrets: Secrets, settings: Settings, ctx: ReportContext, dry: bool) -> None:

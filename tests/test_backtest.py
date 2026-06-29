@@ -72,6 +72,19 @@ def test_no_lookahead_weight_fn_only_sees_past():
     assert "max" in seen
 
 
+def test_walk_forward_compare_runs_adaptive_and_static():
+    from usbot.backtest import walk_forward_compare
+
+    prices = _series_prices(n=900)
+    cfg = BacktestConfig(start_date="2015-03-01", benchmark="SPY", cost_bps=10.0)
+    comp = walk_forward_compare(prices, cfg, top_n=2)
+    s = comp.summary()
+    assert "adaptive" in s and "static" in s
+    assert "adaptive_minus_static_cagr" in s
+    assert comp.adaptive.equity.iloc[-1] > 0
+    assert comp.static.equity.iloc[-1] > 0
+
+
 def test_walk_forward_windows_are_ordered():
     idx = pd.date_range("2015-01-01", periods=252 * 6, freq="B")
     wins = list(walk_forward_windows(idx, train_years=2, test_years=1))

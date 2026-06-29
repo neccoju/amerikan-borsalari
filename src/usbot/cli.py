@@ -30,6 +30,8 @@ def main(argv: list[str] | None = None) -> int:
     bt.add_argument("--top-n", type=int, default=10)
     bt.add_argument("--lookback", type=int, default=126, help="Momentum lookback (trading days)")
     bt.add_argument("--cost-bps", type=float, default=10.0)
+    bt.add_argument("--walk-forward", action="store_true",
+                    help="Compare adaptive vs static factor weighting (Phase 4)")
     bt.add_argument("--config-dir", default=None)
 
     args = parser.parse_args(argv)
@@ -72,6 +74,12 @@ def _run_backtest_cmd(args) -> int:
 
     cfg = BacktestConfig(start_date=args.start, end_date=args.end,
                          benchmark=args.benchmark, cost_bps=args.cost_bps)
+    if getattr(args, "walk_forward", False):
+        from .backtest import walk_forward_compare
+
+        comp = walk_forward_compare(pdata.history, cfg, top_n=args.top_n)
+        print(json.dumps(comp.summary(), indent=2))
+        return 0
     result = run_backtest(
         pdata.history,
         weight_fn=momentum_weight_fn(top_n=args.top_n, lookback=args.lookback),
