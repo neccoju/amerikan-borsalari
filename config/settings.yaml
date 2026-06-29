@@ -46,6 +46,12 @@ risk:
   active:    { max_position: 0.15, max_sector: 0.35, max_daily_turnover: 0.25,
                min_expected_edge_after_cost: 0.0 }
 
+news:
+  enabled: true                  # auto-skips if no FINNHUB/ALPHA_VANTAGE key
+  lookback_days: 3
+  max_per_symbol: 10
+  sentiment_model: "vader"       # vader | finbert (finbert needs transformers)
+
 email:
   enabled: true                  # auto-disabled if SMTP secrets are missing
   subject_prefix: "[usbot]"

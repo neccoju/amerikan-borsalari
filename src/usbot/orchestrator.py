@@ -19,6 +19,7 @@ from .indicators import compute_indicators
 from .llm.provider import get_provider
 from .llm.review import run_monthly_review
 from .mailer import send_report
+from .news import fetch_news, news_scores, score_sentiment
 from .portfolio import ActivePortfolio, SelfLearningPortfolio, build_model_portfolio
 from .reports import ReportContext, build_report
 from .reports.builder import PortfolioReport, save_report
@@ -101,8 +102,12 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     macro = fetch_macro_series(scfg.get("macro_tickers", {}), period_days=history_days,
                                cache=cache)
 
+    # ---- news + sentiment (graceful skip if no key) ----
+    news_series = _run_news(settings, secrets, universe.symbols, ctx)
+
     # ---- scoring ----
-    scores = score_universe(indicators, fundamentals, macro, settings.scoring)
+    scores = score_universe(indicators, fundamentals, macro, settings.scoring,
+                            news_score=news_series)
     if scores.macro:
         ctx.regime_label = scores.macro.label
         ctx.regime_score = scores.macro.score
@@ -141,6 +146,48 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     ctx.llm_note = review.text if review.ran else review.note
     if not review.ran:
         ctx.skipped.append(review.note)
+
+
+def _run_news(settings: Settings, secrets: Secrets, symbols: list[str],
+              ctx: ReportContext) -> "pd.Series | None":
+    """Fetch + score news; returns a per-symbol 0..100 news score, or None if skipped.
+
+    Always fail-soft: any error degrades to 'no news' and the report notes it.
+    """
+    ncfg = settings.get("news", {})
+    if not ncfg.get("enabled", True):
+        ctx.news_note = "News disabled in settings"
+        return None
+    try:
+        result = fetch_news(symbols, secrets, days=int(ncfg.get("lookback_days", 3)),
+                            max_per_symbol=int(ncfg.get("max_per_symbol", 10)))
+    except Exception as exc:  # noqa: BLE001
+        ctx.news_note = f"News skipped: {exc}"
+        ctx.skipped.append(ctx.news_note)
+        return None
+
+    if not result.enabled or result.total == 0:
+        ctx.news_note = result.skip_reason or "No news available"
+        if result.skip_reason:
+            ctx.skipped.append(f"news: {result.skip_reason}")
+        ctx.errors.extend(result.errors)
+        return None
+
+    # Sentiment-annotate every item, then build per-symbol scores + highlights.
+    all_items = [it for items in result.items.values() for it in items]
+    sent = score_sentiment(all_items, model=ncfg.get("sentiment_model"))
+    series = news_scores(result.items, symbols)
+
+    # Highlights: strongest |sentiment| non-neutral items first.
+    ranked = sorted(all_items, key=lambda it: abs(it.sentiment), reverse=True)
+    ctx.news_highlights = [
+        {"symbol": it.symbol, "headline": it.headline, "label": it.label,
+         "category": it.category, "sentiment": round(it.sentiment, 2)}
+        for it in ranked if it.label != "neutral"
+    ][:12]
+    ctx.news_note = f"{result.total} items via {result.provider} (sentiment={sent.model})"
+    log.info("News: %s", ctx.news_note)
+    return series
 
 
 def _build_model_sleeves(ctx, scores, prices, sectors, fundamentals, pcfg, rcfg,
