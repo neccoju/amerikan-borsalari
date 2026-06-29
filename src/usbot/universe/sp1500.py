@@ -23,9 +23,9 @@ SP600_SEED = [
 
 
 def _fetch_wiki_table(url: str, symbol_col: str = "Symbol") -> list[str]:
-    import pandas as pd
+    from .wiki import read_wikipedia_tables
 
-    tables = pd.read_html(url)
+    tables = read_wikipedia_tables(url)
     for tbl in tables:
         cols = {str(c).strip(): c for c in tbl.columns}
         col = cols.get(symbol_col) or cols.get("Ticker symbol") or cols.get("Ticker")

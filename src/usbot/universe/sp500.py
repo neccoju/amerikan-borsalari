@@ -43,9 +43,9 @@ def get_sp500(dynamic: bool = True) -> list[str]:
     """Return S&P 500 symbols. Dynamic fetch with static fallback."""
     if dynamic:
         try:
-            import pandas as pd
+            from .wiki import read_wikipedia_tables
 
-            tables = pd.read_html(
+            tables = read_wikipedia_tables(
                 "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
             )
             syms = tables[0]["Symbol"].astype(str).str.replace(".", "-", regex=False).tolist()
