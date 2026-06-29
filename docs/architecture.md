@@ -52,4 +52,9 @@ usbot.cli  ──►  usbot.orchestrator.run_daily()
   still emit a report listing skips and errors.
 - **Auditable:** scores, trades, positions, snapshots, runs persisted to SQLite.
 - **Cost-aware:** Active sleeve refuses trades whose expected benefit < fee + edge.
+- **Stateful Active sleeve:** the Active portfolio persists cash/holdings/history
+  to `state/active_portfolio.json`, which the workflow commits back after each
+  real run (Actions runners are ephemeral). It accumulates day-to-day, scales in
+  gradually, and a same-day guard prevents duplicate-trigger double-trading.
+  Dry-run is a read-only preview (never persists).
 - **Safety:** LLM never trades; Self-Learning is paper-only.

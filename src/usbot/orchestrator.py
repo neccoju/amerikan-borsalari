@@ -57,7 +57,8 @@ def run_daily(force: bool = False, dry_run: bool | None = None,
     is_month_end = is_last_trading_day_of_month(today) or force
 
     try:
-        _run_pipeline(settings, secrets, ctx, is_month_end)
+        # persist=True only on real (non-dry) runs so previews never mutate the book.
+        _run_pipeline(settings, secrets, ctx, is_month_end, force=force, persist=not dry)
     except Exception as exc:  # noqa: BLE001 - never let the whole run crash
         log.exception("pipeline error")
         ctx.errors.append(f"pipeline: {exc}")
@@ -67,7 +68,7 @@ def run_daily(force: bool = False, dry_run: bool | None = None,
 
 
 def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
-                  is_month_end: bool) -> None:
+                  is_month_end: bool, *, force: bool = False, persist: bool = False) -> None:
     scfg = settings.get("data", {})
     cache = Cache(scfg.get("cache_dir", "data/raw"), scfg.get("cache_ttl_hours", 12))
     history_days = int(scfg.get("history_days", 420))
@@ -125,7 +126,8 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     pcfg = settings.get("portfolios", {})
     rcfg = settings.get("risk", {})
     _build_model_sleeves(ctx, scores, prices, sectors, fundamentals, pcfg, rcfg, is_month_end)
-    _run_active(ctx, scores, prices, indicators, pcfg, rcfg)
+    _run_active(ctx, scores, prices, indicators, pcfg, rcfg, settings, ctx.date,
+                force=force, persist=persist)
     _build_self_learning(ctx, scores, prices, sectors, settings, pcfg)
 
     # ---- LLM monthly review ----
@@ -222,37 +224,69 @@ def _build_model_sleeves(ctx, scores, prices, sectors, fundamentals, pcfg, rcfg,
         ))
 
 
-def _run_active(ctx, scores, prices, indicators, pcfg, rcfg) -> None:
-    from .portfolio.base import PortfolioState
+def _run_active(ctx, scores, prices, indicators, pcfg, rcfg, settings, date: str,
+                *, force: bool = False, persist: bool = False) -> None:
+    """Active sleeve with day-to-day persistence.
+
+    Loads prior state, decides (buy/sell) once per day, revalues, and (on real
+    runs) saves state back so it accumulates over time. A same-day guard prevents
+    duplicate triggers from double-trading.
+    """
+    from .portfolio import ActivePortfolioStore, performance_from_history
 
     capital = float(pcfg.get("active_capital", 1600.0))
     txn_cost = float(pcfg.get("active_txn_cost", 1.5))
+    state_path = settings.get("portfolios", {}).get("active_state_path",
+                                                    "state/active_portfolio.json")
+    store = ActivePortfolioStore(state_path)
+    loaded = store.load("Active Entry", capital, txn_cost)
+    state = loaded.state
+
     active = ActivePortfolio(
         risk_cfg=rcfg.get("active", {}),
         txn_cost=txn_cost,
         min_cash_buffer_pct=float(pcfg.get("min_cash_buffer_pct", 0.05)),
         initial_deploy_pct=float(pcfg.get("active_initial_deploy_pct", 0.25)),
     )
-    # Phase 1: start fresh each run (state persistence across runs lands in Phase 2).
-    state = PortfolioState(name="Active Entry", ptype="active", cash=capital,
-                           starting_capital=capital, txn_cost=txn_cost)
     comp = scores.composite.get("active", pd.Series(dtype=float))
-    decision = active.decide(state, comp, prices, indicators, ctx.regime_label)
 
-    tv = state.total_value(prices)
+    # Same-day guard: don't re-decide if we already decided today (unless forced).
+    already_decided_today = (loaded.last_decision_date == date) and not force
+    actions: list[str] = []
+    trades = []
+    if already_decided_today:
+        actions.append("Already decided today — revalue only (no new trades)")
+    else:
+        decision = active.decide(state, comp, prices, indicators, ctx.regime_label)
+        trades = decision.trades
+        actions = [f"{t.side.upper()} {t.symbol} ({t.reason})" for t in trades[:10]]
+        actions += decision.notes
+        total_cost = sum(t.cost for t in trades)
+        if total_cost:
+            actions.append(f"Transaction costs paid: ${total_cost:.2f}")
+
+    # Revalue and persist (real runs only; dry-run is a read-only preview).
+    history = loaded.history
+    if persist:
+        history, tv = store.save(state, prices, date, history,
+                                 decided_today=not already_decided_today)
+    else:
+        tv = state.total_value(prices)
+        history = [h for h in history if h.get("date") != date]
+        history.append({"date": date, "total_value": round(tv, 2), "cash": round(state.cash, 2)})
+        if not loaded.existed:
+            actions.append("(preview — state not persisted on dry-run)")
+
+    perf = performance_from_history(history, tv, state.starting_capital)
     w = state.weights(prices)
     holdings = [
         {"symbol": s, "weight": w.get(s, 0.0), "value": h.market_value(prices.get(s, h.avg_cost))}
         for s, h in sorted(state.holdings.items(), key=lambda kv: -w.get(kv[0], 0))
     ]
-    actions = [f"{t.side.upper()} {t.symbol} ({t.reason})" for t in decision.trades[:10]]
-    actions += decision.notes
-    total_cost = sum(t.cost for t in decision.trades)
-    if total_cost:
-        actions.append(f"Transaction costs paid: ${total_cost:.2f}")
     ctx.portfolios.append(PortfolioReport(
         name="Active Entry", total_value=tv, cash=state.cash,
-        daily_pl=0.0, total_pl=tv - capital, holdings=holdings, actions=actions,
+        daily_pl=perf["daily_pl"], total_pl=perf["total_pl"],
+        holdings=holdings, actions=actions,
     ))
 
 
