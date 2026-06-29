@@ -44,10 +44,18 @@
   </div>
   {% if pf.holdings %}
   <table>
-    <tr><th>Symbol</th><th>Weight</th><th>Value</th></tr>
+    <tr><th>Symbol</th><th>Weight</th><th>Shares</th><th>Fill</th><th>Price</th>
+        <th>Value</th><th>P/L</th></tr>
     {% for h in pf.holdings[:15] %}
-    <tr><td>{{ h.symbol }}</td><td>{{ "%.1f"|format(h.weight*100) }}%</td>
-        <td>${{ "{:,.0f}".format(h.value) }}</td></tr>
+    <tr>
+      <td>{{ h.symbol }}</td>
+      <td>{{ "%.1f"|format(h.weight*100) }}%</td>
+      <td>{{ "%.4f"|format(h.shares) }}</td>
+      <td>${{ "{:,.2f}".format(h.avg_cost) }}</td>
+      <td>${{ "{:,.2f}".format(h.price) }}</td>
+      <td>${{ "{:,.2f}".format(h.value) }}</td>
+      <td class="{{ 'pos' if h.pl_pct >= 0 else 'neg' }}">{{ "%+.1f"|format(h.pl_pct*100) }}%</td>
+    </tr>
     {% endfor %}
   </table>
   {% else %}<div class="muted">No holdings (100% cash).</div>{% endif %}

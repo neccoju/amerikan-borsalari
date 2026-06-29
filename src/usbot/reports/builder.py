@@ -66,8 +66,16 @@ def _build_text(ctx: ReportContext) -> str:
             f"[{pf.name}] value=${pf.total_value:,.2f} cash=${pf.cash:,.2f} "
             f"daily={pf.daily_pl:+.2f} total={pf.total_pl:+.2f}"
         )
-        for h in pf.holdings[:10]:
-            lines.append(f"    {h['symbol']:<6} {h['weight']*100:5.1f}%  ${h['value']:,.0f}")
+        for h in pf.holdings[:12]:
+            shares = h.get("shares", 0.0)
+            avg = h.get("avg_cost", 0.0)
+            price = h.get("price", avg)
+            pl = h.get("pl_pct", 0.0) * 100
+            lines.append(
+                f"    {h['symbol']:<6} {h.get('weight', 0)*100:5.1f}%  "
+                f"{shares:8.4f} sh @ ${avg:,.2f} → ${price:,.2f}  "
+                f"= ${h.get('value', 0):,.2f}  ({pl:+.1f}%)"
+            )
         for a in pf.actions:
             lines.append(f"    action: {a}")
         lines.append("")
