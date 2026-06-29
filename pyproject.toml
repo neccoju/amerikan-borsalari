@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "usbot"
+version = "0.1.0"
+description = "American stock market analysis and multi-portfolio bot (research/monitoring tool, not financial advice)"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "neccoju" }]
+
+# Core dependencies kept intentionally light so the MVP runs with zero API keys.
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "yfinance>=0.2.40",
+    "pandas-market-calendars>=4.3",
+    "PyYAML>=6.0",
+    "Jinja2>=3.1",
+    "requests>=2.31",
+]
+
+[project.optional-dependencies]
+# Installed only when the relevant phase/keys are activated. Absence never breaks the bot.
+llm = ["anthropic>=0.39", "openai>=1.40"]
+macro = ["fredapi>=0.5"]
+news = ["finnhub-python>=2.4", "alpha_vantage>=2.3"]
+dev = ["pytest>=7.4", "pytest-cov>=4.1", "ruff>=0.5"]
+
+[project.scripts]
+usbot = "usbot.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

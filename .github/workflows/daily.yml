@@ -1,0 +1,94 @@
+name: usbot-daily
+
+# Triggers:
+#  1. workflow_dispatch  -> manual run from the GitHub UI (and via GitHub API).
+#  2. repository_dispatch -> external trigger (cron-job.org -> GitHub API).
+#     We listen for the "daily-run" event type.
+#
+# We deliberately do NOT use the native GitHub `schedule:` cron. The daily
+# cadence is driven externally by cron-job.org (see docs/cron_job_org_setup.md),
+# which posts to the GitHub API after the US market close. The bot itself also
+# performs a trading-day/holiday guard and exits cleanly with a "market closed"
+# report on non-trading days.
+
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Run even on non-trading days (and treat as month-end)"
+        type: boolean
+        default: false
+      dry_run:
+        description: "Do not send email; log report only"
+        type: boolean
+        default: false
+  repository_dispatch:
+    types: [daily-run]
+
+permissions:
+  contents: read
+
+concurrency:
+  # Prevent overlapping runs from double-processing the simulated books.
+  group: usbot-daily
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Optional sanity check of external trigger token
+        if: ${{ github.event_name == 'repository_dispatch' }}
+        env:
+          EXPECTED: ${{ secrets.CRON_SECRET_TOKEN }}
+          GOT: ${{ github.event.client_payload.token }}
+        run: |
+          if [ -n "$EXPECTED" ] && [ "$EXPECTED" != "$GOT" ]; then
+            echo "::error::repository_dispatch token mismatch"; exit 1
+          fi
+          echo "trigger token check passed (or not configured)"
+
+      - name: Run daily pipeline
+        env:
+          # All secrets are optional. Missing keys -> the matching module is
+          # skipped gracefully and the report notes the skip.
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
+          LLM_PROVIDER: ${{ secrets.LLM_PROVIDER }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+        run: |
+          FORCE_FLAG=""
+          DRY_FLAG=""
+          if [ "${{ github.event.inputs.force }}" = "true" ]; then FORCE_FLAG="--force"; fi
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then DRY_FLAG="--dry-run"; fi
+          python -m usbot run $FORCE_FLAG $DRY_FLAG --config-dir config
+
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-report
+          path: reports/
+          if-no-files-found: ignore
+          retention-days: 14

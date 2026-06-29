@@ -1,0 +1,241 @@
+"""Daily orchestration: ties data -> scoring -> portfolios -> report -> email.
+
+Fail-soft throughout: a failure in any single stage is recorded and the run
+continues to produce a (possibly degraded) report. Honors the trading-day guard
+and emits a "market closed, skipped" report on non-trading days.
+"""
+from __future__ import annotations
+
+import datetime as dt
+
+import pandas as pd
+
+from .config import get_secrets, load_settings
+from .config.secrets import Secrets
+from .config.settings import Settings
+from .data import fetch_fundamentals, fetch_macro_series, fetch_prices
+from .data.cache import Cache
+from .indicators import compute_indicators
+from .llm.provider import get_provider
+from .llm.review import run_monthly_review
+from .mailer import send_report
+from .portfolio import ActivePortfolio, SelfLearningPortfolio, build_model_portfolio
+from .reports import ReportContext, build_report
+from .reports.builder import PortfolioReport, save_report
+from .scoring import score_universe
+from .universe import build_universe
+from .universe.build import apply_liquidity_filters
+from .utils.dates import is_last_trading_day_of_month, is_trading_day, market_status
+from .utils.logging import get_logger, setup_logging
+
+log = get_logger(__name__)
+
+
+def run_daily(force: bool = False, dry_run: bool | None = None,
+              config_dir: str | None = None) -> ReportContext:
+    settings = load_settings(config_dir)
+    run_cfg = settings.get("run", {})
+    setup_logging(run_cfg.get("log_level", "INFO"))
+    secrets = get_secrets()
+
+    today = dt.date.today()
+    date_str = today.isoformat()
+    status = market_status(today)
+    dry = run_cfg.get("dry_run", False) if dry_run is None else dry_run
+
+    ctx = ReportContext(date=date_str, market_status=status)
+
+    # ---- trading-day guard ----
+    if not is_trading_day(today) and not force:
+        log.info("Market closed (%s). Skipping run.", status)
+        ctx.skipped.append(f"market_closed ({status})")
+        ctx.llm_note = "Run skipped: US market closed."
+        _emit(secrets, settings, ctx, dry)
+        return ctx
+
+    is_month_end = is_last_trading_day_of_month(today) or force
+
+    try:
+        _run_pipeline(settings, secrets, ctx, is_month_end)
+    except Exception as exc:  # noqa: BLE001 - never let the whole run crash
+        log.exception("pipeline error")
+        ctx.errors.append(f"pipeline: {exc}")
+
+    _emit(secrets, settings, ctx, dry)
+    return ctx
+
+
+def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
+                  is_month_end: bool) -> None:
+    scfg = settings.get("data", {})
+    cache = Cache(scfg.get("cache_dir", "data/raw"), scfg.get("cache_ttl_hours", 12))
+    history_days = int(scfg.get("history_days", 420))
+
+    # ---- universe ----
+    universe = build_universe(settings.settings)
+    log.info("Universe candidates: %d equities + %d ETFs",
+             len(universe.symbols), len(universe.etfs))
+
+    # ---- prices ----
+    pdata = fetch_prices(universe.all_symbols, period_days=history_days, cache=cache)
+    ctx.errors.extend(pdata.errors)
+
+    # ---- fundamentals (best-effort) ----
+    fundamentals = fetch_fundamentals(universe.symbols)
+    sectors = {s: m.get("sector", "Unknown") for s, m in fundamentals.items()}
+
+    # ---- liquidity filters ----
+    universe = apply_liquidity_filters(universe, pdata, fundamentals, settings.settings)
+
+    # ---- indicators ----
+    indicators: dict[str, dict] = {}
+    tcfg = settings.scoring.get("technical", {})
+    for sym in universe.symbols:
+        if sym in pdata:
+            try:
+                indicators[sym] = compute_indicators(pdata[sym], tcfg)
+            except Exception as exc:  # noqa: BLE001
+                ctx.errors.append(f"indicators {sym}: {exc}")
+
+    # ---- macro ----
+    macro = fetch_macro_series(scfg.get("macro_tickers", {}), period_days=history_days,
+                               cache=cache)
+
+    # ---- scoring ----
+    scores = score_universe(indicators, fundamentals, macro, settings.scoring)
+    if scores.macro:
+        ctx.regime_label = scores.macro.label
+        ctx.regime_score = scores.macro.score
+        ctx.regime_detail = {k: v for k, v in scores.macro.detail.items() if v is not None}
+
+    for pf in ("growth", "defensive", "balanced", "active"):
+        comp = scores.composite.get(pf, pd.Series(dtype=float))
+        ctx.top_scores[pf] = [(s, float(v)) for s, v in comp.head(5).items()]
+
+    # last close price map
+    prices = {s: float(pdata[s]["close"].iloc[-1]) for s in pdata.symbols
+              if not pdata[s].empty}
+
+    # ---- portfolios ----
+    pcfg = settings.get("portfolios", {})
+    rcfg = settings.get("risk", {})
+    _build_model_sleeves(ctx, scores, prices, sectors, fundamentals, pcfg, rcfg, is_month_end)
+    _run_active(ctx, scores, prices, indicators, pcfg, rcfg)
+    _build_self_learning(ctx, scores, prices, sectors, settings, pcfg)
+
+    # ---- LLM monthly review ----
+    provider = get_provider(secrets)
+    review = run_monthly_review(
+        provider,
+        context={
+            "regime_label": ctx.regime_label,
+            "regime_score": f"{ctx.regime_score:.0f}",
+            "top_growth": [s for s, _ in ctx.top_scores.get("growth", [])],
+            "top_defensive": [s for s, _ in ctx.top_scores.get("defensive", [])],
+            "active_cash_pct": next((f"{p.cash/p.total_value:.0%}" for p in ctx.portfolios
+                                     if p.name == "Active Entry" and p.total_value), "n/a"),
+        },
+        monthly_only=settings.get("llm", {}).get("monthly_only", True),
+        is_month_end=is_month_end,
+    )
+    ctx.llm_note = review.text if review.ran else review.note
+    if not review.ran:
+        ctx.skipped.append(review.note)
+
+
+def _build_model_sleeves(ctx, scores, prices, sectors, fundamentals, pcfg, rcfg,
+                         is_month_end) -> None:
+    capital = float(pcfg.get("model_capital", 1000.0))
+    sleeves = [
+        ("Growth", "growth"),
+        ("Defensive", "defensive"),
+        ("Balanced", "balanced"),
+    ]
+    for display, key in sleeves:
+        comp = scores.composite.get(key, pd.Series(dtype=float))
+        state, weights = build_model_portfolio(
+            name=display, ptype=key, scores=comp, prices=prices, sectors=sectors,
+            fundamentals=fundamentals, risk_cfg=rcfg.get(key, {}), capital=capital,
+            regime_label=ctx.regime_label,
+        )
+        tv = state.total_value(prices)
+        w = state.weights(prices)
+        holdings = [
+            {"symbol": s, "weight": w.get(s, 0.0), "value": h.market_value(prices.get(s, h.avg_cost))}
+            for s, h in sorted(state.holdings.items(), key=lambda kv: -w.get(kv[0], 0))
+        ]
+        actions = []
+        if is_month_end:
+            actions.append(f"Month-end rebalance into {len(state.holdings)} names")
+        else:
+            actions.append("Hold (rebalance only at month-end)")
+        ctx.portfolios.append(PortfolioReport(
+            name=display, total_value=tv, cash=state.cash,
+            daily_pl=0.0, total_pl=tv - capital, holdings=holdings, actions=actions,
+        ))
+
+
+def _run_active(ctx, scores, prices, indicators, pcfg, rcfg) -> None:
+    from .portfolio.base import PortfolioState
+
+    capital = float(pcfg.get("active_capital", 1600.0))
+    txn_cost = float(pcfg.get("active_txn_cost", 1.5))
+    active = ActivePortfolio(
+        risk_cfg=rcfg.get("active", {}),
+        txn_cost=txn_cost,
+        min_cash_buffer_pct=float(pcfg.get("min_cash_buffer_pct", 0.05)),
+        initial_deploy_pct=float(pcfg.get("active_initial_deploy_pct", 0.25)),
+    )
+    # Phase 1: start fresh each run (state persistence across runs lands in Phase 2).
+    state = PortfolioState(name="Active Entry", ptype="active", cash=capital,
+                           starting_capital=capital, txn_cost=txn_cost)
+    comp = scores.composite.get("active", pd.Series(dtype=float))
+    decision = active.decide(state, comp, prices, indicators, ctx.regime_label)
+
+    tv = state.total_value(prices)
+    w = state.weights(prices)
+    holdings = [
+        {"symbol": s, "weight": w.get(s, 0.0), "value": h.market_value(prices.get(s, h.avg_cost))}
+        for s, h in sorted(state.holdings.items(), key=lambda kv: -w.get(kv[0], 0))
+    ]
+    actions = [f"{t.side.upper()} {t.symbol} ({t.reason})" for t in decision.trades[:10]]
+    actions += decision.notes
+    total_cost = sum(t.cost for t in decision.trades)
+    if total_cost:
+        actions.append(f"Transaction costs paid: ${total_cost:.2f}")
+    ctx.portfolios.append(PortfolioReport(
+        name="Active Entry", total_value=tv, cash=state.cash,
+        daily_pl=0.0, total_pl=tv - capital, holdings=holdings, actions=actions,
+    ))
+
+
+def _build_self_learning(ctx, scores, prices, sectors, settings, pcfg) -> None:
+    capital = float(pcfg.get("self_learning_capital", 1000.0))
+    base_weights = settings.scoring.get("factors", {}).get("balanced", {})
+    sl = SelfLearningPortfolio(base_weights=base_weights, capital=capital)
+    comp = scores.composite.get("balanced", pd.Series(dtype=float))
+    state = sl.build(comp, prices, sectors)
+    tv = state.total_value(prices)
+    w = state.weights(prices)
+    holdings = [
+        {"symbol": s, "weight": w.get(s, 0.0), "value": h.market_value(prices.get(s, h.avg_cost))}
+        for s, h in sorted(state.holdings.items(), key=lambda kv: -w.get(kv[0], 0))
+    ]
+    ctx.portfolios.append(PortfolioReport(
+        name="Self-Learning (paper)", total_value=tv, cash=state.cash,
+        daily_pl=0.0, total_pl=tv - capital, holdings=holdings,
+        actions=["PAPER ONLY — seed weights; adaptive update deferred to Phase 4"],
+    ))
+
+
+def _emit(secrets: Secrets, settings: Settings, ctx: ReportContext, dry: bool) -> None:
+    html, text = build_report(ctx)
+    save_report(text, html, out_dir="reports", date=ctx.date)
+    log.info("\n%s", text)
+    ecfg = settings.get("email", {})
+    subject = f"{ecfg.get('subject_prefix', '[usbot]')} {ctx.date} — {ctx.regime_label}"
+    result = send_report(secrets, subject, html, text,
+                         enabled=ecfg.get("enabled", True), dry_run=dry)
+    log.info("[email] channel=%s sent=%s (%s)", result.channel, result.sent, result.note)
+    if not result.sent and "missing" in result.note:
+        ctx.skipped.append(f"email: {result.note}")

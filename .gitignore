@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Secrets / local env — NEVER commit real keys, tokens or passwords
+.env
+.env.local
+*.key
+*.pem
+
+# Local SQLite database & generated artifacts
+*.db
+*.sqlite
+*.sqlite3
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Generated reports (kept out of VCS by default; flip if you want history)
+reports/*.html
+reports/*.md
+!reports/.gitkeep
+
+# Caches
+.cache/
+*.log
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
