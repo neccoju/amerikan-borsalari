@@ -66,6 +66,24 @@
   {% endfor %}
   {% endif %}
 
+  {% if ctx.news_highlights %}
+  <h2>Important News</h2>
+  <table>
+    <tr><th>Symbol</th><th>Sentiment</th><th>Type</th><th>Headline</th></tr>
+    {% for n in ctx.news_highlights[:12] %}
+    <tr>
+      <td>{{ n.symbol }}</td>
+      <td class="{{ 'pos' if n.label == 'positive' else ('neg' if n.label == 'negative' else 'muted') }}">{{ n.label }}</td>
+      <td><span class="pill">{{ n.category }}</span></td>
+      <td>{{ n.headline[:110] }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% elif ctx.news_note %}
+  <h2>News</h2>
+  <div class="muted">{{ ctx.news_note }}</div>
+  {% endif %}
+
   <h2>LLM Review</h2>
   <div class="muted">{{ ctx.llm_note }}</div>
 

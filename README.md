@@ -43,6 +43,9 @@ python -m usbot run --force --dry-run
 
 # Just check market status
 python -m usbot status
+
+# Run a look-ahead-safe momentum backtest vs a benchmark (needs price history)
+python -m usbot backtest --start 2015-01-01 --benchmark SPY --top-n 10 --cost-bps 10
 ```
 
 Run the tests:
@@ -89,8 +92,8 @@ in [`docs/cron_job_org_setup.md`](docs/cron_job_org_setup.md).
 
 | Phase | Scope | Status |
 |---|---|---|
-| 1 | Universe, prices, technical+fundamental+macro scoring, 5 portfolios, SQLite, report, email/LLM graceful skip, workflow, tests | ✅ this repo |
-| 2 | News + sentiment, backtesting engine, richer reports | planned |
+| 1 | Universe, prices, technical+fundamental+macro scoring, 5 portfolios, SQLite, report, email/LLM graceful skip, workflow, tests | ✅ done |
+| 2 | News ingestion + sentiment (VADER/FinBERT) wired into scoring, look-ahead-safe backtesting engine, richer report | ✅ done |
 | 3 | SEC 13F, congressional trades, monthly LLM adjustment | planned |
 | 4 | Adaptive self-learning (Bayesian/online), walk-forward, broad universe | planned |
 

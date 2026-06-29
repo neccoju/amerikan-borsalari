@@ -33,6 +33,9 @@ class ReportContext:
     regime_detail: dict = field(default_factory=dict)
     top_scores: dict[str, list[tuple[str, float]]] = field(default_factory=dict)
     portfolios: list[PortfolioReport] = field(default_factory=list)
+    # News highlights: list of {symbol, headline, label, category, sentiment}
+    news_highlights: list[dict] = field(default_factory=list)
+    news_note: str = ""
     llm_note: str = ""
     skipped: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
@@ -74,6 +77,13 @@ def _build_text(ctx: ReportContext) -> str:
             top = ", ".join(f"{s}({v:.0f})" for s, v in items[:5])
             lines.append(f"    {pf_name}: {top}")
         lines.append("")
+    if ctx.news_highlights:
+        lines.append("Important news:")
+        for n in ctx.news_highlights[:8]:
+            lines.append(f"    [{n['label']}/{n['category']}] {n['symbol']}: {n['headline'][:90]}")
+        lines.append("")
+    elif ctx.news_note:
+        lines.append(f"News: {ctx.news_note}")
     if ctx.llm_note:
         lines.append(f"LLM: {ctx.llm_note}")
     if ctx.skipped:

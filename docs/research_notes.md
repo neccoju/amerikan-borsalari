@@ -30,12 +30,20 @@
 
 ## Known limitations
 
-- **Survivorship bias:** v1 uses the *current* S&P 500 seed for both live and
-  (future) backtests. Rigorous point-in-time universe reconstruction is
-  **deferred to Phase 4** (documented and accepted for v1).
+- **Survivorship bias:** the current S&P 500 seed is used for both live and
+  backtests. Rigorous point-in-time universe reconstruction is **deferred to
+  Phase 4** (documented and accepted).
+- **Backtest scope (Phase 2):** only price-derived signals (momentum/technical)
+  are truly point-in-time from free history. Fundamental/news factors lack free
+  point-in-time history, so they are excluded from backtests (deferred to Phase 4).
+  The live daily pipeline still uses them; only historical replay omits them.
+- **News sentiment:** default model is VADER (lexicon-based), which mis-reads
+  some financial jargon (e.g. "crushes earnings" → negative). FinBERT is the
+  optional `[finbert]` upgrade for finance-aware sentiment.
 - yfinance fundamentals are best-effort and occasionally stale/missing.
 - Macro relies on keyless proxies (VIX/^TNX) until FRED is enabled.
-- No transaction-cost modeling on model sleeves (intentional).
+- No transaction-cost modeling on model sleeves (intentional); the Active sleeve
+  and the backtester both model costs.
 
 ## Implementation-safe rules
 

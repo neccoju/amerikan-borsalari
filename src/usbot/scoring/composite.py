@@ -44,13 +44,22 @@ def _effective_weights(factor_weights: dict, enabled: list[str]) -> dict[str, fl
 
 
 def score_universe(indicators: dict[str, dict], fundamentals: dict[str, dict],
-                   macro: dict[str, pd.DataFrame], scoring_cfg: dict) -> ScoreResult:
-    """Run all live sub-scores and assemble per-portfolio composites."""
+                   macro: dict[str, pd.DataFrame], scoring_cfg: dict,
+                   news_score: pd.Series | None = None) -> ScoreResult:
+    """Run all live sub-scores and assemble per-portfolio composites.
+
+    ``news_score`` (optional, 0..100 per symbol) is folded in only when provided
+    and non-empty; in that case the 'news' factor is enabled for this run and its
+    configured weight participates in the renormalization.
+    """
     tech = technical_scores(indicators, scoring_cfg.get("technical", {}))
     fund = fundamental_scores(fundamentals, scoring_cfg.get("fundamental", {}))
     regime = compute_macro_regime(macro, scoring_cfg.get("macro", {}))
 
-    enabled = scoring_cfg.get("enabled_factors", ["macro", "fundamental", "technical"])
+    enabled = list(scoring_cfg.get("enabled_factors", ["macro", "fundamental", "technical"]))
+    news_active = news_score is not None and len(news_score) > 0
+    if news_active and "news" not in enabled:
+        enabled.append("news")
     factor_table = scoring_cfg.get("factors", {})
 
     # Macro is market-wide; applied as a per-name constant component.
@@ -61,8 +70,9 @@ def score_universe(indicators: dict[str, dict], fundamentals: dict[str, dict],
         "technical": tech,
         "fundamental": fund,
         "macro": pd.Series(macro_component, index=symbols),
-        # Not-yet-live factors default neutral; excluded from enabled anyway.
-        "news": pd.Series(50.0, index=symbols),
+        # News folded in when provided; otherwise neutral & excluded from enabled.
+        "news": (news_score.reindex(symbols).fillna(50.0) if news_active
+                 else pd.Series(50.0, index=symbols)),
         "institutional": pd.Series(50.0, index=symbols),
         "congress": pd.Series(50.0, index=symbols),
         "llm": pd.Series(50.0, index=symbols),

@@ -15,3 +15,4 @@ pandas-market-calendars>=4.3
 PyYAML>=6.0
 Jinja2>=3.1
 requests>=2.31
+vaderSentiment>=3.3

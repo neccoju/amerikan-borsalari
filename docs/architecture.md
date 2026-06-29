@@ -41,8 +41,9 @@ usbot.cli  ──►  usbot.orchestrator.run_daily()
 | `db/` | SQLite schema + repository (only place with SQL) |
 | `reports/` | HTML/text report builder + Jinja template |
 | `mailer/` | SMTP sender with log fallback |
+| `news/` | news ingestion (Finnhub/AV, graceful skip), dedup, VADER/FinBERT sentiment, per-symbol news score |
 | `llm/` | configurable provider (anthropic/openai/ollama/none) + monthly review |
-| `backtest/` | Phase 2 engine (look-ahead-safe contract documented) |
+| `backtest/` | look-ahead-safe engine (T+1 execution, costs, walk-forward) + metrics |
 
 ## Design guarantees
 
