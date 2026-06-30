@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>usbot — US Market Dashboard {{ d.date }}</title>
+<script src="https://cdn.plot.ly/plotly-2.30.0.min.js" charset="utf-8"></script>
+<style>
+  :root {
+    --bg: #0e1117; --panel: #161b22; --panel2: #1c2230; --border: #21262d;
+    --fg: #c9d1d9; --muted: #8b949e; --green: #2ea043; --red: #f85149;
+    --amber: #d29922; --blue: #1f6feb; --accent: #58a6ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px; line-height: 1.5;
+  }
+  a { color: var(--accent); }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 16px; }
+  header.top {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px;
+    border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 8px;
+  }
+  header.top h1 { font-size: 20px; margin: 0; font-weight: 650; }
+  header.top .sub { color: var(--muted); font-size: 13px; }
+  .badge {
+    display: inline-block; padding: 2px 9px; border-radius: 999px; font-size: 12px;
+    border: 1px solid var(--border); background: var(--panel2); color: var(--fg);
+  }
+  .disclaimer {
+    margin: 10px 0 20px; padding: 9px 12px; border-radius: 8px; font-size: 12.5px;
+    background: rgba(210,153,34,0.08); border: 1px solid rgba(210,153,34,0.35); color: var(--amber);
+  }
+  section { margin: 26px 0; }
+  section > h2 {
+    font-size: 16px; margin: 0 0 12px; font-weight: 620;
+    display: flex; align-items: center; gap: 8px;
+  }
+  section > h2 .num {
+    font-size: 12px; color: var(--bg); background: var(--accent);
+    border-radius: 6px; padding: 1px 7px; font-weight: 700;
+  }
+  .note { color: var(--muted); font-size: 12.5px; margin: 4px 0 12px; }
+  .grid { display: grid; gap: 12px; }
+  .kpis { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  .cards { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .card {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .card .label { color: var(--muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: .03em; }
+  .card .value { font-size: 20px; font-weight: 650; margin-top: 3px; }
+  .card .value.sm { font-size: 15px; }
+  .pos { color: var(--green); } .neg { color: var(--red); } .flat { color: var(--muted); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { color: var(--muted); font-weight: 600; font-size: 12px; position: sticky; top: 0; background: var(--bg); }
+  tbody tr:hover { background: var(--panel2); }
+  .tbl-wrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; }
+  .chart { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 6px; margin: 8px 0; }
+  .placeholder {
+    background: var(--panel); border: 1px dashed var(--border); border-radius: 10px;
+    padding: 28px 16px; text-align: center; color: var(--muted); font-size: 13px;
+  }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600; }
+  .pill.inflow { background: rgba(46,160,67,0.16); color: var(--green); }
+  .pill.outflow { background: rgba(248,81,73,0.16); color: var(--red); }
+  .pill.neutral { background: var(--panel2); color: var(--muted); }
+  .q-Leading { color: var(--green); } .q-Weakening { color: var(--amber); }
+  .q-Lagging { color: var(--red); } .q-Improving { color: var(--blue); }
+  .llm { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; white-space: pre-wrap; font-size: 13px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 760px) { .two-col { grid-template-columns: 1fr; } }
+  ul.clean { margin: 6px 0; padding-left: 18px; }
+  footer { margin: 40px 0 16px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); padding-top: 14px; }
+  .meter { height: 6px; background: var(--panel2); border-radius: 4px; overflow: hidden; margin-top: 6px; }
+  .meter > span { display: block; height: 100%; background: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+{# ---------- header ---------- #}
+<header class="top">
+  <h1>US Market &amp; Portfolio Dashboard</h1>
+  <span class="sub">Run {{ d.date }} · {{ d.market_status }}</span>
+  <span class="badge">Regime: {{ d.regime_label }} ({{ "%.0f"|format(d.regime_score) }})</span>
+  {% if d.email_status %}<span class="badge">{{ d.email_status }}</span>{% endif %}
+  <span class="sub" style="margin-left:auto">generated {{ d.generated_at }}</span>
+</header>
+
+<div class="disclaimer">
+  ⚠️ Research / monitoring tool — <strong>NOT financial advice</strong>. All portfolios are
+  paper-trading simulations. The LLM provides decision-support commentary only and never
+  executes trades. The "Smart Money Rotation Proxy" is an estimate from price/volume/momentum,
+  <strong>NOT actual dollar flow</strong>.
+</div>
+
+{# ---------- 1. Executive Overview ---------- #}
+<section>
+  <h2><span class="num">1</span> Executive Overview</h2>
+  {% set k = d.kpis %}
+  <div class="grid kpis">
+    <div class="card"><div class="label">Latest Run</div><div class="value sm">{{ k.run_date }}</div></div>
+    <div class="card"><div class="label">Market Regime</div>
+      <div class="value sm">{{ k.regime }} <span class="muted">({{ "%.0f"|format(k.regime_score) }})</span></div></div>
+    <div class="card"><div class="label">Total Portfolio Value</div>
+      <div class="value">${{ "{:,.0f}".format(k.total_value) }}</div></div>
+    <div class="card"><div class="label">Daily P/L</div>
+      <div class="value {{ 'pos' if k.daily_pl > 0 else 'neg' if k.daily_pl < 0 else 'flat' }}">
+        {{ "{:+,.2f}".format(k.daily_pl) }}</div></div>
+    <div class="card"><div class="label">Total P/L</div>
+      <div class="value {{ 'pos' if k.total_pl > 0 else 'neg' if k.total_pl < 0 else 'flat' }}">
+        {{ "{:+,.2f}".format(k.total_pl) }}</div></div>
+    <div class="card"><div class="label">Cash %</div>
+      <div class="value sm">{{ "%.1f%%"|format(k.cash_pct * 100) }}</div>
+      <div class="meter"><span style="width: {{ [k.cash_pct * 100, 100]|min }}%"></span></div></div>
+    <div class="card"><div class="label">Best Performer</div>
+      {% if k.best %}<div class="value sm pos">{{ k.best.symbol }} {{ "%+.1f%%"|format(k.best.ret * 100) }}</div>
+      {% else %}<div class="value sm flat">—</div>{% endif %}</div>
+    <div class="card"><div class="label">Worst Performer</div>
+      {% if k.worst %}<div class="value sm neg">{{ k.worst.symbol }} {{ "%+.1f%%"|format(k.worst.ret * 100) }}</div>
+      {% else %}<div class="value sm flat">—</div>{% endif %}</div>
+    <div class="card"><div class="label">Data Quality</div>
+      <div class="value sm {{ 'neg' if k.warnings else 'pos' }}">{{ k.warnings }} warn · {{ k.skipped }} skip</div></div>
+  </div>
+</section>
+
+{# ---------- 2. Portfolio vs Benchmarks ---------- #}
+<section>
+  <h2><span class="num">2</span> Portfolio vs Benchmarks</h2>
+  <div class="note">Cumulative return normalized to 100, plus drawdown comparison. Alpha is the
+    CAGR difference vs SPY / QQQ. Curves fill in as the bot accrues daily history.</div>
+  {% if d.alpha_cards %}
+  <div class="grid cards">
+    {% for a in d.alpha_cards %}
+    <div class="card">
+      <div class="label">{{ a.name }} · α</div>
+      <div class="value sm {{ 'pos' if a.alpha_spy > 0 else 'neg' if a.alpha_spy < 0 else 'flat' }}">
+        {{ "%+.1f%%"|format(a.alpha_spy * 100) }} <span class="muted">SPY</span></div>
+      <div class="value sm {{ 'pos' if a.alpha_qqq > 0 else 'neg' if a.alpha_qqq < 0 else 'flat' }}">
+        {{ "%+.1f%%"|format(a.alpha_qqq * 100) }} <span class="muted">QQQ</span></div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  <div class="chart">{{ d.chart_perf | safe }}</div>
+  <div class="chart">{{ d.chart_drawdown | safe }}</div>
+  {% if d.perf_table %}
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Series</th><th>Total Return</th><th>CAGR</th><th>Vol</th>
+        <th>Sharpe</th><th>Max DD</th><th>α SPY</th><th>α QQQ</th></tr></thead>
+      <tbody>
+      {% for r in d.perf_table %}
+        <tr>
+          <td>{{ r.name }}</td>
+          <td class="{{ 'pos' if r.total_return > 0 else 'neg' if r.total_return < 0 else 'flat' }}">{{ "%+.1f%%"|format(r.total_return * 100) }}</td>
+          <td>{{ "%+.1f%%"|format(r.cagr * 100) }}</td>
+          <td>{{ "%.1f%%"|format(r.ann_vol * 100) }}</td>
+          <td>{{ "%.2f"|format(r.sharpe) }}</td>
+          <td class="neg">{{ "%.1f%%"|format(r.max_drawdown * 100) }}</td>
+          <td class="{{ 'pos' if r.alpha_spy > 0 else 'neg' if r.alpha_spy < 0 else 'flat' }}">{{ "%+.1f%%"|format(r.alpha_spy * 100) }}</td>
+          <td class="{{ 'pos' if r.alpha_qqq > 0 else 'neg' if r.alpha_qqq < 0 else 'flat' }}">{{ "%+.1f%%"|format(r.alpha_qqq * 100) }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="placeholder">Rolling performance table appears once at least two days of history exist.</div>
+  {% endif %}
+</section>
+
+{# ---------- 3. Portfolio Dashboard ---------- #}
+<section>
+  <h2><span class="num">3</span> Portfolio Dashboard</h2>
+  {% if d.portfolios %}
+  <div class="grid" style="grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));">
+    {% for p in d.portfolios %}
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <strong>{{ p.name }}</strong>
+        <span class="value sm">${{ "{:,.0f}".format(p.total_value) }}</span>
+      </div>
+      <div class="note" style="margin:4px 0">
+        cash ${{ "{:,.0f}".format(p.cash) }} ·
+        <span class="{{ 'pos' if p.daily_pl > 0 else 'neg' if p.daily_pl < 0 else 'flat' }}">day {{ "{:+,.2f}".format(p.daily_pl) }}</span> ·
+        <span class="{{ 'pos' if p.total_pl > 0 else 'neg' if p.total_pl < 0 else 'flat' }}">total {{ "{:+,.2f}".format(p.total_pl) }}</span>
+      </div>
+      {% if p.holdings %}
+      <table>
+        <thead><tr><th>Symbol</th><th>Shares</th><th>Price</th><th>Wt</th><th>P/L</th></tr></thead>
+        <tbody>
+        {% for h in p.holdings[:10] %}
+          <tr>
+            <td>{{ h.symbol }}</td>
+            <td>{{ "%.3f"|format(h.get('shares', 0)) }}</td>
+            <td>${{ "%.2f"|format(h.get('price', h.get('avg_cost', 0))) }}</td>
+            <td>{{ "%.1f%%"|format(h.get('weight', 0) * 100) }}</td>
+            <td class="{{ 'pos' if h.get('pl_pct',0) > 0 else 'neg' if h.get('pl_pct',0) < 0 else 'flat' }}">{{ "%+.1f%%"|format(h.get('pl_pct', 0) * 100) }}</td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}<div class="note">All cash — no open positions.</div>{% endif %}
+      {% if p.actions %}<ul class="clean">{% for a in p.actions[:6] %}<li class="note">{{ a }}</li>{% endfor %}</ul>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="placeholder">No portfolio data for this run.</div>
+  {% endif %}
+</section>
+
+{# ---------- 4. Market Heatmap ---------- #}
+<section>
+  <h2><span class="num">4</span> Market Heatmap</h2>
+  <div class="note">Finviz-style sector → ticker treemap. Tile size = market cap (held names
+    floored), color = daily return.</div>
+  <div class="chart">{{ d.chart_treemap | safe }}</div>
+</section>
+
+{# ---------- 5. Sector Rotation ---------- #}
+<section>
+  <h2><span class="num">5</span> Sector Rotation</h2>
+  <div class="note">{{ d.rotation_text }}</div>
+  <div class="two-col">
+    <div class="chart">{{ d.chart_sector_bar | safe }}</div>
+    <div class="chart">{{ d.chart_rrg | safe }}</div>
+  </div>
+  {% if d.sector_rows %}
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Sector</th><th>ETF</th><th>1D</th><th>1W</th><th>1M</th><th>3M</th>
+        <th>RS vs SPY</th><th>RSI</th><th>Quadrant</th></tr></thead>
+      <tbody>
+      {% for r in d.sector_rows %}
+        <tr>
+          <td>{{ r.name }}</td><td>{{ r.etf }}</td>
+          {% for h in ['1D','1W','1M','3M'] %}
+            {% set v = r.ret.get(h) %}
+            <td class="{{ 'pos' if v and v > 0 else 'neg' if v and v < 0 else 'flat' }}">{{ ("%+.1f%%"|format(v*100)) if v == v and v is not none else "—" }}</td>
+          {% endfor %}
+          <td class="{{ 'pos' if r.rs_vs_spy > 0 else 'neg' if r.rs_vs_spy < 0 else 'flat' }}">{{ "%+.1f%%"|format(r.rs_vs_spy) }}</td>
+          <td>{{ ("%.0f"|format(r.rsi)) if r.rsi == r.rsi else "—" }}</td>
+          <td class="q-{{ r.quadrant }}">{{ r.quadrant }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="placeholder">Sector rotation table unavailable — sector ETF history missing.</div>
+  {% endif %}
+</section>
+
+{# ---------- 6. Smart Money Rotation Proxy ---------- #}
+<section>
+  <h2><span class="num">6</span> Smart Money Rotation Proxy</h2>
+  <div class="note">Estimated proxy = 0.35·RS change + 0.25·volume z + 0.20·MFI change +
+    0.10·OBV trend + 0.10·price momentum, normalized to −100…+100.
+    <strong>This is NOT actual dollar flow.</strong></div>
+  {% if d.proxy_rows %}
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Sector</th><th>ETF</th><th>Proxy</th><th>Direction</th><th>Detail</th></tr></thead>
+      <tbody>
+      {% for r in d.proxy_rows %}
+        <tr>
+          <td>{{ r.name }}</td><td>{{ r.etf }}</td>
+          <td class="{{ 'pos' if r.proxy > 0 else 'neg' if r.proxy < 0 else 'flat' }}">{{ "%+.0f"|format(r.proxy) }}</td>
+          <td><span class="pill {{ r.direction }}">{{ r.direction }}</span></td>
+          <td class="note" style="text-align:left">{{ r.explanation }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+  <div class="chart">{{ d.chart_sankey | safe }}</div>
+</section>
+
+{# ---------- 7. Holdings and Signals ---------- #}
+<section>
+  <h2><span class="num">7</span> Holdings and Signals</h2>
+  <div class="note">Top-ranked names (balanced composite) with contributing factor sub-scores (0–100).</div>
+  {% if d.holdings_signals %}
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Symbol</th><th>Composite</th><th>Technical</th><th>Fundamental</th><th>Macro</th><th>News</th></tr></thead>
+      <tbody>
+      {% for h in d.holdings_signals %}
+        <tr>
+          <td>{{ h.symbol }}</td>
+          <td><strong>{{ "%.0f"|format(h.score) }}</strong></td>
+          {% for f in ['technical','fundamental','macro','news'] %}
+            {% set v = h[f] %}
+            <td>{{ ("%.0f"|format(v)) if v == v else "—" }}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="placeholder">No scored holdings available for this run.</div>
+  {% endif %}
+</section>
+
+{# ---------- 8. News and LLM Insights ---------- #}
+<section>
+  <h2><span class="num">8</span> News and LLM Insights</h2>
+  {% if d.news_highlights %}
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Symbol</th><th>Headline</th><th>Sentiment</th></tr></thead>
+      <tbody>
+      {% for n in d.news_highlights[:20] %}
+        <tr>
+          <td>{{ n.get('symbol','') }}</td>
+          <td style="text-align:left;white-space:normal">{{ n.get('headline','') }}</td>
+          <td class="{{ 'pos' if n.get('sentiment',0) > 0.05 else 'neg' if n.get('sentiment',0) < -0.05 else 'flat' }}">
+            {{ n.get('label','') }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="placeholder">{{ d.news_note or "No news highlights for this run (news source disabled or rate-limited)." }}</div>
+  {% endif %}
+</section>
+
+{# ---------- 9. Monthly AI Portfolio Review ---------- #}
+<section>
+  <h2><span class="num">9</span> Monthly AI Portfolio Review</h2>
+  <div class="note">LLM reviews each portfolio (summary, performance vs benchmarks, what worked /
+    hurt, risks, suggested changes, confidence, action). Decision-support only — the model
+    never executes trades. Runs on a monthly cadence.</div>
+  {% if d.llm_available and d.llm_review %}
+  <div class="llm">{{ d.llm_review }}</div>
+  {% elif d.llm_available %}
+  <div class="placeholder">LLM review not generated this run (monthly cadence — appears at month-end).</div>
+  {% else %}
+  <div class="placeholder">LLM review unavailable — missing API key or disabled.</div>
+  {% endif %}
+</section>
+
+{# ---------- 10. Data Quality and System Health ---------- #}
+<section>
+  <h2><span class="num">10</span> Data Quality and System Health</h2>
+  <div class="two-col">
+    <div class="card">
+      <div class="label">Skipped modules ({{ d.skipped|length }})</div>
+      {% if d.skipped %}<ul class="clean">{% for s in d.skipped %}<li class="note">{{ s }}</li>{% endfor %}</ul>
+      {% else %}<div class="note">None — all modules ran.</div>{% endif %}
+    </div>
+    <div class="card">
+      <div class="label">Errors ({{ d.errors|length }})</div>
+      {% if d.errors %}<ul class="clean">{% for e in d.errors[:30] %}<li class="note">{{ e }}</li>{% endfor %}</ul>
+      {% else %}<div class="note">None.</div>{% endif %}
+    </div>
+  </div>
+</section>
+
+<footer>
+  usbot — automated US-market research dashboard. Inspired by the UX of Finviz, Portfolio
+  Visualizer, Koyfin, TradingView, StockCharts and Yahoo Finance (own data &amp; code).
+  Paper-trading only · not financial advice. Generated {{ d.generated_at }}.
+</footer>
+
+</div>
+</body>
+</html>

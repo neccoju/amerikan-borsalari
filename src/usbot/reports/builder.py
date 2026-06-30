@@ -43,6 +43,11 @@ class ReportContext:
     congress_updates: list[dict] = field(default_factory=list)
     congress_note: str = ""
     llm_note: str = ""
+    # Dashboard link surfaced in the email. ``dashboard_url`` comes from the
+    # DASHBOARD_URL secret (empty if unset); ``dashboard_generated`` is True once
+    # site/index.html was written, so the email can note "generated but no URL".
+    dashboard_url: str = ""
+    dashboard_generated: bool = False
     skipped: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
 
@@ -67,6 +72,13 @@ def _build_text(ctx: ReportContext) -> str:
         f"Market: {ctx.market_status} | Regime: {ctx.regime_label} ({ctx.regime_score:.0f})",
         "",
     ]
+    if ctx.dashboard_url:
+        lines.append("Dashboard:")
+        lines.append(f"    Open Dashboard: {ctx.dashboard_url}")
+        lines.append("")
+    elif ctx.dashboard_generated:
+        lines.append("Dashboard generated, but DASHBOARD_URL is not configured yet.")
+        lines.append("")
     for pf in ctx.portfolios:
         lines.append(
             f"[{pf.name}] value=${pf.total_value:,.2f} cash=${pf.cash:,.2f} "

@@ -34,6 +34,7 @@ KNOWN_SECRETS = [
     "EMAIL_TO",
     "EMAIL_FROM",
     "CRON_SECRET_TOKEN",
+    "DASHBOARD_URL",   # public link to the published dashboard (e.g. GitHub Pages)
 ]
 
 
