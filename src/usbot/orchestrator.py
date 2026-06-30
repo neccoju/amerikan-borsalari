@@ -184,6 +184,35 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
         ctx.llm_note = review.note
         ctx.skipped.append(review.note)
 
+    # ---- persist the LLM review to SQLite (best-effort) ----
+    if persist:
+        try:
+            from .db.repository import Repository
+
+            db_path = settings.get("data", {}).get("db_path", "data/usbot.db")
+            with Repository(db_path) as repo:
+                repo.save_llm_review(
+                    ctx.date, "monthly", provider.provider, provider.model,
+                    review.text if review.ran else "", review.note)
+                repo.commit()
+        except Exception as exc:  # noqa: BLE001 - persistence must never break the run
+            log.warning("LLM review persistence skipped: %s", exc)
+
+    # ---- interactive dashboard (site/index.html); never breaks the email ----
+    try:
+        from .dashboard import build_dashboard
+
+        dcfg = settings.get("dashboard", {})
+        if dcfg.get("enabled", True):
+            build_dashboard(
+                ctx, pdata.history, fundamentals, scores, store,
+                llm_review=review.text if review.ran else "",
+                llm_available=provider.available,
+                out_path=dcfg.get("out_path", "site/index.html"))
+    except Exception as exc:  # noqa: BLE001 - dashboard is optional, must never crash the run
+        log.warning("Dashboard build skipped: %s", exc)
+        ctx.skipped.append(f"dashboard: {exc}")
+
 
 def _news_targets(prelim, top_n: int) -> list[str]:
     """Union of the top-n names across portfolios from the prelim (news-free) score.

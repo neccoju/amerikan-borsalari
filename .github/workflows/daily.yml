@@ -27,6 +27,8 @@ on:
 
 permissions:
   contents: write   # needed to commit the Active portfolio state back to the repo
+  pages: write      # publish the dashboard to GitHub Pages (optional)
+  id-token: write   # required by the Pages deploy action
 
 concurrency:
   # Prevent overlapping runs from double-processing the simulated books.
@@ -99,6 +101,31 @@ jobs:
           path: reports/
           if-no-files-found: ignore
           retention-days: 14
+
+      - name: Upload dashboard artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashboard
+          path: site/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      # Publish the dashboard to GitHub Pages. This is OPTIONAL: it only works
+      # once Pages is enabled for the repo (Settings -> Pages -> Source:
+      # "GitHub Actions"). Until then these steps are skipped/soft-failed and the
+      # dashboard is still available as the "dashboard" artifact above.
+      - name: Package dashboard for Pages
+        if: ${{ github.event.inputs.dry_run != 'true' && hashFiles('site/index.html') != '' }}
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/
+        continue-on-error: true
+
+      - name: Deploy dashboard to GitHub Pages
+        if: ${{ github.event.inputs.dry_run != 'true' && hashFiles('site/index.html') != '' }}
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
 
       - name: Persist Active portfolio state
         # Only on real runs (not dry-run previews). repository_dispatch has no

@@ -41,6 +41,28 @@ def atr(df: pd.DataFrame, period: int = 14) -> pd.Series:
     return tr.ewm(alpha=1 / period, min_periods=period, adjust=False).mean()
 
 
+def mfi(df: pd.DataFrame, period: int = 14) -> pd.Series:
+    """Money Flow Index (0..100): volume-weighted RSI-like flow indicator."""
+    if not {"high", "low", "close", "volume"}.issubset(df.columns):
+        return pd.Series(dtype=float)
+    tp = (df["high"] + df["low"] + df["close"]) / 3.0
+    rmf = tp * df["volume"].astype(float)
+    delta = tp.diff()
+    pos = rmf.where(delta > 0, 0.0).rolling(period).sum()
+    neg = rmf.where(delta < 0, 0.0).rolling(period).sum()
+    ratio = pos / neg.replace(0.0, np.nan)
+    out = 100 - (100 / (1 + ratio))
+    return out.where(neg != 0, 100.0)
+
+
+def obv(df: pd.DataFrame) -> pd.Series:
+    """On-Balance Volume: cumulative signed volume."""
+    if not {"close", "volume"}.issubset(df.columns):
+        return pd.Series(dtype=float)
+    direction = np.sign(df["close"].diff().fillna(0.0))
+    return (direction * df["volume"].astype(float)).cumsum()
+
+
 def momentum(series: pd.Series, lookback: int) -> float:
     """Total return over ``lookback`` trading days. NaN if insufficient history."""
     if len(series) <= lookback:

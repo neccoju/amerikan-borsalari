@@ -22,6 +22,7 @@ dependencies = [
     "requests>=2.31",
     "vaderSentiment>=3.3",        # keyless default news sentiment model
     "lxml>=4.9",                  # enables pandas.read_html for dynamic index constituents
+    "plotly>=5.20",               # interactive charts for the HTML dashboard
 ]
 
 [project.optional-dependencies]

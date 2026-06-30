@@ -73,6 +73,10 @@ email:
   enabled: true                  # auto-disabled if SMTP secrets are missing
   subject_prefix: "[usbot]"
 
+dashboard:
+  enabled: true                  # generate site/index.html each run (never blocks email)
+  out_path: "site/index.html"    # published via the Pages workflow / uploaded artifact
+
 llm:
   enabled: true                  # auto-disabled if no key / provider=none
   monthly_only: true             # do NOT run on daily runs (cost control)

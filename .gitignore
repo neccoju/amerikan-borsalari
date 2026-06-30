@@ -33,6 +33,9 @@ reports/*.html
 reports/*.md
 !reports/.gitkeep
 
+# Generated dashboard (published via the Pages workflow / uploaded as an artifact)
+site/
+
 # Caches
 .cache/
 *.log
