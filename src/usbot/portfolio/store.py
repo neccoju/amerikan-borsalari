@@ -29,6 +29,7 @@ class LoadedState:
     last_decision_date: str | None = None                   # active sleeve
     last_rebalance_date: str | None = None                  # model/self-learning sleeves
     meta: dict = field(default_factory=dict)                # sleeve-specific extras (e.g. learned weights)
+    ledger: list[dict] = field(default_factory=list)        # transaction journal (buys/sells/rebalances)
     existed: bool = False
 
 
@@ -93,6 +94,7 @@ class PortfolioStore:
             last_decision_date=p.get("last_decision_date"),
             last_rebalance_date=p.get("last_rebalance_date"),
             meta=dict(p.get("meta", {})),
+            ledger=list(p.get("ledger", [])),
             existed=True,
         )
 
@@ -102,12 +104,14 @@ class PortfolioStore:
               last_decision_date: str | None = None,
               last_rebalance_date: str | None = None,
               meta: dict | None = None,
-              max_history: int = 750) -> tuple[list[dict], float]:
+              ledger: list[dict] | None = None,
+              max_history: int = 750, max_ledger: int = 1000) -> tuple[list[dict], float]:
         total_value = state.total_value(prices)
         history = [h for h in history if h.get("date") != date]
         history.append({"date": date, "total_value": round(total_value, 2),
                         "cash": round(state.cash, 2)})
         history = history[-max_history:]
+        existing = self._all()["portfolios"].get(state.name, {})
         self._all()["portfolios"][state.name] = {
             "ptype": ptype or state.ptype,
             "starting_capital": state.starting_capital,
@@ -120,6 +124,10 @@ class PortfolioStore:
             "last_decision_date": last_decision_date,
             "last_rebalance_date": last_rebalance_date,
             "meta": meta or {},
+            # Transaction journal: caller passes the full (already-appended) list;
+            # we keep the most recent ``max_ledger`` rows. Preserve prior ledger
+            # when the caller doesn't manage one (defensive).
+            "ledger": (ledger if ledger is not None else existing.get("ledger", []))[-max_ledger:],
             "updated_at": dt.datetime.utcnow().isoformat(timespec="seconds") + "Z",
         }
         return history, total_value

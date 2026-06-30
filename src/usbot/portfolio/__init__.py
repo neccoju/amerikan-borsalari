@@ -3,6 +3,7 @@ from .model_portfolios import build_model_portfolio, compute_model_targets, reba
 from .active import ActivePortfolio
 from .self_learning import SelfLearningPortfolio
 from .store import PortfolioStore, performance_from_history
+from .ledger import trade_row, rebalance_row, total_cost, entries_on
 
 __all__ = [
     "Holding",
@@ -14,4 +15,8 @@ __all__ = [
     "SelfLearningPortfolio",
     "PortfolioStore",
     "performance_from_history",
+    "trade_row",
+    "rebalance_row",
+    "total_cost",
+    "entries_on",
 ]
