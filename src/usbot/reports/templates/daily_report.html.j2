@@ -23,7 +23,8 @@
 </head>
 <body>
   <h1>usbot — Daily Report</h1>
-  <div class="muted">{{ ctx.date }} · Market: {{ ctx.market_status }}</div>
+  <div class="muted">{{ ctx.date }} · Market: {{ ctx.market_status }} ·
+    Month-end rebalance: <b>{{ 'YES' if ctx.is_month_end else 'no' }}</b></div>
 
   {% if ctx.dashboard_url %}
   <div style="margin:14px 0;">
@@ -81,6 +82,28 @@
     {% for a in pf.actions %}<div>· {{ a }}</div>{% endfor %}
   </div>{% endif %}
   {% endfor %}
+
+  <h2>Transaction Ledger — {{ ctx.date }}</h2>
+  <div class="muted">Today's cost: <b>${{ "{:,.2f}".format(ctx.cost_today) }}</b> ·
+    Lifetime cost: <b>${{ "{:,.2f}".format(ctx.cost_total) }}</b></div>
+  {% if ctx.ledger_today %}
+  <table>
+    <tr><th>Sleeve</th><th>Type</th><th>Symbol</th><th>Shares</th><th>Price</th><th>Fee</th><th>Reason</th></tr>
+    {% for e in ctx.ledger_today %}
+    <tr>
+      <td>{{ e.sleeve }}</td>
+      <td>{{ e.type|upper }}</td>
+      <td>{{ e.symbol }}</td>
+      <td>{{ "%.4f"|format(e.shares) if e.shares else "—" }}</td>
+      <td>{{ "$%0.2f"|format(e.price) if e.price else "—" }}</td>
+      <td>{{ "$%0.2f"|format(e.cost) if e.cost else "—" }}</td>
+      <td class="muted">{{ e.reason }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  {% else %}
+  <div class="muted">No trades today — positions held.</div>
+  {% endif %}
 
   {% if ctx.top_scores %}
   <h2>Top Scores</h2>

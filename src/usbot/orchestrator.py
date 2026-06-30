@@ -153,6 +153,10 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, ctx.date,
                          is_month_end, price_history=pdata.history)
 
+    # ---- transaction journal (today's activity + cost totals) ----
+    ctx.is_month_end = is_month_end
+    _collect_ledger(ctx, store, ctx.date)
+
     if persist:
         store.commit()
 
@@ -213,6 +217,28 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     except Exception as exc:  # noqa: BLE001 - dashboard is optional, must never crash the run
         log.warning("Dashboard build skipped: %s", exc)
         ctx.skipped.append(f"dashboard: {exc}")
+
+
+def _collect_ledger(ctx: ReportContext, store, date: str) -> None:
+    """Gather today's transaction-journal entries (all sleeves) + cost totals."""
+    from .portfolio import entries_on, total_cost
+
+    today: list[dict] = []
+    lifetime = 0.0
+    try:
+        sleeves = store._all().get("portfolios", {})
+    except Exception:  # noqa: BLE001
+        sleeves = {}
+    for p in sleeves.values():
+        led = p.get("ledger", [])
+        today.extend(entries_on(led, date))
+        lifetime += total_cost(led)
+    # buys/sells first, summaries (rebalance/rebuild) after; stable within group
+    order = {"buy": 0, "sell": 1, "rebalance": 2, "rebuild": 3}
+    today.sort(key=lambda e: order.get(e.get("type", ""), 9))
+    ctx.ledger_today = today
+    ctx.cost_today = round(sum(float(e.get("cost", 0.0)) for e in today), 2)
+    ctx.cost_total = round(lifetime, 2)
 
 
 def _news_targets(prelim, top_n: int) -> list[str]:
@@ -357,7 +383,8 @@ def _holding_rows(state, prices: dict[str, float]) -> list[dict]:
 def _build_model_sleeves(ctx, store, scores, prices, sectors, fundamentals, pcfg, rcfg,
                          date: str, is_month_end: bool) -> None:
     """Model sleeves hold real positions; rebalance at month-end, hold otherwise."""
-    from .portfolio import compute_model_targets, performance_from_history, rebalance_to_targets
+    from .portfolio import (compute_model_targets, performance_from_history, rebalance_row,
+                            rebalance_to_targets)
 
     capital = float(pcfg.get("model_capital", 1000.0))
     for display, key in [("Growth", "growth"), ("Defensive", "defensive"),
@@ -365,20 +392,24 @@ def _build_model_sleeves(ctx, store, scores, prices, sectors, fundamentals, pcfg
         loaded = store.load(display, capital, txn_cost=0.0)
         state = loaded.state
         comp = scores.composite.get(key, pd.Series(dtype=float))
+        ledger = list(loaded.ledger)
 
         # Rebalance on month-end, on the first ever run, or if somehow empty.
         do_rebalance = is_month_end or not loaded.existed or not state.holdings
         if do_rebalance:
             targets = compute_model_targets(key, comp, sectors, fundamentals, rcfg.get(key, {}))
             n = rebalance_to_targets(state, targets, prices, txn_cost=0.0)
+            kind = "rebuild" if not loaded.existed else "rebalance"
             action = (f"{'Initial allocation' if not loaded.existed else 'Month-end rebalance'} "
                       f"into {len(state.holdings)} names at live prices")
+            ledger.append(rebalance_row(date, display, len(state.holdings), cost=0.0,
+                                        reason=action, kind=kind))
         else:
             action = "Hold (rebalance only at month-end)"
 
         history, tv = store.stage(state, prices, date, loaded.history, ptype=key,
                                   last_rebalance_date=date if do_rebalance
-                                  else loaded.last_rebalance_date)
+                                  else loaded.last_rebalance_date, ledger=ledger)
         perf = performance_from_history(history, tv, capital)
         ctx.portfolios.append(PortfolioReport(
             name=display, total_value=tv, cash=state.cash,
@@ -390,12 +421,13 @@ def _build_model_sleeves(ctx, store, scores, prices, sectors, fundamentals, pcfg
 def _run_active(ctx, store, scores, prices, indicators, pcfg, rcfg, date: str,
                 *, force: bool = False) -> None:
     """Active sleeve: loads prior book, decides once/day, accumulates over time."""
-    from .portfolio import ActivePortfolio, performance_from_history
+    from .portfolio import ActivePortfolio, performance_from_history, trade_row
 
     capital = float(pcfg.get("active_capital", 1600.0))
     txn_cost = float(pcfg.get("active_txn_cost", 1.5))
     loaded = store.load("Active Entry", capital, txn_cost)
     state = loaded.state
+    ledger = list(loaded.ledger)
 
     active = ActivePortfolio(
         risk_cfg=rcfg.get("active", {}),
@@ -416,10 +448,14 @@ def _run_active(ctx, store, scores, prices, indicators, pcfg, rcfg, date: str,
         total_cost = sum(t.cost for t in decision.trades)
         if total_cost:
             actions.append(f"Transaction costs paid: ${total_cost:.2f}")
+        # itemise each real buy/sell (with its fee) into the transaction ledger
+        for t in decision.trades:
+            ledger.append(trade_row(date, "Active Entry", t.side, t.symbol, t.shares,
+                                    t.price, t.cost, t.reason))
 
     history, tv = store.stage(state, prices, date, loaded.history, ptype="active",
                               last_decision_date=date if not already_decided_today
-                              else loaded.last_decision_date)
+                              else loaded.last_decision_date, ledger=ledger)
     perf = performance_from_history(history, tv, state.starting_capital)
     ctx.portfolios.append(PortfolioReport(
         name="Active Entry", total_value=tv, cash=state.cash,
@@ -441,7 +477,7 @@ def _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, da
     static for comparison.
     """
     from .learning import compute_factor_ic, realized_returns, update_weights
-    from .portfolio import performance_from_history, rebalance_to_targets
+    from .portfolio import performance_from_history, rebalance_row, rebalance_to_targets
     from .portfolio.risk import target_weights_from_scores
 
     name = "Self-Learning (paper)"
@@ -450,6 +486,7 @@ def _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, da
     loaded = store.load(name, capital, txn_cost=0.0)
     state = loaded.state
     meta = loaded.meta or {}
+    ledger = list(loaded.ledger)
 
     factor_scores = scores.factor_scores or {}
     enabled = [f for f in (scores.enabled_factors or []) if f in factor_scores]
@@ -496,6 +533,10 @@ def _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, da
         wtxt = ", ".join(f"{f}:{w:.2f}" for f, w in sorted(weights.items(),
                                                            key=lambda kv: -kv[1])[:4])
         actions.append(f"PAPER — rebuilt with learned weights ({wtxt})")
+        ledger.append(rebalance_row(
+            date, name, len(state.holdings), cost=0.0,
+            reason=f"Paper rebuild with learned weights ({wtxt})",
+            kind="rebuild" if not loaded.existed else "rebalance"))
         # snapshot current scores for next month's IC
         meta["last_scores"] = {f: {s: round(float(v), 3) for s, v in
                                    factor_scores[f].dropna().items()} for f in enabled}
@@ -509,7 +550,7 @@ def _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, da
 
     history, tv = store.stage(state, prices, date, loaded.history, ptype="self_learning",
                               last_rebalance_date=date if do_rebalance
-                              else loaded.last_rebalance_date, meta=meta)
+                              else loaded.last_rebalance_date, meta=meta, ledger=ledger)
     perf = performance_from_history(history, tv, capital)
     ctx.portfolios.append(PortfolioReport(
         name=name, total_value=tv, cash=state.cash,

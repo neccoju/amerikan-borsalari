@@ -84,10 +84,20 @@ in GitHub Secrets and want the workflow to verify it.
    `Authorization`).
 5. **Request body:** the JSON payload from step 3.
 6. **Schedule (US market close + data settle):** US equities close 16:00 ET.
-   Trigger ~21:30–22:00 **UTC** on weekdays. cron-job.org schedules in a fixed
-   timezone, so prefer **UTC** to stay DST-proof:
-   - Cron expression (UTC): `30 21 * * 1-5`
+   The bot uses each day's *closing* prices, so the trigger MUST fire **after**
+   the US close. Set the cron-job.org **timezone to UTC** and use:
+   - Cron expression (UTC): **`0 22 * * 1-5`** (22:00 UTC, weekdays)
+   - 22:00 UTC is ~1–2h after the close year-round (DST-proof) and leaves time
+     for yfinance end-of-day bars to settle.
    - The bot's own calendar guard handles US holidays.
+
+   > ⚠️ **Common mistake — local time vs UTC.** US close in **Turkey time
+   > (UTC+3)** is **23:00** in summer (US EDT) and **00:00** in winter (US EST).
+   > If you schedule at **21:30 Istanbul time** the job fires at **18:30 UTC**,
+   > i.e. ~2.5h *before* the close — so the report uses intraday, not closing,
+   > prices. Fix: set the schedule timezone to **UTC** and use `0 22 * * 1-5`.
+   > (If you must keep Istanbul time, use **01:00** local, which equals 22:00
+   > UTC.)
 7. **Save.** Enable failure notifications so a dead trigger is visible.
 
 ---

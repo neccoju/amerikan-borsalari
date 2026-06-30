@@ -214,6 +214,35 @@
   {% else %}
   <div class="placeholder">No portfolio data for this run.</div>
   {% endif %}
+
+  {# ---- transaction ledger ---- #}
+  <h2 style="font-size:14px;margin-top:20px;">Transaction Ledger — {{ d.date }}</h2>
+  <div class="note">All buys/sells and month-end rebalances are journalled here.
+    Month-end rebalance day: <strong>{{ 'YES' if d.is_month_end else 'no' }}</strong> ·
+    Today's cost: <strong>${{ "{:,.2f}".format(d.cost_today) }}</strong> ·
+    Lifetime cost: <strong>${{ "{:,.2f}".format(d.cost_total) }}</strong></div>
+  {% if d.ledger_today %}
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Sleeve</th><th>Type</th><th>Symbol</th><th>Shares</th><th>Price</th><th>Fee</th><th>Reason</th></tr></thead>
+      <tbody>
+      {% for e in d.ledger_today %}
+        <tr>
+          <td>{{ e.sleeve }}</td>
+          <td>{% if e.type in ('buy','sell') %}<span class="pill {{ 'inflow' if e.type=='buy' else 'outflow' }}">{{ e.type|upper }}</span>{% else %}{{ e.type|upper }}{% endif %}</td>
+          <td>{{ e.symbol }}</td>
+          <td>{{ "%.4f"|format(e.shares) if e.shares else "—" }}</td>
+          <td>{{ "$%0.2f"|format(e.price) if e.price else "—" }}</td>
+          <td>{{ "$%0.2f"|format(e.cost) if e.cost else "—" }}</td>
+          <td class="note" style="text-align:left;white-space:normal">{{ e.reason }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="placeholder">No trades today — positions held.</div>
+  {% endif %}
 </section>
 
 {# ---------- 4. Market Heatmap ---------- #}

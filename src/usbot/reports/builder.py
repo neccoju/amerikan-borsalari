@@ -48,6 +48,12 @@ class ReportContext:
     # site/index.html was written, so the email can note "generated but no URL".
     dashboard_url: str = ""
     dashboard_generated: bool = False
+    # Whether this run is a month-end rebalance day (model/self-learning rebuild).
+    is_month_end: bool = False
+    # Transaction journal: today's entries across all sleeves + cost totals.
+    ledger_today: list[dict] = field(default_factory=list)
+    cost_today: float = 0.0
+    cost_total: float = 0.0
     skipped: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
 
@@ -70,6 +76,7 @@ def _build_text(ctx: ReportContext) -> str:
     lines = [
         f"usbot daily report — {ctx.date}",
         f"Market: {ctx.market_status} | Regime: {ctx.regime_label} ({ctx.regime_score:.0f})",
+        f"Month-end rebalance day: {'YES' if ctx.is_month_end else 'no'}",
         "",
     ]
     if ctx.dashboard_url:
@@ -78,6 +85,26 @@ def _build_text(ctx: ReportContext) -> str:
         lines.append("")
     elif ctx.dashboard_generated:
         lines.append("Dashboard generated, but DASHBOARD_URL is not configured yet.")
+        lines.append("")
+    # ---- transaction journal (today) ----
+    if ctx.ledger_today:
+        lines.append(f"Transaction ledger — {ctx.date} "
+                     f"(today's cost ${ctx.cost_today:,.2f} · lifetime ${ctx.cost_total:,.2f}):")
+        for e in ctx.ledger_today:
+            typ = e.get("type", "")
+            if typ in ("buy", "sell"):
+                lines.append(
+                    f"    [{e['sleeve']}] {typ.upper():4} {e.get('symbol',''):<6} "
+                    f"{e.get('shares',0):.4f} @ ${e.get('price',0):,.2f}  "
+                    f"fee ${e.get('cost',0):.2f}  ({e.get('reason','')})")
+            else:
+                lines.append(
+                    f"    [{e['sleeve']}] {typ.upper()}: {e.get('reason','')}"
+                    + (f"  fee ${e.get('cost',0):.2f}" if e.get('cost') else ""))
+        lines.append("")
+    elif ctx.cost_total:
+        lines.append(f"Transaction ledger: no trades today "
+                     f"(lifetime cost ${ctx.cost_total:,.2f}).")
         lines.append("")
     for pf in ctx.portfolios:
         lines.append(

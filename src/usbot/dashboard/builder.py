@@ -49,6 +49,10 @@ class DashboardData:
     proxy_rows: list[dict] = field(default_factory=list)
     news_highlights: list[dict] = field(default_factory=list)
     news_note: str = ""
+    is_month_end: bool = False
+    ledger_today: list[dict] = field(default_factory=list)
+    cost_today: float = 0.0
+    cost_total: float = 0.0
     llm_review: str = ""
     llm_available: bool = False
     skipped: list[str] = field(default_factory=list)
@@ -78,6 +82,10 @@ def build_dashboard(ctx, prices: dict, fundamentals: dict, scores, store,
         regime_label=ctx.regime_label, regime_score=ctx.regime_score,
         portfolios=ctx.portfolios, news_highlights=ctx.news_highlights,
         news_note=ctx.news_note, skipped=ctx.skipped, errors=ctx.errors,
+        is_month_end=getattr(ctx, "is_month_end", False),
+        ledger_today=getattr(ctx, "ledger_today", []),
+        cost_today=getattr(ctx, "cost_today", 0.0),
+        cost_total=getattr(ctx, "cost_total", 0.0),
         llm_review=llm_review, llm_available=llm_available, email_status=email_status,
         generated_at=dt.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
     )
