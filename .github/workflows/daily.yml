@@ -84,6 +84,9 @@ jobs:
           SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
           EMAIL_TO: ${{ secrets.EMAIL_TO }}
           EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          # Public dashboard link shown in the email (optional; e.g. GitHub Pages
+          # URL). If unset, the email notes the dashboard URL is not configured.
+          DASHBOARD_URL: ${{ secrets.DASHBOARD_URL }}
           # SEC EDGAR identity (no key). Falls back to a generic UA if unset.
           EDGAR_IDENTITY: ${{ secrets.EDGAR_IDENTITY }}
         run: |
