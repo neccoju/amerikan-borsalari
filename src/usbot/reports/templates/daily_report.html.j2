@@ -25,6 +25,23 @@
   <h1>usbot — Daily Report</h1>
   <div class="muted">{{ ctx.date }} · Market: {{ ctx.market_status }}</div>
 
+  {% if ctx.dashboard_url %}
+  <div style="margin:14px 0;">
+    <a href="{{ ctx.dashboard_url }}"
+       style="display:inline-block; background:#137333; color:#ffffff; text-decoration:none;
+              font-weight:600; font-size:14px; padding:10px 18px; border-radius:6px;">
+      📊 Open Dashboard
+    </a>
+    <div class="muted" style="margin-top:6px;">
+      Or copy this link: <a href="{{ ctx.dashboard_url }}">{{ ctx.dashboard_url }}</a>
+    </div>
+  </div>
+  {% elif ctx.dashboard_generated %}
+  <div class="muted" style="margin:14px 0;">
+    Dashboard generated, but DASHBOARD_URL is not configured yet.
+  </div>
+  {% endif %}
+
   <h2>Macro Regime</h2>
   <span class="regime {{ ctx.regime_label }}">{{ ctx.regime_label|upper }}</span>
   <span class="muted">score {{ "%.0f"|format(ctx.regime_score) }}</span>

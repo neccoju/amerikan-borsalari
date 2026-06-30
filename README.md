@@ -79,6 +79,7 @@ pytest
 | `SMTP_USERNAME` / `SMTP_APP_PASSWORD` | email report | report logged to disk |
 | `EMAIL_TO` / `EMAIL_FROM` | email addresses | defaults to SMTP user |
 | `CRON_SECRET_TOKEN` | verify external trigger | check skipped |
+| `DASHBOARD_URL` | "Open Dashboard" link in the email | email notes it's unset |
 
 > Never commit real keys. `.env` is git-ignored; `.env.example` lists names only.
 
@@ -117,6 +118,32 @@ automatically on each real run; it's served at
 `https://<owner>.github.io/<repo>/`. Until Pages is enabled the deploy step is a
 soft no-op — the dashboard is always available from the run's **`dashboard`
 artifact** regardless.
+
+### Dashboard link in daily email
+
+The daily email can carry an **"Open Dashboard"** button straight to your
+published dashboard. The link is never hard-coded — it comes from the optional
+`DASHBOARD_URL` secret/env var.
+
+1. **Enable GitHub Pages** (see above) so the dashboard gets a public URL,
+   typically `https://<github_username>.github.io/<repo_name>/`.
+2. **Add the `DASHBOARD_URL` secret** with that URL:
+   - GitHub: **Settings → Secrets and variables → Actions → New repository
+     secret** → name `DASHBOARD_URL`, value e.g.
+     `https://neccoju.github.io/amerikan-borsalari/`.
+   - Local dev: put `DASHBOARD_URL=...` in your `.env`.
+
+How it shows up in the email:
+
+- **`DASHBOARD_URL` set** → HTML email shows a green **"📊 Open Dashboard"**
+  button (plus a copyable link); the plain-text part shows
+  `Open Dashboard: <url>`.
+- **`DASHBOARD_URL` not set** → the email still sends normally and simply notes:
+  *"Dashboard generated, but DASHBOARD_URL is not configured yet."*
+
+The dashboard is always built **before** the email is sent, so the link points
+at a freshly generated page. The build is wrapped so a dashboard failure can
+never block the email.
 
 ---
 

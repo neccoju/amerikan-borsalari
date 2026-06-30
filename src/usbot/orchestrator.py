@@ -209,6 +209,7 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
                 llm_review=review.text if review.ran else "",
                 llm_available=provider.available,
                 out_path=dcfg.get("out_path", "site/index.html"))
+            ctx.dashboard_generated = True
     except Exception as exc:  # noqa: BLE001 - dashboard is optional, must never crash the run
         log.warning("Dashboard build skipped: %s", exc)
         ctx.skipped.append(f"dashboard: {exc}")
@@ -530,6 +531,9 @@ def scores_cfg_weight(settings: Settings, portfolio: str, factor: str) -> float:
 
 
 def _emit(secrets: Secrets, settings: Settings, ctx: ReportContext, dry: bool) -> None:
+    # Surface the published-dashboard link in the email (never hard-coded; comes
+    # from the optional DASHBOARD_URL secret). Empty -> the report shows a note.
+    ctx.dashboard_url = secrets.get("DASHBOARD_URL", "") or ""
     html, text = build_report(ctx)
     save_report(text, html, out_dir="reports", date=ctx.date)
     log.info("\n%s", text)
