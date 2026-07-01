@@ -3,7 +3,7 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 335.173766,
+      "cash": 130.079825,
       "holdings": [
         {
           "symbol": "AMAT",
@@ -36,6 +36,11 @@
           "avg_cost": 1053.27002
         },
         {
+          "symbol": "MYRG",
+          "shares": 0.4396233,
+          "avg_cost": 463.109985
+        },
+        {
           "symbol": "VICR",
           "shares": 0.33940236,
           "avg_cost": 379.779999
@@ -56,9 +61,14 @@
           "date": "2026-06-30",
           "total_value": 1619.23,
           "cash": 335.17
+        },
+        {
+          "date": "2026-07-01",
+          "total_value": 1563.19,
+          "cash": 130.08
         }
       ],
-      "last_decision_date": "2026-06-30",
+      "last_decision_date": "2026-07-01",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -94,9 +104,20 @@
           "price": 89.809998,
           "cost": 1.5,
           "reason": "entry(score=81)"
+        },
+        {
+          "date": "2026-07-01",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "MYRG",
+          "shares": 0.4396233,
+          "price": 463.109985,
+          "cost": 1.5,
+          "reason": "entry(score=80)"
         }
       ],
-      "updated_at": "2026-06-30T20:32:48Z"
+      "updated_at": "2026-07-01T20:33:13Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -189,6 +210,11 @@
           "date": "2026-06-30",
           "total_value": 1007.5,
           "cash": 705.25
+        },
+        {
+          "date": "2026-07-01",
+          "total_value": 989.01,
+          "cash": 705.25
         }
       ],
       "last_decision_date": null,
@@ -207,7 +233,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-06-30T20:32:48Z"
+      "updated_at": "2026-07-01T20:33:13Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -300,6 +326,11 @@
           "date": "2026-06-30",
           "total_value": 994.29,
           "cash": 745.72
+        },
+        {
+          "date": "2026-07-01",
+          "total_value": 981.13,
+          "cash": 745.72
         }
       ],
       "last_decision_date": null,
@@ -318,7 +349,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-06-30T20:32:48Z"
+      "updated_at": "2026-07-01T20:33:13Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -411,6 +442,11 @@
           "date": "2026-06-30",
           "total_value": 1016.46,
           "cash": 731.85
+        },
+        {
+          "date": "2026-07-01",
+          "total_value": 1000.39,
+          "cash": 731.85
         }
       ],
       "last_decision_date": null,
@@ -429,7 +465,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-06-30T20:32:48Z"
+      "updated_at": "2026-07-01T20:33:13Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -521,6 +557,11 @@
         {
           "date": "2026-06-30",
           "total_value": 1018.17,
+          "cash": 712.72
+        },
+        {
+          "date": "2026-07-01",
+          "total_value": 1000.92,
           "cash": 712.72
         }
       ],
@@ -3568,7 +3609,7 @@
           "reason": "Paper rebuild with learned weights (fundamental:0.33, technical:0.27, macro:0.16, news:0.13)"
         }
       ],
-      "updated_at": "2026-06-30T20:32:48Z"
+      "updated_at": "2026-07-01T20:33:13Z"
     }
   }
 }
