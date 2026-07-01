@@ -20,6 +20,7 @@ class PortfolioReport:
     cash: float
     daily_pl: float
     total_pl: float
+    equity: float = 0.0                                 # value held in shares (= total - cash)
     holdings: list[dict] = field(default_factory=list)  # {symbol, weight, value}
     actions: list[str] = field(default_factory=list)
 
@@ -54,6 +55,9 @@ class ReportContext:
     ledger_today: list[dict] = field(default_factory=list)
     cost_today: float = 0.0
     cost_total: float = 0.0
+    # Symbols yfinance returned no data for (delisted/renamed/illiquid/hiccup);
+    # tracked separately from real errors so they don't look alarming.
+    data_gaps: list[str] = field(default_factory=list)
     skipped: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
 
@@ -108,8 +112,9 @@ def _build_text(ctx: ReportContext) -> str:
         lines.append("")
     for pf in ctx.portfolios:
         lines.append(
-            f"[{pf.name}] value=${pf.total_value:,.2f} cash=${pf.cash:,.2f} "
-            f"daily={pf.daily_pl:+.2f} total={pf.total_pl:+.2f}"
+            f"[{pf.name}] total=${pf.total_value:,.2f} "
+            f"(in shares ${pf.equity:,.2f} + cash ${pf.cash:,.2f}) "
+            f"daily={pf.daily_pl:+.2f} total_pl={pf.total_pl:+.2f}"
         )
         for h in pf.holdings[:12]:
             shares = h.get("shares", 0.0)
@@ -156,6 +161,12 @@ def _build_text(ctx: ReportContext) -> str:
         lines.append(f"LLM: {ctx.llm_note}")
     if ctx.skipped:
         lines.append("Skipped: " + "; ".join(ctx.skipped))
+    if ctx.data_gaps:
+        preview = ", ".join(ctx.data_gaps[:15])
+        more = f" (+{len(ctx.data_gaps) - 15} more)" if len(ctx.data_gaps) > 15 else ""
+        lines.append(f"Data gaps: {len(ctx.data_gaps)} symbols had no price data, "
+                     f"skipped (normal — delisted/renamed/illiquid or a data hiccup): "
+                     f"{preview}{more}")
     if ctx.errors:
         lines.append("Data/API errors: " + "; ".join(ctx.errors[:10]))
     lines.append("")
