@@ -187,7 +187,7 @@
         <span class="value sm">${{ "{:,.0f}".format(p.total_value) }}</span>
       </div>
       <div class="note" style="margin:4px 0">
-        cash ${{ "{:,.0f}".format(p.cash) }} ·
+        in shares ${{ "{:,.0f}".format(p.equity) }} · cash ${{ "{:,.0f}".format(p.cash) }} ·
         <span class="{{ 'pos' if p.daily_pl > 0 else 'neg' if p.daily_pl < 0 else 'flat' }}">day {{ "{:+,.2f}".format(p.daily_pl) }}</span> ·
         <span class="{{ 'pos' if p.total_pl > 0 else 'neg' if p.total_pl < 0 else 'flat' }}">total {{ "{:+,.2f}".format(p.total_pl) }}</span>
       </div>
@@ -394,6 +394,15 @@
       {% else %}<div class="note">None.</div>{% endif %}
     </div>
   </div>
+  {% if d.data_gaps %}
+  <div class="card" style="margin-top:12px;">
+    <div class="label">Price data gaps ({{ d.data_gaps|length }})</div>
+    <div class="note">These tickers returned no price data and were skipped this run —
+      normal (delisted/renamed/illiquid, or a transient yfinance miss); scored names
+      are unaffected.</div>
+    <div class="note" style="margin-top:6px;">{{ d.data_gaps[:40]|join(", ") }}{% if d.data_gaps|length > 40 %} …{% endif %}</div>
+  </div>
+  {% endif %}
 </section>
 
 <footer>

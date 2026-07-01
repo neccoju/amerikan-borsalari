@@ -55,10 +55,11 @@
   {% for pf in ctx.portfolios %}
   <h2>{{ pf.name }}</h2>
   <div>
-    Value: <b>${{ "{:,.2f}".format(pf.total_value) }}</b> ·
-    Cash: ${{ "{:,.2f}".format(pf.cash) }} ·
+    Total value: <b>${{ "{:,.2f}".format(pf.total_value) }}</b> ·
+    In shares: <b>${{ "{:,.2f}".format(pf.equity) }}</b> ·
+    Cash: <b>${{ "{:,.2f}".format(pf.cash) }}</b> ·
     Daily: <span class="{{ 'pos' if pf.daily_pl >= 0 else 'neg' }}">{{ "%+.2f"|format(pf.daily_pl) }}</span> ·
-    Total: <span class="{{ 'pos' if pf.total_pl >= 0 else 'neg' }}">{{ "%+.2f"|format(pf.total_pl) }}</span>
+    Total P/L: <span class="{{ 'pos' if pf.total_pl >= 0 else 'neg' }}">{{ "%+.2f"|format(pf.total_pl) }}</span>
   </div>
   {% if pf.holdings %}
   <table>
@@ -166,6 +167,14 @@
   {% if ctx.skipped %}
   <h2>Skipped Modules</h2>
   <div class="warn">{% for s in ctx.skipped %}<div>· {{ s }}</div>{% endfor %}</div>
+  {% endif %}
+
+  {% if ctx.data_gaps %}
+  <h2>Data Gaps</h2>
+  <div class="muted">{{ ctx.data_gaps|length }} symbol(s) had no price data and were
+    skipped this run — this is normal (delisted/renamed/illiquid tickers, or a
+    transient yfinance miss) and does not affect scored names:
+    {{ ctx.data_gaps[:20]|join(", ") }}{% if ctx.data_gaps|length > 20 %} …{% endif %}</div>
   {% endif %}
 
   {% if ctx.errors %}

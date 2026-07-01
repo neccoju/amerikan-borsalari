@@ -40,23 +40,32 @@ def compute_model_targets(ptype: str, scores: pd.Series, sectors: dict[str, str]
 
 
 def rebalance_to_targets(state: PortfolioState, target_weights: dict[str, float],
-                         prices: dict[str, float], txn_cost: float = 0.0) -> int:
+                         prices: dict[str, float], txn_cost: float = 0.0) -> list[dict]:
     """Rebalance ``state`` in place to ``target_weights`` at current prices.
 
     Liquidates current holdings to cash (at current prices), then buys the target
     weights using the *current total value* so gains compound. Fractional shares;
-    fill price recorded as the current price. Returns the number of trades.
+    fill price recorded as the current price.
+
+    Returns an itemised trade list ``[{side, symbol, shares, price, cost}]``: a
+    BUY at the fill price for every new target position, and a SELL at the current
+    price for every name dropped from the book (a genuine exit).
     """
     total = state.total_value(prices)
+    old = dict(state.holdings)                 # snapshot before liquidation
     n_trades = len(state.holdings)
     state.holdings.clear()
     # apply sell-side costs (0 for model sleeves)
     state.cash = total - n_trades * txn_cost
     invest = state.cash
+    trades: list[dict] = []
 
     if not target_weights:
         log.warning("[%s] no eligible names; holding 100%% cash", state.name)
-        return n_trades
+        for sym, h in old.items():
+            trades.append({"side": "sell", "symbol": sym, "shares": h.shares,
+                           "price": float(prices.get(sym, h.avg_cost)), "cost": txn_cost})
+        return trades
 
     for sym, w in target_weights.items():
         price = prices.get(sym)
@@ -68,10 +77,16 @@ def rebalance_to_targets(state: PortfolioState, target_weights: dict[str, float]
             continue
         state.holdings[sym] = Holding(symbol=sym, shares=shares, avg_cost=price)
         state.cash -= alloc + txn_cost
-        n_trades += 1
-    log.info("[%s] rebalanced into %d names at real prices, cash=%.2f",
-             state.name, len(state.holdings), state.cash)
-    return n_trades
+        trades.append({"side": "buy", "symbol": sym, "shares": shares,
+                       "price": float(price), "cost": txn_cost})
+    # record exits (held before, absent from the new book) at the current price
+    for sym, h in old.items():
+        if sym not in state.holdings:
+            trades.append({"side": "sell", "symbol": sym, "shares": h.shares,
+                           "price": float(prices.get(sym, h.avg_cost)), "cost": txn_cost})
+    log.info("[%s] rebalanced into %d names at real prices, cash=%.2f (%d trades)",
+             state.name, len(state.holdings), state.cash, len(trades))
+    return trades
 
 
 def build_model_portfolio(name: str, ptype: str, scores: pd.Series,

@@ -1,9 +1,9 @@
 """Transaction journal: helpers, store persistence, and surfacing in email + dashboard."""
 from __future__ import annotations
 
-from usbot.portfolio import (PortfolioState, PortfolioStore, entries_on, rebalance_row,
-                             total_cost, trade_row)
-from usbot.reports.builder import ReportContext, build_report
+from usbot.portfolio import (Holding, PortfolioState, PortfolioStore, entries_on, rebalance_row,
+                             rebalance_to_targets, total_cost, trade_row)
+from usbot.reports.builder import PortfolioReport, ReportContext, build_report
 
 
 # ---- helpers ---------------------------------------------------------------
@@ -97,3 +97,46 @@ def test_email_handles_no_trades():
     assert "No trades today" in html
     assert "Month-end rebalance: <b>no</b>" in html
     assert "no trades today" in text.lower()
+
+
+# ---- itemised rebalance trades (all sleeves, with prices) ------------------
+def test_rebalance_returns_itemised_buys_and_exit_sells():
+    st = PortfolioState(name="Growth", ptype="growth", cash=0.0, starting_capital=1000.0)
+    st.holdings["AAA"] = Holding("AAA", 1.0, 100.0)   # dropped -> exit sell
+    st.holdings["BBB"] = Holding("BBB", 2.0, 50.0)    # carries over -> buy at new price
+    prices = {"AAA": 110.0, "BBB": 55.0, "CCC": 10.0}
+    trades = rebalance_to_targets(st, {"BBB": 0.5, "CCC": 0.5}, prices, txn_cost=0.0)
+    buys = {t["symbol"]: t for t in trades if t["side"] == "buy"}
+    sells = {t["symbol"]: t for t in trades if t["side"] == "sell"}
+    assert set(buys) == {"BBB", "CCC"}                 # every new position is a buy
+    assert buys["CCC"]["price"] == 10.0                 # fill price recorded
+    assert set(sells) == {"AAA"}                        # only genuine exits sold
+    assert sells["AAA"]["price"] == 110.0               # exit at current price
+
+
+def test_rebalance_all_names_have_prices_for_ledger():
+    st = PortfolioState(name="Balanced", ptype="balanced", cash=1000.0, starting_capital=1000.0)
+    trades = rebalance_to_targets(st, {"MU": 0.6, "LLY": 0.4},
+                                  {"MU": 100.0, "LLY": 200.0}, txn_cost=0.0)
+    assert all(t["price"] > 0 and t["shares"] > 0 for t in trades)
+    assert {t["symbol"] for t in trades} == {"MU", "LLY"}
+
+
+# ---- portfolio value breakdown (total / in-shares / cash) ------------------
+def test_email_shows_value_breakdown():
+    pf = PortfolioReport(name="Growth", total_value=1011.28, cash=250.0, equity=761.28,
+                         daily_pl=1.4, total_pl=11.28)
+    html, text = build_report(_ctx(portfolios=[pf]))
+    assert "In shares:" in html and "761.28" in html and "250.00" in html
+    assert "in shares $761.28" in text and "cash $250.00" in text
+
+
+# ---- data gaps separated from real errors ----------------------------------
+def test_email_data_gaps_summarised_not_errors():
+    gaps = [f"SYM{i}" for i in range(12)]
+    html, text = build_report(_ctx(data_gaps=gaps, errors=["fred: real failure"]))
+    # gaps are a benign summary, not in the error list
+    assert "Data Gaps" in html and "12 symbol" in html
+    assert "12 symbols had no price data" in text
+    # a genuine error still shows in its own section
+    assert "real failure" in html and "real failure" in text
