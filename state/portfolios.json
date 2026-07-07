@@ -3,17 +3,17 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 87.657344,
+      "cash": 167.100173,
       "holdings": [
-        {
-          "symbol": "AMAT",
-          "shares": 0.19053861,
-          "avg_cost": 646.940002
-        },
         {
           "symbol": "AMD",
           "shares": 0.25747707,
           "avg_cost": 508.890015
+        },
+        {
+          "symbol": "BNY",
+          "shares": 1.41354978,
+          "avg_cost": 152.910004
         },
         {
           "symbol": "C",
@@ -31,11 +31,6 @@
           "avg_cost": 1152.040039
         },
         {
-          "symbol": "KLIC",
-          "shares": 1.18405074,
-          "avg_cost": 121.330002
-        },
-        {
           "symbol": "LLY",
           "shares": 0.19618422,
           "avg_cost": 1223.339966
@@ -44,11 +39,6 @@
           "symbol": "MU",
           "shares": 0.07821494,
           "avg_cost": 1053.27002
-        },
-        {
-          "symbol": "VSAT",
-          "shares": 0.9199637,
-          "avg_cost": 89.809998
         }
       ],
       "history": [
@@ -76,9 +66,14 @@
           "date": "2026-07-06",
           "total_value": 1510.18,
           "cash": 87.66
+        },
+        {
+          "date": "2026-07-07",
+          "total_value": 1434.97,
+          "cash": 167.1
         }
       ],
-      "last_decision_date": "2026-07-06",
+      "last_decision_date": "2026-07-07",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -169,9 +164,53 @@
           "price": 1152.040039,
           "cost": 1.5,
           "reason": "entry(score=83)"
+        },
+        {
+          "date": "2026-07-07",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "AMAT",
+          "shares": 0.19053861,
+          "price": 554.5,
+          "cost": 1.5,
+          "reason": "stop_loss(-14.3%)"
+        },
+        {
+          "date": "2026-07-07",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "KLIC",
+          "shares": 1.18405074,
+          "price": 105.870003,
+          "cost": 1.5,
+          "reason": "stop_loss(-12.7%)"
+        },
+        {
+          "date": "2026-07-07",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "VSAT",
+          "shares": 0.9199637,
+          "price": 76.720001,
+          "cost": 1.5,
+          "reason": "stop_loss(-14.6%)"
+        },
+        {
+          "date": "2026-07-07",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "BNY",
+          "shares": 1.41354978,
+          "price": 152.910004,
+          "cost": 1.5,
+          "reason": "entry(score=80)"
         }
       ],
-      "updated_at": "2026-07-06T20:34:09Z"
+      "updated_at": "2026-07-07T20:35:18Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -279,6 +318,11 @@
           "date": "2026-07-06",
           "total_value": 967.09,
           "cash": 705.25
+        },
+        {
+          "date": "2026-07-07",
+          "total_value": 952.68,
+          "cash": 705.25
         }
       ],
       "last_decision_date": null,
@@ -297,7 +341,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-06T20:34:09Z"
+      "updated_at": "2026-07-07T20:35:18Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -405,6 +449,11 @@
           "date": "2026-07-06",
           "total_value": 960.83,
           "cash": 745.72
+        },
+        {
+          "date": "2026-07-07",
+          "total_value": 950.07,
+          "cash": 745.72
         }
       ],
       "last_decision_date": null,
@@ -423,7 +472,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-06T20:34:09Z"
+      "updated_at": "2026-07-07T20:35:18Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -531,6 +580,11 @@
           "date": "2026-07-06",
           "total_value": 977.89,
           "cash": 731.85
+        },
+        {
+          "date": "2026-07-07",
+          "total_value": 964.95,
+          "cash": 731.85
         }
       ],
       "last_decision_date": null,
@@ -549,7 +603,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-06T20:34:09Z"
+      "updated_at": "2026-07-07T20:35:18Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -656,6 +710,11 @@
         {
           "date": "2026-07-06",
           "total_value": 976.77,
+          "cash": 712.72
+        },
+        {
+          "date": "2026-07-07",
+          "total_value": 962.89,
           "cash": 712.72
         }
       ],
@@ -3703,7 +3762,7 @@
           "reason": "Paper rebuild with learned weights (fundamental:0.33, technical:0.27, macro:0.16, news:0.13)"
         }
       ],
-      "updated_at": "2026-07-06T20:34:09Z"
+      "updated_at": "2026-07-07T20:35:18Z"
     }
   }
 }
