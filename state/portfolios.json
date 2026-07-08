@@ -3,7 +3,7 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 167.100173,
+      "cash": 70.200634,
       "holdings": [
         {
           "symbol": "AMD",
@@ -29,6 +29,11 @@
           "symbol": "GEV",
           "shares": 0.15551265,
           "avg_cost": 1152.040039
+        },
+        {
+          "symbol": "ILMN",
+          "shares": 0.50795772,
+          "avg_cost": 187.809998
         },
         {
           "symbol": "LLY",
@@ -71,9 +76,14 @@
           "date": "2026-07-07",
           "total_value": 1434.97,
           "cash": 167.1
+        },
+        {
+          "date": "2026-07-08",
+          "total_value": 1432.51,
+          "cash": 70.2
         }
       ],
-      "last_decision_date": "2026-07-07",
+      "last_decision_date": "2026-07-08",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -208,9 +218,20 @@
           "price": 152.910004,
           "cost": 1.5,
           "reason": "entry(score=80)"
+        },
+        {
+          "date": "2026-07-08",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "ILMN",
+          "shares": 0.50795772,
+          "price": 187.809998,
+          "cost": 1.5,
+          "reason": "entry(score=79)"
         }
       ],
-      "updated_at": "2026-07-07T20:35:18Z"
+      "updated_at": "2026-07-08T20:33:35Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -323,6 +344,11 @@
           "date": "2026-07-07",
           "total_value": 952.68,
           "cash": 705.25
+        },
+        {
+          "date": "2026-07-08",
+          "total_value": 962.38,
+          "cash": 705.25
         }
       ],
       "last_decision_date": null,
@@ -341,7 +367,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-07T20:35:18Z"
+      "updated_at": "2026-07-08T20:33:35Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -454,6 +480,11 @@
           "date": "2026-07-07",
           "total_value": 950.07,
           "cash": 745.72
+        },
+        {
+          "date": "2026-07-08",
+          "total_value": 958.45,
+          "cash": 745.72
         }
       ],
       "last_decision_date": null,
@@ -472,7 +503,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-07T20:35:18Z"
+      "updated_at": "2026-07-08T20:33:35Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -585,6 +616,11 @@
           "date": "2026-07-07",
           "total_value": 964.95,
           "cash": 731.85
+        },
+        {
+          "date": "2026-07-08",
+          "total_value": 974.03,
+          "cash": 731.85
         }
       ],
       "last_decision_date": null,
@@ -603,7 +639,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-07T20:35:18Z"
+      "updated_at": "2026-07-08T20:33:35Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -715,6 +751,11 @@
         {
           "date": "2026-07-07",
           "total_value": 962.89,
+          "cash": 712.72
+        },
+        {
+          "date": "2026-07-08",
+          "total_value": 972.63,
           "cash": 712.72
         }
       ],
@@ -3762,7 +3803,7 @@
           "reason": "Paper rebuild with learned weights (fundamental:0.33, technical:0.27, macro:0.16, news:0.13)"
         }
       ],
-      "updated_at": "2026-07-07T20:35:18Z"
+      "updated_at": "2026-07-08T20:33:35Z"
     }
   }
 }
