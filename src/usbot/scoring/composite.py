@@ -64,14 +64,20 @@ def score_universe(indicators: dict[str, dict], fundamentals: dict[str, dict],
     fund = fundamental_scores(fundamentals, scoring_cfg.get("fundamental", {}))
     regime = compute_macro_regime(macro, scoring_cfg.get("macro", {}))
 
-    enabled = list(scoring_cfg.get("enabled_factors", ["macro", "fundamental", "technical"]))
+    enabled = list(scoring_cfg.get("enabled_factors", ["fundamental", "technical"]))
     for factor in extra:
         if factor not in enabled:
             enabled.append(factor)
+    # Macro is market-wide — identical for every name, so it cannot change the
+    # cross-sectional RANKING; as a composite component it only shifted all
+    # scores with the regime, silently making fixed entry thresholds (Active's
+    # ENTRY_SCORE) regime-dependent. It is therefore excluded from the composite.
+    # The regime acts where it belongs instead: as an exposure multiplier at
+    # rebalance time and as the Active sleeve's deployment ceiling.
+    enabled = [f for f in enabled if f != "macro"]
     factor_table = scoring_cfg.get("factors", {})
 
-    # Macro is market-wide; applied as a per-name constant component.
-    macro_component = regime.score
+    macro_component = regime.score  # kept in factor_scores for reporting only
 
     symbols = sorted(set(tech.index) | set(fund.index))
     sub_values = {

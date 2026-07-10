@@ -40,7 +40,11 @@ factors:
 
 # Which factors have a live data source in the current phase. Others -> weight
 # is redistributed proportionally among the live ones at runtime.
-enabled_factors: ["macro", "fundamental", "technical"]
+# NOTE: "macro" is intentionally NOT a composite factor — being identical for
+# every name it cannot change the ranking; the regime instead scales portfolio
+# exposure at rebalance (risk_on 100% / neutral 80% / risk_off 50% invested)
+# and gates the Active sleeve's deployment ceiling.
+enabled_factors: ["fundamental", "technical"]
 
 technical:
   rsi_period: 14

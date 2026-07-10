@@ -83,7 +83,9 @@ llm:
   max_adjustment_points: 5.0     # LLM can only nudge composite by +/- this
 
 learning:                        # adaptive Self-Learning sleeve (paper only)
-  learning_rate: 0.5             # online exponential-gradient step
+  learning_rate: 0.25            # online exponential-gradient step (conservative)
+  ic_ema_alpha: 0.4              # EMA over stored monthly ICs; updates follow
+                                 # persistent factor efficacy, not one lucky month
   min_weight: 0.05               # per-factor weight bounds
   max_weight: 0.50
 

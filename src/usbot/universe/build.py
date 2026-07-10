@@ -3,11 +3,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-import pandas as pd
 
 from ..utils.logging import get_logger
-from .sp500 import get_sp500
-from .sp1500 import get_sp400, get_sp600
+from .sp500 import get_sp500_constituents
+from .sp1500 import get_sp400_constituents, get_sp600_constituents
 from .watchlist import get_etfs, get_watchlist
 
 log = get_logger(__name__)
@@ -19,6 +18,9 @@ class Universe:
     etfs: list[str] = field(default_factory=list)           # benchmark/defensive
     watchlist: set[str] = field(default_factory=set)        # relaxed-filter names
     dropped: dict[str, str] = field(default_factory=dict)   # symbol -> reason
+    # GICS sector per symbol from the constituent tables (full coverage, free);
+    # used for sector caps + the dashboard treemap instead of yfinance .info.
+    sectors: dict[str, str] = field(default_factory=dict)
 
     @property
     def all_symbols(self) -> list[str]:
@@ -31,12 +33,17 @@ def build_universe(settings: dict) -> Universe:
     source = ucfg.get("source", "sp500")
 
     candidates: list[str] = []
+    sectors: dict[str, str] = {}
     # sp500 | sp1500 | broad | watchlist | both
     if source in ("sp500", "sp1500", "broad", "both"):
-        candidates += get_sp500(dynamic=True)
+        syms, secs = get_sp500_constituents(dynamic=True)
+        candidates += syms
+        sectors.update(secs)
     if source in ("sp1500", "broad"):
-        candidates += get_sp400(dynamic=True)
-        candidates += get_sp600(dynamic=True)
+        for getter in (get_sp400_constituents, get_sp600_constituents):
+            syms, secs = getter(dynamic=True)
+            candidates += syms
+            sectors.update(secs)
     watch = get_watchlist() if ucfg.get("include_watchlist", True) else []
     if source in ("watchlist", "both") or ucfg.get("include_watchlist", True):
         candidates += watch
@@ -49,12 +56,14 @@ def build_universe(settings: dict) -> Universe:
         if s not in seen:
             seen.add(s)
             ordered.append(s)
-    log.info("Universe '%s': %d candidate symbols", source, len(ordered))
+    log.info("Universe '%s': %d candidate symbols (%d with GICS sector)",
+             source, len(ordered), len(sectors))
 
     return Universe(
         symbols=ordered,
         etfs=get_etfs(),
         watchlist=set(watch),
+        sectors=sectors,
     )
 
 

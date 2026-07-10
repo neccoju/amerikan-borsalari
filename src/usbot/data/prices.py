@@ -45,6 +45,7 @@ def _download(symbols: list[str], period_days: int) -> pd.DataFrame:
         period=f"{period_days}d",
         interval="1d",
         auto_adjust=False,
+        actions=True,   # include Dividends / Stock Splits columns (same batch call)
         group_by="ticker",
         threads=True,
         progress=False,
@@ -64,9 +65,11 @@ def _extract_single(df: pd.DataFrame, sym: str, multi: bool) -> pd.DataFrame | N
             columns={
                 "Open": "open", "High": "high", "Low": "low",
                 "Close": "close", "Adj Close": "adj_close", "Volume": "volume",
+                "Dividends": "dividends", "Stock Splits": "splits",
             }
         )
-        keep = [c for c in ["open", "high", "low", "close", "adj_close", "volume"] if c in sub]
+        keep = [c for c in ["open", "high", "low", "close", "adj_close", "volume",
+                            "dividends", "splits"] if c in sub]
         return sub[keep]
     except Exception:  # noqa: BLE001
         return None
