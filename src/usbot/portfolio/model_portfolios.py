@@ -96,7 +96,8 @@ def rebalance_to_targets(state: PortfolioState, target_weights: dict[str, float]
             held.avg_cost = (cur_shares * held.avg_cost + delta * price) / new_shares
             held.shares = new_shares
         else:
-            state.holdings[sym] = Holding(symbol=sym, shares=delta, avg_cost=price)
+            state.holdings[sym] = Holding(symbol=sym, shares=delta, avg_cost=price,
+                                          high_water=price)
         trades.append({"side": "buy", "symbol": sym, "shares": delta,
                        "price": price, "cost": txn_cost})
 

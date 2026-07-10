@@ -70,6 +70,12 @@ class PortfolioStore:
         except Exception as exc:  # noqa: BLE001
             log.warning("Could not migrate legacy active state: %s", exc)
 
+    # ---- public read access -------------------------------------------------
+    def all_portfolios(self) -> dict:
+        """Raw per-sleeve records ({name: {ptype, cash, holdings, history, ledger,
+        meta, ...}}) for reporting/archiving. Read-only by convention."""
+        return dict(self._all().get("portfolios", {}))
+
     # ---- load -------------------------------------------------------------
     def load(self, name: str, starting_capital: float, txn_cost: float = 0.0) -> LoadedState:
         p = self._all()["portfolios"].get(name)
@@ -87,7 +93,8 @@ class PortfolioStore:
         )
         for h in p.get("holdings", []):
             state.holdings[h["symbol"]] = Holding(
-                symbol=h["symbol"], shares=float(h["shares"]), avg_cost=float(h["avg_cost"]))
+                symbol=h["symbol"], shares=float(h["shares"]), avg_cost=float(h["avg_cost"]),
+                high_water=float(h.get("high_water", 0.0)))
         return LoadedState(
             state=state,
             history=list(p.get("history", [])),
@@ -117,7 +124,8 @@ class PortfolioStore:
             "starting_capital": state.starting_capital,
             "cash": round(state.cash, 6),
             "holdings": [
-                {"symbol": s, "shares": round(h.shares, 8), "avg_cost": round(h.avg_cost, 6)}
+                {"symbol": s, "shares": round(h.shares, 8), "avg_cost": round(h.avg_cost, 6),
+                 "high_water": round(h.high_water, 6)}
                 for s, h in sorted(state.holdings.items())
             ],
             "history": history,

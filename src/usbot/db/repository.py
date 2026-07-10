@@ -107,6 +107,21 @@ class Repository:
             (portfolio_id, date, sym, side, shares, price, cost, reason),
         )
 
+    def replace_trades_for_day(self, portfolio_id: int, date: str,
+                               rows: Iterable[dict]) -> None:
+        """Idempotent daily archive: replace the day's journal rows for a sleeve.
+
+        Trades carry no unique key, so re-running the same day would duplicate
+        plain inserts; delete-then-insert keeps the archive exact per (sleeve, day).
+        """
+        self.conn.execute("DELETE FROM trades WHERE portfolio_id=? AND date=?",
+                          (portfolio_id, date))
+        for r in rows:
+            self.save_trade(portfolio_id, date, r.get("symbol", ""),
+                            r.get("side", r.get("type", "")), float(r.get("shares", 0.0)),
+                            float(r.get("price", 0.0)), float(r.get("cost", 0.0)),
+                            r.get("reason", ""))
+
     def save_position(self, portfolio_id: int, date: str, sym: str, shares: float,
                       avg_cost: float, weight: float) -> None:
         self.conn.execute(

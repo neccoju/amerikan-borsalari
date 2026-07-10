@@ -77,14 +77,27 @@ def _extract_single(df: pd.DataFrame, sym: str, multi: bool) -> pd.DataFrame | N
 
 def fetch_prices(symbols: list[str], period_days: int = 420,
                  cache: Cache | None = None) -> PriceData:
-    """Fetch daily OHLCV for ``symbols``. Cache-first, fail-soft per symbol."""
+    """Fetch daily OHLCV for ``symbols``. Cache-first, fail-soft per symbol.
+
+    Cache validity is close-aware, not just TTL-based: a frame cached BEFORE a
+    market close carries intraday bars for that session, so once the close has
+    passed it is refetched even inside the TTL. Otherwise a second run on the
+    same day would value the books on stale intraday prices.
+    """
+    import time as _time
+
+    from ..utils.dates import close_crossed
+
     out = PriceData()
     to_download: list[str] = []
 
     if cache is not None:
+        now = _time.time()
         for sym in symbols:
-            if cache.fresh(f"px_{sym}"):
-                cached = cache.load(f"px_{sym}")
+            key = f"px_{sym}"
+            mt = cache.mtime(key)
+            if cache.fresh(key) and mt is not None and not close_crossed(mt, now):
+                cached = cache.load(key)
                 if cached is not None and not cached.empty:
                     out.history[sym] = cached
                     continue

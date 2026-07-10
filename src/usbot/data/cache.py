@@ -25,6 +25,12 @@ class Cache:
         p = self._path(key)
         return p.exists() and (time.time() - p.stat().st_mtime) < self.ttl_seconds
 
+    def mtime(self, key: str) -> float | None:
+        """Epoch mtime of the cached entry, or None if absent. Lets callers apply
+        content-aware validity rules (e.g. 'no market close since caching')."""
+        p = self._path(key)
+        return p.stat().st_mtime if p.exists() else None
+
     def load(self, key: str) -> pd.DataFrame | None:
         p = self._path(key)
         if not p.exists():

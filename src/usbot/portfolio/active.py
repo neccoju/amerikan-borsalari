@@ -41,7 +41,7 @@ class ActiveDecision:
 class ActivePortfolio:
     ENTRY_SCORE = 62.0          # composite threshold to consider a buy
     EXIT_SCORE = 48.0           # composite below this -> exit
-    STOP_DRAWDOWN = -0.12       # per-position stop from avg cost
+    STOP_DRAWDOWN = -0.12       # hard stop: per-position drawdown from avg cost
     MIN_POSITION_NOTIONAL = 80.0  # avoid tiny positions where $1.5 fee bites
     # Expected per-trade benefit proxy: how far score is above entry, mapped to $.
     EDGE_PER_SCORE_POINT = 0.004  # 0.4% expected edge per point above threshold
@@ -51,6 +51,11 @@ class ActivePortfolio:
         self.max_position = risk_cfg.get("max_position", 0.15)
         self.max_daily_turnover = risk_cfg.get("max_daily_turnover", 0.25)
         self.min_edge_after_cost = risk_cfg.get("min_expected_edge_after_cost", 0.0)
+        # Trailing stop: exit when price falls this far from the position's
+        # high-water mark. Protects accrued gains, which the avg-cost hard stop
+        # cannot — a +30% winner can round-trip all the way to -12% before
+        # STOP_DRAWDOWN reacts.
+        self.trail_drawdown = float(risk_cfg.get("trail_drawdown", -0.15))
         self.txn_cost = txn_cost
         self.min_cash_buffer_pct = min_cash_buffer_pct
         self.initial_deploy_pct = initial_deploy_pct
@@ -85,8 +90,11 @@ class ActivePortfolio:
             price = prices.get(sym)
             if not price or price <= 0:
                 continue
+            # ratchet the high-water mark (persisted) before the exit checks
+            h.high_water = max(h.high_water, h.avg_cost, float(price))
             score = float(scores.get(sym, 0.0))
             ret = price / h.avg_cost - 1.0 if h.avg_cost else 0.0
+            from_high = price / h.high_water - 1.0 if h.high_water else 0.0
             below_ma = indicators.get(sym, {}).get("above_sma50") == 0.0
             reason = None
             if regime_label == "risk_off":
@@ -95,6 +103,8 @@ class ActivePortfolio:
                 reason = f"score_decay({score:.0f})"
             elif ret <= self.STOP_DRAWDOWN:
                 reason = f"stop_loss({ret:.1%})"
+            elif from_high <= self.trail_drawdown:
+                reason = f"trailing_stop({from_high:.1%} from high)"
             elif below_ma:
                 reason = "technical_breakdown(<50DMA)"
             if reason:
@@ -140,7 +150,8 @@ class ActivePortfolio:
             if benefit < self.txn_cost + self.min_edge_after_cost:
                 continue
             shares = size / price
-            state.holdings[sym] = Holding(symbol=sym, shares=shares, avg_cost=price)
+            state.holdings[sym] = Holding(symbol=sym, shares=shares, avg_cost=price,
+                                          high_water=price)
             state.cash -= size + self.txn_cost
             deployable -= size
             turnover_used += size
