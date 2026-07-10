@@ -55,3 +55,19 @@ def compute_factor_ic(prev_scores: dict[str, dict[str, float]] | dict[str, pd.Se
         corr = joined["score"].rank().corr(joined["ret"].rank())
         ic[factor] = float(corr) if pd.notna(corr) else 0.0
     return ic
+
+
+def smooth_ic(ic_sequence: list[dict[str, float]], alpha: float = 0.4) -> dict[str, float]:
+    """EMA over a chronological sequence of per-factor ICs (oldest first).
+
+    A single monthly IC is one noisy observation — updating weights on it alone
+    lets one lucky month swing the allocation. Smoothing over the stored IC
+    history makes the adaptive sleeve follow persistent factor efficacy instead
+    of chasing noise. Factors absent from an entry keep their running value.
+    """
+    out: dict[str, float] = {}
+    for ic in ic_sequence:
+        for f, v in (ic or {}).items():
+            v = float(v)
+            out[f] = v if f not in out else alpha * v + (1 - alpha) * out[f]
+    return out

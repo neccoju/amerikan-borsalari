@@ -4,6 +4,7 @@ from .active import ActivePortfolio
 from .self_learning import SelfLearningPortfolio
 from .store import PortfolioStore, performance_from_history
 from .ledger import trade_row, rebalance_row, total_cost, entries_on
+from .corporate_actions import apply_corporate_actions
 
 __all__ = [
     "Holding",
@@ -19,4 +20,5 @@ __all__ = [
     "rebalance_row",
     "total_cost",
     "entries_on",
+    "apply_corporate_actions",
 ]

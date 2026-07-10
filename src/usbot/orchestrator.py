@@ -95,7 +95,20 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
 
     # ---- fundamentals (best-effort, only for survivors) + market-cap filter ----
     fundamentals = fetch_fundamentals(universe.symbols)
-    sectors = {s: m.get("sector", "Unknown") for s, m in fundamentals.items()}
+    # Sector: Wikipedia GICS (full coverage, consistent naming) wins; yfinance
+    # .info fills only what the constituent tables don't cover (e.g. watchlist).
+    sectors = {s: m["sector"] for s, m in fundamentals.items() if m.get("sector")}
+    sectors.update(universe.sectors)
+    # Beta: realized beta vs SPY from price history covers every symbol; yfinance
+    # beta (when present) is kept. This makes the defensive low-beta filter real.
+    from .indicators.technical import realized_betas
+
+    for sym, b in realized_betas(pdata.history, bench="SPY").items():
+        fundamentals.setdefault(sym, {}).setdefault("beta", b)
+    # Backfill merged sector into fundamentals so downstream consumers (dashboard
+    # treemap, defensive filter) see one consistent naming scheme.
+    for sym, sec in sectors.items():
+        fundamentals.setdefault(sym, {})["sector"] = sec
     universe = apply_marketcap_filter(universe, fundamentals, settings.settings)
 
     # ---- indicators ----
@@ -154,9 +167,9 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     store = PortfolioStore(pcfg.get("state_path", "state/portfolios.json"))
 
     _build_model_sleeves(ctx, store, scores, prices, sectors, fundamentals, pcfg, rcfg,
-                         ctx.date, is_month_end)
+                         ctx.date, is_month_end, price_history=pdata.history)
     _run_active(ctx, store, scores, prices, indicators, pcfg, rcfg, ctx.date,
-                force=force)
+                force=force, price_history=pdata.history)
     _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, ctx.date,
                          is_month_end, price_history=pdata.history)
 
@@ -388,10 +401,10 @@ def _holding_rows(state, prices: dict[str, float]) -> list[dict]:
 
 
 def _build_model_sleeves(ctx, store, scores, prices, sectors, fundamentals, pcfg, rcfg,
-                         date: str, is_month_end: bool) -> None:
+                         date: str, is_month_end: bool, price_history: dict | None = None) -> None:
     """Model sleeves hold real positions; rebalance at month-end, hold otherwise."""
-    from .portfolio import (compute_model_targets, performance_from_history, rebalance_to_targets,
-                            trade_row)
+    from .portfolio import (apply_corporate_actions, compute_model_targets,
+                            performance_from_history, rebalance_to_targets, trade_row)
 
     capital = float(pcfg.get("model_capital", 1000.0))
     for display, key in [("Growth", "growth"), ("Defensive", "defensive"),
@@ -401,13 +414,30 @@ def _build_model_sleeves(ctx, store, scores, prices, sectors, fundamentals, pcfg
         comp = scores.composite.get(key, pd.Series(dtype=float))
         ledger = list(loaded.ledger)
 
+        # dividends / splits since the last processed date (before any rebalance,
+        # so credited cash is reinvested at month-end)
+        last_date = loaded.history[-1]["date"] if loaded.history else None
+        ca_rows, ca_notes = apply_corporate_actions(state, price_history or {},
+                                                    last_date, display, date)
+        ledger.extend(ca_rows)
+
         # Rebalance on month-end, on the first ever run, or if somehow empty.
-        do_rebalance = is_month_end or not loaded.existed or not state.holdings
+        # Idempotent: a second run on the same day (manual re-run, force) must
+        # not re-fill the book at different prices or duplicate ledger rows.
+        already_rebalanced_today = loaded.last_rebalance_date == date
+        do_rebalance = ((is_month_end and not already_rebalanced_today)
+                        or not loaded.existed or not state.holdings)
         if do_rebalance:
             targets = compute_model_targets(key, comp, sectors, fundamentals, rcfg.get(key, {}))
+            # Regime scales gross exposure (risk_on 100% / neutral 80% / risk_off
+            # 50% invested); the remainder stays in cash until conditions improve.
+            mult = scores.macro.exposure_multiplier if scores.macro else 1.0
+            if mult < 1.0:
+                targets = {s: w * mult for s, w in targets.items()}
             trades = rebalance_to_targets(state, targets, prices, txn_cost=0.0)
             reason = "Initial allocation" if not loaded.existed else "Month-end rebalance"
-            action = f"{reason} into {len(state.holdings)} names at live prices"
+            action = (f"{reason} into {len(state.holdings)} names at live prices "
+                      f"(exposure {mult:.0%}, {ctx.regime_label})")
             for t in trades:
                 ledger.append(trade_row(date, display, t["side"], t["symbol"], t["shares"],
                                         t["price"], t["cost"], reason))
@@ -421,20 +451,25 @@ def _build_model_sleeves(ctx, store, scores, prices, sectors, fundamentals, pcfg
         ctx.portfolios.append(PortfolioReport(
             name=display, total_value=tv, cash=state.cash, equity=tv - state.cash,
             daily_pl=perf["daily_pl"], total_pl=perf["total_pl"],
-            holdings=_holding_rows(state, prices), actions=[action],
+            holdings=_holding_rows(state, prices), actions=[action] + ca_notes,
         ))
 
 
 def _run_active(ctx, store, scores, prices, indicators, pcfg, rcfg, date: str,
-                *, force: bool = False) -> None:
+                *, force: bool = False, price_history: dict | None = None) -> None:
     """Active sleeve: loads prior book, decides once/day, accumulates over time."""
-    from .portfolio import ActivePortfolio, performance_from_history, trade_row
+    from .portfolio import (ActivePortfolio, apply_corporate_actions,
+                            performance_from_history, trade_row)
 
     capital = float(pcfg.get("active_capital", 1600.0))
     txn_cost = float(pcfg.get("active_txn_cost", 1.5))
     loaded = store.load("Active Entry", capital, txn_cost)
     state = loaded.state
     ledger = list(loaded.ledger)
+    last_date = loaded.history[-1]["date"] if loaded.history else None
+    ca_rows, ca_notes = apply_corporate_actions(state, price_history or {},
+                                                last_date, "Active Entry", date)
+    ledger.extend(ca_rows)
 
     active = ActivePortfolio(
         risk_cfg=rcfg.get("active", {}),
@@ -445,12 +480,12 @@ def _run_active(ctx, store, scores, prices, indicators, pcfg, rcfg, date: str,
     comp = scores.composite.get("active", pd.Series(dtype=float))
 
     already_decided_today = (loaded.last_decision_date == date) and not force
-    actions: list[str] = []
+    actions: list[str] = list(ca_notes)
     if already_decided_today:
         actions.append("Already decided today — revalue only (no new trades)")
     else:
         decision = active.decide(state, comp, prices, indicators, ctx.regime_label)
-        actions = [f"{t.side.upper()} {t.symbol} ({t.reason})" for t in decision.trades[:10]]
+        actions += [f"{t.side.upper()} {t.symbol} ({t.reason})" for t in decision.trades[:10]]
         actions += decision.notes
         total_cost = sum(t.cost for t in decision.trades)
         if total_cost:
@@ -484,7 +519,8 @@ def _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, da
     static for comparison.
     """
     from .learning import compute_factor_ic, realized_returns, update_weights
-    from .portfolio import performance_from_history, rebalance_to_targets, trade_row
+    from .portfolio import (apply_corporate_actions, performance_from_history,
+                            rebalance_to_targets, trade_row)
     from .portfolio.risk import target_weights_from_scores
 
     name = "Self-Learning (paper)"
@@ -494,6 +530,10 @@ def _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, da
     state = loaded.state
     meta = loaded.meta or {}
     ledger = list(loaded.ledger)
+    last_date = loaded.history[-1]["date"] if loaded.history else None
+    ca_rows, ca_notes = apply_corporate_actions(state, price_history or {},
+                                                last_date, name, date)
+    ledger.extend(ca_rows)
 
     factor_scores = scores.factor_scores or {}
     enabled = [f for f in (scores.enabled_factors or []) if f in factor_scores]
@@ -505,8 +545,10 @@ def _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, da
                for f in enabled}
     weights = _renorm(weights) if weights else dict(static_weights)
 
-    do_rebalance = is_month_end or not loaded.existed or not state.holdings
-    actions: list[str] = []
+    # Idempotent like the model sleeves: never re-learn/re-fill twice in one day.
+    do_rebalance = ((is_month_end and loaded.last_rebalance_date != date)
+                    or not loaded.existed or not state.holdings)
+    actions: list[str] = list(ca_notes)
     weight_history = list(meta.get("weight_history", []))
 
     # ---- monthly learning step (only with a prior snapshot + history) ----
@@ -517,12 +559,19 @@ def _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, da
                                 list({s for v in prev_scores.values() for s in v.index}))
         if len(rets) >= 5 and prev_scores:
             ic = compute_factor_ic(prev_scores, rets)
-            weights = update_weights(weights, ic,
-                                     lr=float(lcfg.get("learning_rate", 0.5)),
+            # Update on an EMA of the stored IC history + this month, not on a
+            # single noisy monthly observation.
+            from .learning import smooth_ic
+
+            past_ics = [h.get("ic", {}) for h in weight_history[-5:]]
+            smoothed = smooth_ic(past_ics + [ic],
+                                 alpha=float(lcfg.get("ic_ema_alpha", 0.4)))
+            weights = update_weights(weights, smoothed,
+                                     lr=float(lcfg.get("learning_rate", 0.25)),
                                      min_w=float(lcfg.get("min_weight", 0.05)),
                                      max_w=float(lcfg.get("max_weight", 0.50)))
-            top_ic = sorted(ic.items(), key=lambda kv: kv[1], reverse=True)
-            actions.append("Learned from IC: " +
+            top_ic = sorted(smoothed.items(), key=lambda kv: kv[1], reverse=True)
+            actions.append("Learned from smoothed IC: " +
                            ", ".join(f"{f}={v:+.2f}" for f, v in top_ic[:4]))
             weight_history.append({"date": date, "weights": {k: round(v, 4)
                                    for k, v in weights.items()},
@@ -536,6 +585,9 @@ def _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, da
             comp = comp.add(factor_scores[f].reindex(symbols).fillna(50.0) * w, fill_value=0.0)
         targets = target_weights_from_scores(comp.dropna(), n=15, max_position=0.12,
                                              sectors=sectors, max_sector=0.30)
+        mult = scores.macro.exposure_multiplier if scores.macro else 1.0
+        if mult < 1.0:
+            targets = {s: w * mult for s, w in targets.items()}
         trades = rebalance_to_targets(state, targets, prices, txn_cost=0.0)
         wtxt = ", ".join(f"{f}:{w:.2f}" for f, w in sorted(weights.items(),
                                                            key=lambda kv: -kv[1])[:4])

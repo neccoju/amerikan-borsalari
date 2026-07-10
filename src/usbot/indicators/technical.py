@@ -81,6 +81,33 @@ def realized_vol(series: pd.Series, window: int = 21) -> float:
     return float(rets.std() * np.sqrt(252))
 
 
+def realized_betas(price_history: dict[str, pd.DataFrame], bench: str = "SPY",
+                   window: int = 252, min_obs: int = 60) -> dict[str, float]:
+    """Realized beta vs ``bench`` from daily close returns (cov/var over ``window``).
+
+    Computable for every symbol with price history — unlike yfinance ``.info``
+    beta, which is rate-limited from CI and covers only a fraction of the
+    universe. Symbols with fewer than ``min_obs`` overlapping returns are omitted.
+    """
+    bench_df = price_history.get(bench)
+    if bench_df is None or bench_df.empty or "close" not in bench_df:
+        return {}
+    bret = bench_df["close"].astype(float).pct_change().dropna().tail(window)
+    bvar = float(bret.var())
+    if bvar <= 0 or len(bret) < min_obs:
+        return {}
+    out: dict[str, float] = {}
+    for sym, df in price_history.items():
+        if sym == bench or df is None or df.empty or "close" not in df:
+            continue
+        r = df["close"].astype(float).pct_change().dropna()
+        joined = pd.concat([r.rename("s"), bret.rename("b")], axis=1).dropna()
+        if len(joined) < min_obs:
+            continue
+        out[sym] = float(joined["s"].cov(joined["b"]) / joined["b"].var())
+    return out
+
+
 def compute_indicators(df: pd.DataFrame, cfg: dict) -> dict:
     """Compute a snapshot of indicators for the most recent bar.
 

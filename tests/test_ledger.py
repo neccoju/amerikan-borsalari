@@ -99,19 +99,39 @@ def test_email_handles_no_trades():
     assert "no trades today" in text.lower()
 
 
-# ---- itemised rebalance trades (all sleeves, with prices) ------------------
-def test_rebalance_returns_itemised_buys_and_exit_sells():
+# ---- itemised delta-rebalance trades (all sleeves, with prices) ------------
+def test_rebalance_trades_deltas_and_preserves_avg_cost():
     st = PortfolioState(name="Growth", ptype="growth", cash=0.0, starting_capital=1000.0)
     st.holdings["AAA"] = Holding("AAA", 1.0, 100.0)   # dropped -> exit sell
-    st.holdings["BBB"] = Holding("BBB", 2.0, 50.0)    # carries over -> buy at new price
+    st.holdings["BBB"] = Holding("BBB", 2.0, 50.0)    # target == current -> NO trade
     prices = {"AAA": 110.0, "BBB": 55.0, "CCC": 10.0}
+    # total = 110 + 110 = 220; targets: BBB 50% (=110 -> 2.0 sh, unchanged), CCC 50%
     trades = rebalance_to_targets(st, {"BBB": 0.5, "CCC": 0.5}, prices, txn_cost=0.0)
     buys = {t["symbol"]: t for t in trades if t["side"] == "buy"}
     sells = {t["symbol"]: t for t in trades if t["side"] == "sell"}
-    assert set(buys) == {"BBB", "CCC"}                 # every new position is a buy
-    assert buys["CCC"]["price"] == 10.0                 # fill price recorded
-    assert set(sells) == {"AAA"}                        # only genuine exits sold
-    assert sells["AAA"]["price"] == 110.0               # exit at current price
+    assert set(buys) == {"CCC"}                        # only the actual delta is traded
+    assert buys["CCC"]["price"] == 10.0                # fill price recorded
+    assert set(sells) == {"AAA"}                       # genuine exit at current price
+    assert sells["AAA"]["price"] == 110.0
+    # carried name keeps its original cost basis -> P/L stays meaningful
+    assert st.holdings["BBB"].avg_cost == 50.0
+    assert abs(st.holdings["BBB"].shares - 2.0) < 1e-9
+    # book is fully invested per targets; cash ~0
+    assert abs(st.cash) < 1e-6
+
+
+def test_rebalance_add_uses_weighted_average_cost():
+    st = PortfolioState(name="Balanced", ptype="balanced", cash=100.0, starting_capital=200.0)
+    st.holdings["MU"] = Holding("MU", 1.0, 100.0)      # 1 sh @ $100
+    prices = {"MU": 100.0}
+    # total = 200 -> target 100% MU = 2 sh -> buy 1 more at $100... use a different
+    # price to see the averaging: reprice MU to 120 (total 220, target 220/120)
+    prices = {"MU": 120.0}
+    trades = rebalance_to_targets(st, {"MU": 1.0}, prices, txn_cost=0.0)
+    assert len(trades) == 1 and trades[0]["side"] == "buy"
+    h = st.holdings["MU"]
+    # bought (220/120 - 1) ≈ 0.8333 sh @120; avg = (1*100 + 0.8333*120)/1.8333 ≈ 109.09
+    assert 100.0 < h.avg_cost < 120.0
 
 
 def test_rebalance_all_names_have_prices_for_ledger():

@@ -40,51 +40,67 @@ def compute_model_targets(ptype: str, scores: pd.Series, sectors: dict[str, str]
 
 
 def rebalance_to_targets(state: PortfolioState, target_weights: dict[str, float],
-                         prices: dict[str, float], txn_cost: float = 0.0) -> list[dict]:
-    """Rebalance ``state`` in place to ``target_weights`` at current prices.
+                         prices: dict[str, float], txn_cost: float = 0.0,
+                         min_trade_value: float = 1.0) -> list[dict]:
+    """Rebalance ``state`` in place to ``target_weights`` by trading DELTAS.
 
-    Liquidates current holdings to cash (at current prices), then buys the target
-    weights using the *current total value* so gains compound. Fractional shares;
-    fill price recorded as the current price.
+    Only the difference between current and target shares is traded, at current
+    prices. Carried names keep their cost basis (weighted-average ``avg_cost`` on
+    adds, unchanged on trims), so per-holding P/L stays meaningful across
+    rebalances instead of resetting monthly. Trades below ``min_trade_value``
+    dollars are skipped as dust. Fractional shares.
 
-    Returns an itemised trade list ``[{side, symbol, shares, price, cost}]``: a
-    BUY at the fill price for every new target position, and a SELL at the current
-    price for every name dropped from the book (a genuine exit).
+    Returns an itemised trade list ``[{side, symbol, shares, price, cost}]``
+    where ``shares`` is the traded delta (buys positive, sells the amount sold).
     """
     total = state.total_value(prices)
-    old = dict(state.holdings)                 # snapshot before liquidation
-    n_trades = len(state.holdings)
-    state.holdings.clear()
-    # apply sell-side costs (0 for model sleeves)
-    state.cash = total - n_trades * txn_cost
-    invest = state.cash
     trades: list[dict] = []
+    if total <= 0:
+        return trades
 
     if not target_weights:
         log.warning("[%s] no eligible names; holding 100%% cash", state.name)
-        for sym, h in old.items():
-            trades.append({"side": "sell", "symbol": sym, "shares": h.shares,
-                           "price": float(prices.get(sym, h.avg_cost)), "cost": txn_cost})
-        return trades
 
-    for sym, w in target_weights.items():
-        price = prices.get(sym)
-        if not price or price <= 0:
+    # target dollar allocation per symbol (missing/invalid price -> untradable)
+    target_alloc = {sym: total * w for sym, w in target_weights.items()
+                    if prices.get(sym) and prices[sym] > 0}
+
+    # ---- sells first (exits + trims) so their cash funds the buys ----
+    for sym in list(state.holdings.keys()):
+        h = state.holdings[sym]
+        price = float(prices.get(sym, h.avg_cost))
+        target_shares = target_alloc.get(sym, 0.0) / price if price > 0 else 0.0
+        delta = h.shares - target_shares
+        if delta * price < min_trade_value:
             continue
-        alloc = invest * w
-        shares = alloc / price
-        if shares <= 0:
+        state.cash += delta * price - txn_cost
+        trades.append({"side": "sell", "symbol": sym, "shares": delta,
+                       "price": price, "cost": txn_cost})
+        if target_shares <= 0:
+            del state.holdings[sym]           # genuine exit
+        else:
+            h.shares = target_shares          # trim; avg_cost unchanged
+
+    # ---- buys (new positions + adds) ----
+    for sym, alloc in target_alloc.items():
+        price = float(prices[sym])
+        held = state.holdings.get(sym)
+        cur_shares = held.shares if held else 0.0
+        delta = alloc / price - cur_shares
+        if delta * price < min_trade_value:
             continue
-        state.holdings[sym] = Holding(symbol=sym, shares=shares, avg_cost=price)
-        state.cash -= alloc + txn_cost
-        trades.append({"side": "buy", "symbol": sym, "shares": shares,
-                       "price": float(price), "cost": txn_cost})
-    # record exits (held before, absent from the new book) at the current price
-    for sym, h in old.items():
-        if sym not in state.holdings:
-            trades.append({"side": "sell", "symbol": sym, "shares": h.shares,
-                           "price": float(prices.get(sym, h.avg_cost)), "cost": txn_cost})
-    log.info("[%s] rebalanced into %d names at real prices, cash=%.2f (%d trades)",
+        state.cash -= delta * price + txn_cost
+        if held:
+            # weighted-average cost basis on adds
+            new_shares = cur_shares + delta
+            held.avg_cost = (cur_shares * held.avg_cost + delta * price) / new_shares
+            held.shares = new_shares
+        else:
+            state.holdings[sym] = Holding(symbol=sym, shares=delta, avg_cost=price)
+        trades.append({"side": "buy", "symbol": sym, "shares": delta,
+                       "price": price, "cost": txn_cost})
+
+    log.info("[%s] delta-rebalanced to %d names, cash=%.2f (%d trades)",
              state.name, len(state.holdings), state.cash, len(trades))
     return trades
 

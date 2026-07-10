@@ -39,22 +39,48 @@ SP500_SEED: list[str] = [
 ]
 
 
-def get_sp500(dynamic: bool = True) -> list[str]:
-    """Return S&P 500 symbols. Dynamic fetch with static fallback."""
-    if dynamic:
-        try:
-            from .wiki import read_wikipedia_tables
+def _fetch_sp500() -> tuple[list[str], dict[str, str]]:
+    """One Wikipedia fetch -> (symbols, {symbol: GICS sector}). Raises on failure."""
+    from .wiki import read_wikipedia_tables
 
-            tables = read_wikipedia_tables(
-                "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
-            )
-            syms = tables[0]["Symbol"].astype(str).str.replace(".", "-", regex=False).tolist()
-            syms = [s.strip().upper() for s in syms if s and s != "nan"]
+    tbl = read_wikipedia_tables(
+        "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies")[0]
+    syms_raw = tbl["Symbol"].astype(str).str.replace(".", "-", regex=False)
+    syms = [s.strip().upper() for s in syms_raw if s and s != "nan"]
+    sectors: dict[str, str] = {}
+    sec_col = next((c for c in tbl.columns if "GICS Sector" in str(c)), None)
+    if sec_col is not None:
+        for sym, sec in zip(syms_raw, tbl[sec_col].astype(str)):
+            sym = sym.strip().upper()
+            if sym and sec and sec != "nan":
+                sectors[sym] = sec.strip()
+    return syms, sectors
+
+
+_CACHE: tuple[list[str], dict[str, str]] | None = None
+
+
+def get_sp500_constituents(dynamic: bool = True) -> tuple[list[str], dict[str, str]]:
+    """(symbols, {symbol: GICS sector}); the sector map is the free, full-coverage
+    source used for sector caps + the dashboard treemap (yfinance .info is
+    rate-limited from CI and covers only a fraction of the universe)."""
+    global _CACHE
+    if dynamic:
+        if _CACHE is not None:
+            return _CACHE
+        try:
+            syms, sectors = _fetch_sp500()
             if len(syms) >= 400:
                 log.info("Loaded %d S&P 500 symbols dynamically", len(syms))
-                return syms
+                _CACHE = (syms, sectors)
+                return _CACHE
             log.warning("Dynamic S&P 500 list too short (%d); using seed", len(syms))
         except Exception as exc:  # noqa: BLE001
             log.warning("Dynamic S&P 500 fetch failed (%s); using static seed", exc)
     log.info("Using static S&P 500 seed (%d symbols)", len(SP500_SEED))
-    return list(SP500_SEED)
+    return list(SP500_SEED), {}
+
+
+def get_sp500(dynamic: bool = True) -> list[str]:
+    """Return S&P 500 symbols. Dynamic fetch with static fallback."""
+    return get_sp500_constituents(dynamic)[0]
