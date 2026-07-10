@@ -9,6 +9,9 @@ class Holding:
     symbol: str
     shares: float
     avg_cost: float
+    # Highest price seen while held (persisted); powers the trailing stop.
+    # 0.0 = not yet observed -> treated as max(avg_cost, current price).
+    high_water: float = 0.0
 
     def market_value(self, price: float) -> float:
         return self.shares * price

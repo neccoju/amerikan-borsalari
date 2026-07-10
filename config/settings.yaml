@@ -32,7 +32,9 @@ data:
     tnx: "^TNX"                  # 10Y yield proxy
 
 database:
-  path: "data/usbot.db"
+  # Full trade/snapshot/LLM-review archive. Lives under state/ so the workflow's
+  # commit-back step persists it across ephemeral CI runners (like the JSON book).
+  path: "state/usbot.db"
 
 portfolios:
   model_capital: 1000.0
@@ -51,7 +53,8 @@ risk:
   defensive: { max_position: 0.10, max_sector: 0.25, max_names: 15, max_beta: 0.80 }
   balanced:  { max_position: 0.10, max_sector: 0.28, max_names: 15 }
   active:    { max_position: 0.15, max_sector: 0.35, max_daily_turnover: 0.25,
-               min_expected_edge_after_cost: 0.0 }
+               min_expected_edge_after_cost: 0.0,
+               trail_drawdown: -0.15 }   # exit when 15% below the position's high-water mark
 
 news:
   enabled: true                  # auto-skips if no FINNHUB/ALPHA_VANTAGE key

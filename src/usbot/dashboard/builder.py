@@ -172,7 +172,7 @@ def _perf_series(ctx, store, prices) -> list:
     out = []
     # portfolios (from saved equity history)
     try:
-        loaded = store._all().get("portfolios", {}) if store else {}
+        loaded = store.all_portfolios() if store else {}
     except Exception:  # noqa: BLE001
         loaded = {}
     for name, p in loaded.items():

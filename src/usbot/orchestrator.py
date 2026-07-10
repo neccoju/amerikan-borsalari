@@ -179,6 +179,13 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
 
     if persist:
         store.commit()
+        # SQLite archive: full queryable history of trades + daily snapshots
+        # (the JSON ledger keeps only the most recent rows). Idempotent per day;
+        # best-effort — the archive must never break the run.
+        try:
+            _archive_to_db(ctx, store, settings, ctx.date)
+        except Exception as exc:  # noqa: BLE001
+            log.warning("SQLite archive skipped: %s", exc)
 
     # ---- LLM monthly review ----
     provider = get_provider(secrets)
@@ -213,8 +220,7 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
         try:
             from .db.repository import Repository
 
-            db_path = settings.get("data", {}).get("db_path", "data/usbot.db")
-            with Repository(db_path) as repo:
+            with Repository(_db_path(settings)) as repo:
                 repo.save_llm_review(
                     ctx.date, "monthly", provider.provider, provider.model,
                     review.text if review.ran else "", review.note)
@@ -246,7 +252,7 @@ def _collect_ledger(ctx: ReportContext, store, date: str) -> None:
     today: list[dict] = []
     lifetime = 0.0
     try:
-        sleeves = store._all().get("portfolios", {})
+        sleeves = store.all_portfolios()
     except Exception:  # noqa: BLE001
         sleeves = {}
     for p in sleeves.values():
@@ -259,6 +265,41 @@ def _collect_ledger(ctx: ReportContext, store, date: str) -> None:
     ctx.ledger_today = today
     ctx.cost_today = round(sum(float(e.get("cost", 0.0)) for e in today), 2)
     ctx.cost_total = round(lifetime, 2)
+
+
+def _db_path(settings: Settings) -> str:
+    """Archive DB location. Defaults under state/ so the workflow's commit-back
+    step persists it across ephemeral CI runners, like the JSON book."""
+    return settings.get("database", {}).get("path", "state/usbot.db")
+
+
+def _archive_to_db(ctx: ReportContext, store, settings: Settings, date: str) -> None:
+    """Archive today's journal rows + a daily snapshot per sleeve into SQLite.
+
+    The JSON ledger is capped to recent rows; SQLite keeps the FULL queryable
+    history (trades, dividends, splits, rebalances, equity snapshots).
+    Idempotent per (sleeve, day): journal rows are replaced, snapshots upserted.
+    """
+    from .db.repository import Repository
+    from .portfolio import entries_on
+
+    reports = {p.name: p for p in ctx.portfolios}
+    with Repository(_db_path(settings)) as repo:
+        for name, rec in store.all_portfolios().items():
+            pid = repo.ensure_portfolio(
+                name, rec.get("ptype", ""), float(rec.get("starting_capital", 0.0)),
+                txn_cost=0.0, paper_only=True)
+            repo.replace_trades_for_day(pid, date, entries_on(rec.get("ledger", []), date))
+            rep = reports.get(name)
+            if rep is not None:
+                history = rec.get("history", [])
+                peak = max([float(h.get("total_value", 0.0)) for h in history]
+                           + [rep.total_value]) or 1.0
+                repo.save_snapshot(pid, date, rep.cash, rep.equity, rep.total_value,
+                                   rep.daily_pl, rep.total_pl,
+                                   drawdown=rep.total_value / peak - 1.0)
+        repo.commit()
+    log.info("SQLite archive updated (%s)", _db_path(settings))
 
 
 def _news_targets(prelim, top_n: int) -> list[str]:

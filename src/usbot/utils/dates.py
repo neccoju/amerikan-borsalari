@@ -67,3 +67,41 @@ def market_status(day: dt.date | None = None) -> str:
     if day.weekday() >= 5:
         return "weekend"
     return "holiday"
+
+
+def close_crossed(t0_epoch: float, t1_epoch: float) -> bool:
+    """True if a NYSE session close occurred in ``(t0, t1]`` (epoch seconds).
+
+    Used to invalidate price caches: a frame cached BEFORE a close contains
+    intraday bars for that session, so once the close has passed it must be
+    refetched even if the TTL hasn't expired. Prefers the real calendar
+    (handles half-days); falls back to 16:00 America/New_York on trading days.
+    """
+    if t1_epoch <= t0_epoch:
+        return False
+    d0 = dt.datetime.fromtimestamp(t0_epoch, dt.timezone.utc).date() - dt.timedelta(days=1)
+    d1 = dt.datetime.fromtimestamp(t1_epoch, dt.timezone.utc).date() + dt.timedelta(days=1)
+
+    cal = _nyse_calendar()
+    if cal is not None:
+        try:
+            sched = cal.schedule(start_date=d0.isoformat(), end_date=d1.isoformat())
+            for ts in sched["market_close"]:
+                if t0_epoch < ts.timestamp() <= t1_epoch:
+                    return True
+            return False
+        except Exception as exc:  # noqa: BLE001
+            log.warning("close_crossed calendar lookup failed (%s); using fallback", exc)
+
+    # Fallback: 16:00 New York on each trading day in the window.
+    from zoneinfo import ZoneInfo
+
+    ny = ZoneInfo("America/New_York")
+    day = d0
+    while day <= d1:
+        if is_trading_day(day):
+            close = dt.datetime(day.year, day.month, day.day, 16, 0, tzinfo=ny)
+            if t0_epoch < close.timestamp() <= t1_epoch:
+                return True
+        day += dt.timedelta(days=1)
+    return False
