@@ -154,6 +154,29 @@ class Repository:
         )
         return cur.fetchone()
 
+    # ---- fundamentals cache -------------------------------------------------
+    def load_fundamentals_cache(self, max_age_days: int = 7) -> dict[str, dict]:
+        """{symbol: metrics} for entries fresher than ``max_age_days``."""
+        cutoff = (dt.datetime.utcnow() - dt.timedelta(days=max_age_days)).isoformat()
+        cur = self.conn.execute(
+            "SELECT symbol, payload FROM fundamentals_cache WHERE fetched_at >= ?",
+            (cutoff,))
+        out: dict[str, dict] = {}
+        for row in cur.fetchall():
+            try:
+                out[row["symbol"]] = json.loads(row["payload"])
+            except Exception:  # noqa: BLE001
+                continue
+        return out
+
+    def save_fundamentals_cache(self, sym: str, source: str, metrics: dict) -> None:
+        self.conn.execute(
+            """INSERT INTO fundamentals_cache (symbol, fetched_at, source, payload)
+               VALUES (?,?,?,?)
+               ON CONFLICT(symbol) DO UPDATE SET fetched_at=excluded.fetched_at,
+                   source=excluded.source, payload=excluded.payload""",
+            (sym, dt.datetime.utcnow().isoformat(), source, json.dumps(metrics)))
+
     def save_llm_review(self, date: str, scope: str, provider: str, model: str,
                         output: str, note: str) -> None:
         self.conn.execute(

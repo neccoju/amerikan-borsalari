@@ -24,6 +24,8 @@ class PriceData:
 
     history: dict[str, pd.DataFrame] = field(default_factory=dict)
     errors: list[str] = field(default_factory=list)
+    # Symbols served by the secondary source after the primary batch missed them.
+    fallback_used: list[str] = field(default_factory=list)
 
     def __getitem__(self, sym: str) -> pd.DataFrame:
         return self.history[sym]
@@ -76,8 +78,12 @@ def _extract_single(df: pd.DataFrame, sym: str, multi: bool) -> pd.DataFrame | N
 
 
 def fetch_prices(symbols: list[str], period_days: int = 420,
-                 cache: Cache | None = None) -> PriceData:
+                 cache: Cache | None = None, max_fallback: int = 60) -> PriceData:
     """Fetch daily OHLCV for ``symbols``. Cache-first, fail-soft per symbol.
+
+    Symbols the primary (yfinance) batch misses are retried one-by-one against
+    Stooq (keyless), bounded by ``max_fallback`` to keep runtime sane — gaps are
+    normally a handful of names.
 
     Cache validity is close-aware, not just TTL-based: a frame cached BEFORE a
     market close carries intraday bars for that session, so once the close has
@@ -119,16 +125,36 @@ def fetch_prices(symbols: list[str], period_days: int = 420,
         return out
 
     multi = isinstance(raw.columns, pd.MultiIndex)
+    missing: list[str] = []
     for sym in to_download:
         sub = _extract_single(raw, sym, multi)
         if sub is None or sub.empty:
-            out.errors.append(f"no price data: {sym}")
+            missing.append(sym)
             continue
         out.history[sym] = sub
         if cache is not None:
             cache.save(f"px_{sym}", sub)
-    log.info("Fetched %d/%d symbols (%d errors)",
-             len(out.history), len(symbols), len(out.errors))
+
+    # ---- secondary source (Stooq, keyless) for whatever the batch missed ----
+    if missing:
+        from .stooq import fetch_stooq_daily
+
+        for sym in missing[:max_fallback]:
+            sub = fetch_stooq_daily(sym, period_days)
+            if sub is not None and not sub.empty:
+                out.history[sym] = sub
+                out.fallback_used.append(sym)
+                if cache is not None:
+                    cache.save(f"px_{sym}", sub)
+            else:
+                out.errors.append(f"no price data: {sym}")
+        for sym in missing[max_fallback:]:
+            out.errors.append(f"no price data: {sym}")
+        if out.fallback_used:
+            log.info("Stooq fallback recovered %d/%d missing symbols",
+                     len(out.fallback_used), len(missing))
+    log.info("Fetched %d/%d symbols (%d errors, %d via fallback)",
+             len(out.history), len(symbols), len(out.errors), len(out.fallback_used))
     return out
 
 

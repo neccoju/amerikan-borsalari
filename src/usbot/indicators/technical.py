@@ -74,6 +74,36 @@ def momentum(series: pd.Series, lookback: int) -> float:
     return float(last / past - 1.0)
 
 
+def momentum_12_1(series: pd.Series, lookback: int = 252, skip: int = 21) -> float:
+    """Classic 12-1 momentum: total return over ``lookback`` days EXCLUDING the
+    most recent ``skip`` days (Jegadeesh & Titman 1993). The skipped month
+    removes the short-term reversal effect, the most robust momentum
+    specification across markets and periods."""
+    if len(series) <= lookback:
+        return float("nan")
+    past = series.iloc[-lookback - 1]
+    recent = series.iloc[-skip - 1]
+    if past == 0 or pd.isna(past) or pd.isna(recent):
+        return float("nan")
+    return float(recent / past - 1.0)
+
+
+def risk_adjusted_momentum(series: pd.Series, lookback: int = 252,
+                           skip: int = 21) -> float:
+    """12-1 momentum scaled by realized volatility over the same window —
+    the volatility-managed idea of Barroso & Santa-Clara (2015) applied
+    cross-sectionally: prefer trends earned smoothly over trends earned through
+    violent swings (which precede momentum crashes)."""
+    mom = momentum_12_1(series, lookback, skip)
+    if pd.isna(mom):
+        return float("nan")
+    rets = series.pct_change().dropna().tail(lookback)
+    vol = float(rets.std() * np.sqrt(252)) if len(rets) >= 40 else float("nan")
+    if pd.isna(vol) or vol <= 0:
+        return float("nan")
+    return float(mom / vol)
+
+
 def realized_vol(series: pd.Series, window: int = 21) -> float:
     rets = series.pct_change().dropna().tail(window)
     if len(rets) < 2:
@@ -140,6 +170,10 @@ def compute_indicators(df: pd.DataFrame, cfg: dict) -> dict:
 
     for lb in cfg.get("momentum_lookbacks", [21, 63, 126, 252]):
         out[f"mom_{lb}"] = momentum(close, lb)
+    # Academic momentum variants (Jegadeesh-Titman 12-1; Barroso-Santa-Clara
+    # volatility-scaled). Used by the technical score when present.
+    out["mom_12_1"] = momentum_12_1(close)
+    out["risk_adj_mom"] = risk_adjusted_momentum(close)
 
     # Drawdown from 52-week (252d) high
     hi = close.tail(252).max()

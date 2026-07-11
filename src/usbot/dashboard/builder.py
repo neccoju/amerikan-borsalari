@@ -54,6 +54,7 @@ class DashboardData:
     cost_today: float = 0.0
     cost_total: float = 0.0
     data_gaps: list[str] = field(default_factory=list)
+    data_quality: dict = field(default_factory=dict)
     llm_review: str = ""
     llm_available: bool = False
     skipped: list[str] = field(default_factory=list)
@@ -88,6 +89,7 @@ def build_dashboard(ctx, prices: dict, fundamentals: dict, scores, store,
         cost_today=getattr(ctx, "cost_today", 0.0),
         cost_total=getattr(ctx, "cost_total", 0.0),
         data_gaps=getattr(ctx, "data_gaps", []),
+        data_quality=getattr(ctx, "data_quality", {}),
         llm_review=llm_review, llm_available=llm_available, email_status=email_status,
         generated_at=dt.datetime.utcnow().strftime("%Y-%m-%d %H:%M UTC"),
     )

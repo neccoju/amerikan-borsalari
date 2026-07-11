@@ -394,6 +394,24 @@
       {% else %}<div class="note">None.</div>{% endif %}
     </div>
   </div>
+  {% if d.data_quality %}
+  <div class="card" style="margin-top:12px;">
+    <div class="label">Source coverage</div>
+    <div class="note">
+      Prices: <strong>{{ d.data_quality.get('price_ok', 0) }}/{{ d.data_quality.get('price_total', 0) }}</strong>
+      {% set fb = d.data_quality.get('price_fallback', []) %}
+      {% if fb %} · {{ fb|length }} recovered via Stooq fallback ({{ fb[:10]|join(", ") }}){% endif %}
+      · Fundamentals: <strong>{{ d.data_quality.get('fund_ok', 0) }}/{{ d.data_quality.get('fund_total', 0) }}</strong>
+      (cache {{ d.data_quality.get('fund_cache', 0) }}, yfinance {{ d.data_quality.get('fund_yf', 0) }},
+       finnhub {{ d.data_quality.get('fund_finnhub', 0) }})
+    </div>
+    {% set flags = d.data_quality.get('quality_flags', []) %}
+    {% if flags %}
+    <div class="note" style="color:var(--amber);margin-top:4px;">
+      Quality flags: {{ flags[:12]|join("; ") }}</div>
+    {% endif %}
+  </div>
+  {% endif %}
   {% if d.data_gaps %}
   <div class="card" style="margin-top:12px;">
     <div class="label">Price data gaps ({{ d.data_gaps|length }})</div>

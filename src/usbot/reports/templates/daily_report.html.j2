@@ -169,6 +169,23 @@
   <div class="warn">{% for s in ctx.skipped %}<div>· {{ s }}</div>{% endfor %}</div>
   {% endif %}
 
+  {% if ctx.data_quality %}
+  <h2>Data Quality</h2>
+  <div class="muted">
+    Prices: <b>{{ ctx.data_quality.get('price_ok', 0) }}/{{ ctx.data_quality.get('price_total', 0) }}</b>
+    {% set fb = ctx.data_quality.get('price_fallback', []) %}
+    {% if fb %}· {{ fb|length }} recovered via Stooq fallback ({{ fb[:8]|join(", ") }}){% endif %}
+    · Fundamentals: <b>{{ ctx.data_quality.get('fund_ok', 0) }}/{{ ctx.data_quality.get('fund_total', 0) }}</b>
+    (cache {{ ctx.data_quality.get('fund_cache', 0) }},
+     yfinance {{ ctx.data_quality.get('fund_yf', 0) }},
+     finnhub {{ ctx.data_quality.get('fund_finnhub', 0) }})
+  </div>
+  {% set flags = ctx.data_quality.get('quality_flags', []) %}
+  {% if flags %}
+  <div class="warn" style="margin-top:4px;">Quality flags: {{ flags[:10]|join("; ") }}</div>
+  {% endif %}
+  {% endif %}
+
   {% if ctx.data_gaps %}
   <h2>Data Gaps</h2>
   <div class="muted">{{ ctx.data_gaps|length }} symbol(s) had no price data and were
