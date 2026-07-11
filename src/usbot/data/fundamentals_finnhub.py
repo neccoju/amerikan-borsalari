@@ -50,13 +50,16 @@ def _one(session, sym: str, api_key: str, timeout: float) -> dict[str, float]:
 
 
 def fetch_finnhub_fundamentals(symbols: list[str], api_key: str | None,
-                               max_calls: int = 150, rate_per_min: int = 55,
+                               max_calls: int = 150, rate_per_min: int = 40,
                                timeout: float = 10.0) -> dict[str, dict[str, float]]:
-    """Best-effort metrics for up to ``max_calls`` symbols (free tier ~60/min).
+    """Best-effort metrics for up to ``max_calls`` symbols.
 
-    Per-symbol isolation; empty dict when the key is missing. With the 7-day
-    fundamentals cache the bounded budget converges to full universe coverage
-    over a few runs and then just rolls the weekly refresh.
+    ``rate_per_min`` is deliberately below the free tier's 60/min so the news
+    module (same shared API quota, runs right after) doesn't start its first
+    minute rate-limited. Per-symbol isolation; empty dict when the key is
+    missing. With the 7-day fundamentals cache the bounded budget converges to
+    full universe coverage over a few runs and then just rolls the weekly
+    refresh.
     """
     if not api_key or not symbols:
         return {}
