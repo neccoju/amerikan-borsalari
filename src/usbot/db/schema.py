@@ -130,4 +130,13 @@ CREATE TABLE IF NOT EXISTS factor_weights (
     source     TEXT,
     PRIMARY KEY (portfolio, asof_date, factor, source)
 );
+
+-- Slow-moving fundamentals cache (quarterly data; refreshed on a rolling TTL).
+-- Lets rate-limited sources converge to full universe coverage across runs.
+CREATE TABLE IF NOT EXISTS fundamentals_cache (
+    symbol      TEXT PRIMARY KEY,
+    fetched_at  TEXT,
+    source      TEXT,
+    payload     TEXT
+);
 """

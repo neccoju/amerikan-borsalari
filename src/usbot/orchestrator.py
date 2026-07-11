@@ -79,8 +79,9 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     log.info("Universe candidates: %d equities + %d ETFs",
              len(universe.symbols), len(universe.etfs))
 
-    # ---- prices ----
-    pdata = fetch_prices(universe.all_symbols, period_days=history_days, cache=cache)
+    # ---- prices (yfinance batch + Stooq fallback for whatever it misses) ----
+    pdata = fetch_prices(universe.all_symbols, period_days=history_days, cache=cache,
+                         max_fallback=int(scfg.get("price_fallback_max", 60)))
     # "no price data: SYM" is a benign per-symbol gap (delisted/renamed/illiquid or
     # a transient yfinance miss) — track those separately so they don't look like
     # real failures. Everything else stays in errors.
@@ -90,11 +91,22 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
         else:
             ctx.errors.append(e)
 
+    # ---- price quality gates (stale series / suspect prints / corrupt rows) ----
+    from .data.quality import validate_prices
+
+    quality = validate_prices(pdata.history)
+    ctx.data_quality = {
+        "price_total": len(universe.all_symbols),
+        "price_ok": len(pdata.history),
+        "price_fallback": list(pdata.fallback_used),
+        "quality_flags": quality.flags,
+    }
+
     # ---- price/volume pre-filter + cap (bounds the later fundamentals fetch) ----
     universe = apply_price_liquidity_filter(universe, pdata, settings.settings)
 
-    # ---- fundamentals (best-effort, only for survivors) + market-cap filter ----
-    fundamentals = fetch_fundamentals(universe.symbols)
+    # ---- fundamentals: 7-day cache -> yfinance -> Finnhub (bounded) ----
+    fundamentals = _fetch_fundamentals_layered(universe.symbols, settings, secrets, ctx)
     # Sector: Wikipedia GICS (full coverage, consistent naming) wins; yfinance
     # .info fills only what the constituent tables don't cover (e.g. watchlist).
     sectors = {s: m["sector"] for s, m in fundamentals.items() if m.get("sector")}
@@ -271,6 +283,71 @@ def _db_path(settings: Settings) -> str:
     """Archive DB location. Defaults under state/ so the workflow's commit-back
     step persists it across ephemeral CI runners, like the JSON book."""
     return settings.get("database", {}).get("path", "state/usbot.db")
+
+
+def _fetch_fundamentals_layered(symbols: list[str], settings: Settings,
+                                secrets: Secrets, ctx: ReportContext) -> dict:
+    """Fundamentals with layered sourcing + a rolling cache.
+
+    Order: (1) SQLite cache entries fresher than ``fundamentals_ttl_days`` —
+    fundamentals are quarterly data, a weekly refresh loses nothing; (2) yfinance
+    for stale/missing names (rate-limited from CI, covers what it can); (3) a
+    bounded Finnhub budget for what yfinance missed. Because the cache persists
+    across runs (committed back with state/), coverage converges to the full
+    universe within a few runs and then just rolls the weekly refresh.
+    """
+    fcfg = settings.get("data", {})
+    ttl_days = int(fcfg.get("fundamentals_ttl_days", 7))
+    fh_budget = int(fcfg.get("fundamentals_finnhub_max", 150))
+
+    cached: dict[str, dict] = {}
+    repo = None
+    try:
+        from .db.repository import Repository
+
+        repo = Repository(_db_path(settings))
+        cached = repo.load_fundamentals_cache(max_age_days=ttl_days)
+    except Exception as exc:  # noqa: BLE001
+        log.warning("fundamentals cache unavailable: %s", exc)
+
+    want = set(symbols)
+    fundamentals = {s: dict(m) for s, m in cached.items() if s in want}
+    stale = [s for s in symbols if s not in fundamentals]
+
+    yf_new = fetch_fundamentals(stale) if stale else {}
+    fundamentals.update(yf_new)
+
+    still = [s for s in stale if s not in fundamentals]
+    fh_new = {}
+    if still:
+        from .data.fundamentals_finnhub import fetch_finnhub_fundamentals
+
+        fh_new = fetch_finnhub_fundamentals(still, secrets.get("FINNHUB_API_KEY"),
+                                            max_calls=fh_budget)
+        fundamentals.update(fh_new)
+
+    if repo is not None:
+        try:
+            for sym, m in yf_new.items():
+                repo.save_fundamentals_cache(sym, "yfinance", m)
+            for sym, m in fh_new.items():
+                repo.save_fundamentals_cache(sym, "finnhub", m)
+            repo.commit()
+            repo.close()
+        except Exception as exc:  # noqa: BLE001
+            log.warning("fundamentals cache write failed: %s", exc)
+
+    ctx.data_quality.update({
+        "fund_total": len(symbols),
+        "fund_ok": sum(1 for s in symbols if s in fundamentals),
+        "fund_cache": sum(1 for s in symbols if s in cached),
+        "fund_yf": len(yf_new),
+        "fund_finnhub": len(fh_new),
+    })
+    log.info("Fundamentals coverage: %d/%d (cache %d, yfinance %d, finnhub %d)",
+             ctx.data_quality["fund_ok"], len(symbols),
+             ctx.data_quality["fund_cache"], len(yf_new), len(fh_new))
+    return fundamentals
 
 
 def _archive_to_db(ctx: ReportContext, store, settings: Settings, date: str) -> None:

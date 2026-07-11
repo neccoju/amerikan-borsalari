@@ -58,6 +58,9 @@ class ReportContext:
     # Symbols yfinance returned no data for (delisted/renamed/illiquid/hiccup);
     # tracked separately from real errors so they don't look alarming.
     data_gaps: list[str] = field(default_factory=list)
+    # Coverage + quality stats: price_total/ok/fallback, fund_total/ok/cache/
+    # yf/finnhub, quality_flags (stale/suspect/corrupt series).
+    data_quality: dict = field(default_factory=dict)
     skipped: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
 
@@ -161,6 +164,18 @@ def _build_text(ctx: ReportContext) -> str:
         lines.append(f"LLM: {ctx.llm_note}")
     if ctx.skipped:
         lines.append("Skipped: " + "; ".join(ctx.skipped))
+    if ctx.data_quality:
+        q = ctx.data_quality
+        fb = q.get("price_fallback", [])
+        lines.append(
+            f"Data quality: prices {q.get('price_ok', 0)}/{q.get('price_total', 0)}"
+            + (f" ({len(fb)} via Stooq fallback: {', '.join(fb[:8])})" if fb else "")
+            + f" | fundamentals {q.get('fund_ok', 0)}/{q.get('fund_total', 0)}"
+            f" (cache {q.get('fund_cache', 0)}, yfinance {q.get('fund_yf', 0)},"
+            f" finnhub {q.get('fund_finnhub', 0)})")
+        flags = q.get("quality_flags", [])
+        if flags:
+            lines.append("Quality flags: " + "; ".join(flags[:10]))
     if ctx.data_gaps:
         preview = ", ".join(ctx.data_gaps[:15])
         more = f" (+{len(ctx.data_gaps) - 15} more)" if len(ctx.data_gaps) > 15 else ""

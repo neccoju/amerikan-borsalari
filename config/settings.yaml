@@ -23,6 +23,10 @@ data:
   history_days: 420              # ~ enough for 200DMA + 12M momentum
   cache_ttl_hours: 12
   cache_dir: "data/raw"
+  price_fallback_max: 60         # max symbols retried via Stooq when yfinance misses
+  fundamentals_ttl_days: 7       # quarterly data: weekly rolling refresh loses nothing
+  fundamentals_finnhub_max: 150  # per-run Finnhub budget for names yfinance missed;
+                                 # with the cache this converges to full coverage
   benchmarks: ["SPY", "QQQ", "RSP"]
   macro_tickers:                 # fetched via yfinance (keyless) as a fallback
     spy: "SPY"

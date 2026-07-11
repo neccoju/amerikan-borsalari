@@ -17,6 +17,15 @@ adaptive self-learning sleeve. See [`docs/`](docs/) for the full design.
 
 - **Runs with zero API keys.** Uses keyless `yfinance` + `pandas-market-calendars`.
   Every key-dependent module *skips gracefully* and the report notes the skip.
+- **Layered, self-healing data:** prices fall back to Stooq (keyless) when the
+  yfinance batch misses a symbol; fundamentals flow through a 7-day SQLite cache
+  → yfinance → Finnhub (free tier), converging to full universe coverage across
+  runs. Every run screens prices for stale series / suspect prints / corrupt
+  rows and reports source coverage in the email + dashboard Data Quality panel.
+- **Academically-grounded momentum:** the 12M trend leg uses the classic 12-1
+  specification (skip the most recent month — Jegadeesh & Titman 1993) and a
+  volatility-scaled momentum rank (Barroso & Santa-Clara 2015) prefers smooth
+  trends over crash-prone ones.
 - **Five portfolios:** Growth ($1000), Defensive ($1000), Balanced ($1000),
   Active Entry ($1600, $1.5/trade cost-aware), Self-Learning (paper).
 - **Transparent scoring:** technical + fundamental + macro-regime composite,
