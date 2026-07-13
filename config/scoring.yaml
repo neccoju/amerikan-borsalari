@@ -7,35 +7,43 @@
 factors:
   growth:
     macro: 0.10
-    fundamental: 0.25
-    technical: 0.35
-    news: 0.15
-    institutional: 0.08
-    congress: 0.04
+    fundamental: 0.22
+    technical: 0.32
+    news: 0.12
+    insider: 0.10        # opportunistic cluster buys (Cohen-Malloy-Pomorski 2012)
+    earnings: 0.07       # post-earnings drift (Bernard-Thomas)
+    institutional: 0.06
+    congress: 0.03
     llm: 0.03
   defensive:
     macro: 0.20
-    fundamental: 0.35
-    technical: 0.15
-    news: 0.10
-    institutional: 0.10
-    congress: 0.05
+    fundamental: 0.33
+    technical: 0.13
+    news: 0.08
+    insider: 0.07
+    earnings: 0.05
+    institutional: 0.09
+    congress: 0.04
     llm: 0.05
   balanced:
     macro: 0.15
-    fundamental: 0.30
-    technical: 0.25
-    news: 0.12
-    institutional: 0.10
-    congress: 0.05
+    fundamental: 0.27
+    technical: 0.22
+    news: 0.10
+    insider: 0.08
+    earnings: 0.06
+    institutional: 0.09
+    congress: 0.04
     llm: 0.03
   active:
     macro: 0.20
-    fundamental: 0.20
-    technical: 0.35
-    news: 0.15
-    institutional: 0.05
-    congress: 0.03
+    fundamental: 0.18
+    technical: 0.32
+    news: 0.12
+    insider: 0.10        # freshest conviction signal; suits the active sleeve
+    earnings: 0.08
+    institutional: 0.04
+    congress: 0.02
     llm: 0.02
 
 # Which factors have a live data source in the current phase. Others -> weight

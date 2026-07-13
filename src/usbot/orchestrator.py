@@ -154,6 +154,13 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     congress_series = _run_congress(settings, secrets, universe.symbols, ctx)
     if congress_series is not None:
         extra_scores["congress"] = congress_series
+    # Insider (Form 4) + earnings/PEAD share the news top-N targeting budget.
+    insider_series = _run_insider(settings, secrets, news_targets, ctx)
+    if insider_series is not None:
+        extra_scores["insider"] = insider_series.reindex(sorted(set(indicators))).fillna(50.0)
+    earn_series, earnings_blackout = _run_earnings(settings, secrets, news_targets, ctx)
+    if earn_series is not None:
+        extra_scores["earnings"] = earn_series.reindex(sorted(set(indicators))).fillna(50.0)
 
     # ---- final scoring (with alternative-data factors) ----
     scores = score_universe(indicators, fundamentals, macro, settings.scoring,
@@ -181,7 +188,7 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     _build_model_sleeves(ctx, store, scores, prices, sectors, fundamentals, pcfg, rcfg,
                          ctx.date, is_month_end, price_history=pdata.history)
     _run_active(ctx, store, scores, prices, indicators, pcfg, rcfg, ctx.date,
-                force=force, price_history=pdata.history)
+                force=force, price_history=pdata.history, blackout=earnings_blackout)
     _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, ctx.date,
                          is_month_end, price_history=pdata.history)
 
@@ -503,6 +510,77 @@ def _run_congress(settings: Settings, secrets: Secrets, symbols: list[str],
     return series
 
 
+def _run_insider(settings: Settings, secrets: Secrets, symbols: list[str],
+                 ctx: ReportContext) -> "pd.Series | None":
+    """Fetch recent Form 4 trades (Finnhub) and score opportunistic cluster buys."""
+    icfg = settings.get("insider", {})
+    if not icfg.get("enabled", True):
+        return None
+    try:
+        from .insider import fetch_insider_trades, insider_scores
+
+        result = fetch_insider_trades(
+            symbols, secrets.get("FINNHUB_API_KEY"),
+            lookback_days=int(icfg.get("lookback_days", 90)),
+            max_symbols=int(icfg.get("max_symbols", 120)))
+    except Exception as exc:  # noqa: BLE001
+        ctx.insider_note = f"Insider skipped: {exc}"
+        ctx.skipped.append(ctx.insider_note)
+        return None
+    if not result.enabled or not result.trades:
+        ctx.insider_note = result.skip_reason or "No insider (Form 4) trades in window"
+        if result.skip_reason:
+            ctx.skipped.append(f"insider: {result.skip_reason}")
+        return None
+
+    series = insider_scores(result.trades, symbols)
+    buys = [t for t in result.trades if t.is_open_market_buy]
+    top = sorted(buys, key=lambda t: t.value, reverse=True)
+    ctx.insider_updates = [
+        {"symbol": t.symbol, "insider": t.insider, "title": t.title,
+         "value": t.value, "shares": t.shares} for t in top][:12]
+    ctx.insider_note = (f"{len(buys)} open-market buys / {len(result.trades)} Form-4 "
+                        f"trades across {result.symbols_seen} names")
+    log.info("Insider: %s", ctx.insider_note)
+    return series
+
+
+def _run_earnings(settings: Settings, secrets: Secrets, symbols: list[str],
+                  ctx: ReportContext) -> "tuple[pd.Series | None, set[str]]":
+    """PEAD score from recent surprises + the upcoming-earnings blackout set."""
+    ecfg = settings.get("earnings", {})
+    if not ecfg.get("enabled", True):
+        return None, set()
+    try:
+        from .earnings import earnings_blackout, fetch_earnings, pead_scores
+
+        result = fetch_earnings(
+            symbols, secrets.get("FINNHUB_API_KEY"),
+            lookback_days=int(ecfg.get("lookback_days", 90)),
+            days_ahead=int(ecfg.get("blackout_days", 5)) + 5,
+            max_symbols=int(ecfg.get("max_symbols", 120)))
+    except Exception as exc:  # noqa: BLE001
+        ctx.earnings_note = f"Earnings skipped: {exc}"
+        ctx.skipped.append(ctx.earnings_note)
+        return None, set()
+    if not result.enabled:
+        ctx.earnings_note = result.skip_reason or "Earnings disabled"
+        if result.skip_reason:
+            ctx.skipped.append(f"earnings: {result.skip_reason}")
+        return None, set()
+
+    blackout = earnings_blackout(result.upcoming, days_ahead=int(ecfg.get("blackout_days", 5)))
+    series = pead_scores(result.surprises, symbols) if result.surprises else None
+    beats = [s for s in result.surprises if s.surprise_pct > 0]
+    ctx.earnings_note = (f"{len(result.surprises)} surprises ({len(beats)} beats), "
+                         f"{len(result.upcoming)} upcoming, {len(blackout)} in blackout")
+    ctx.earnings_upcoming = [
+        {"symbol": u.symbol, "date": u.date.isoformat(), "hour": u.hour}
+        for u in sorted(result.upcoming, key=lambda u: u.date)][:12]
+    log.info("Earnings: %s", ctx.earnings_note)
+    return series, blackout
+
+
 def _holding_rows(state, prices: dict[str, float]) -> list[dict]:
     """Detailed holding rows: shares, fill price, live price, value, weight, P/L%."""
     w = state.weights(prices)
@@ -574,7 +652,8 @@ def _build_model_sleeves(ctx, store, scores, prices, sectors, fundamentals, pcfg
 
 
 def _run_active(ctx, store, scores, prices, indicators, pcfg, rcfg, date: str,
-                *, force: bool = False, price_history: dict | None = None) -> None:
+                *, force: bool = False, price_history: dict | None = None,
+                blackout: set | None = None) -> None:
     """Active sleeve: loads prior book, decides once/day, accumulates over time."""
     from .portfolio import (ActivePortfolio, apply_corporate_actions,
                             performance_from_history, trade_row)
@@ -602,7 +681,10 @@ def _run_active(ctx, store, scores, prices, indicators, pcfg, rcfg, date: str,
     if already_decided_today:
         actions.append("Already decided today — revalue only (no new trades)")
     else:
-        decision = active.decide(state, comp, prices, indicators, ctx.regime_label)
+        decision = active.decide(state, comp, prices, indicators, ctx.regime_label,
+                                 blackout=blackout)
+        if blackout:
+            actions.append(f"Earnings blackout: {len(blackout)} names excluded from entry")
         actions += [f"{t.side.upper()} {t.symbol} ({t.reason})" for t in decision.trades[:10]]
         actions += decision.notes
         total_cost = sum(t.cost for t in decision.trades)

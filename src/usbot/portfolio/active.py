@@ -74,8 +74,9 @@ class ActivePortfolio:
 
     def decide(self, state: PortfolioState, scores: pd.Series,
                prices: dict[str, float], indicators: dict[str, dict],
-               regime_label: str) -> ActiveDecision:
+               regime_label: str, blackout: set | None = None) -> ActiveDecision:
         dec = ActiveDecision(state=state)
+        blackout = blackout or set()
         total_value = state.total_value(prices)
         if total_value <= 0:
             dec.notes.append("non-positive portfolio value; no action")
@@ -133,6 +134,8 @@ class ActivePortfolio:
                 break
             if score < self.ENTRY_SCORE or sym in state.holdings:
                 continue
+            if sym in blackout:
+                continue  # reports within days -> don't open a binary earnings bet
             price = prices.get(sym)
             if not price or price <= 0:
                 continue

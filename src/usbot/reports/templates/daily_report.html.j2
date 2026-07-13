@@ -161,6 +161,32 @@
   <h2>Congressional Trades</h2><div class="muted">{{ ctx.congress_note }}</div>
   {% endif %}
 
+  {% if ctx.insider_updates %}
+  <h2>Insider (Form 4) Open-Market Buys</h2>
+  <table>
+    <tr><th>Symbol</th><th>Insider</th><th>Title</th><th>Value</th></tr>
+    {% for u in ctx.insider_updates[:12] %}
+    <tr><td>{{ u.symbol }}</td><td>{{ u.insider }}</td>
+        <td class="muted">{{ u.title or 'insider' }}</td>
+        <td class="pos">${{ "{:,.0f}".format(u.value) }}</td></tr>
+    {% endfor %}
+  </table>
+  {% elif ctx.insider_note %}
+  <h2>Insider (Form 4)</h2><div class="muted">{{ ctx.insider_note }}</div>
+  {% endif %}
+
+  {% if ctx.earnings_upcoming %}
+  <h2>Upcoming Earnings <span class="muted">(Active-entry blackout)</span></h2>
+  <table>
+    <tr><th>Symbol</th><th>Date</th><th>When</th></tr>
+    {% for u in ctx.earnings_upcoming[:12] %}
+    <tr><td>{{ u.symbol }}</td><td>{{ u.date }}</td><td class="muted">{{ u.hour }}</td></tr>
+    {% endfor %}
+  </table>
+  {% elif ctx.earnings_note %}
+  <h2>Earnings</h2><div class="muted">{{ ctx.earnings_note }}</div>
+  {% endif %}
+
   <h2>LLM Review</h2>
   <div class="muted">{{ ctx.llm_note }}</div>
 

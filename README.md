@@ -26,6 +26,15 @@ adaptive self-learning sleeve. See [`docs/`](docs/) for the full design.
   specification (skip the most recent month — Jegadeesh & Titman 1993) and a
   volatility-scaled momentum rank (Barroso & Santa-Clara 2015) prefers smooth
   trends over crash-prone ones.
+- **Alt-data factors:** insider (SEC Form 4) opportunistic *cluster buys*
+  (Cohen–Malloy–Pomorski 2012) and post-earnings-announcement drift (PEAD;
+  Bernard–Thomas), both via Finnhub's free tier, feed the composite. The Active
+  sleeve also enforces an **earnings blackout** — it won't open a new position
+  within a few days of a scheduled report (no accidental binary earnings bets).
+- **Sentiment engine is swappable:** VADER by default (keyless, fast); set
+  `news.sentiment_model: finbert` + install the `[finbert]` extra to use the
+  finance-domain FinBERT model (heavier — adds torch; best with a persistent
+  model cache rather than the daily ephemeral runner).
 - **Five portfolios:** Growth ($1000), Defensive ($1000), Balanced ($1000),
   Active Entry ($1600, $1.5/trade cost-aware), Self-Learning (paper).
 - **Transparent scoring:** technical + fundamental + macro-regime composite,

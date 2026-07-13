@@ -43,6 +43,12 @@ class ReportContext:
     # Congressional updates: list of {symbol, politician, txn_type, amount_range, chamber}
     congress_updates: list[dict] = field(default_factory=list)
     congress_note: str = ""
+    # Insider (Form 4) updates: list of {symbol, insider, title, value, shares}
+    insider_updates: list[dict] = field(default_factory=list)
+    insider_note: str = ""
+    # Upcoming earnings (blackout + drift): list of {symbol, date, hour}
+    earnings_upcoming: list[dict] = field(default_factory=list)
+    earnings_note: str = ""
     llm_note: str = ""
     # Dashboard link surfaced in the email. ``dashboard_url`` comes from the
     # DASHBOARD_URL secret (empty if unset); ``dashboard_generated`` is True once
@@ -160,6 +166,21 @@ def _build_text(ctx: ReportContext) -> str:
         lines.append("")
     elif ctx.congress_note:
         lines.append(f"Congress: {ctx.congress_note}")
+    if ctx.insider_updates:
+        lines.append("Insider (Form 4) open-market buys:")
+        for u in ctx.insider_updates[:8]:
+            lines.append(f"    {u['symbol']}: {u.get('insider','')} "
+                         f"({u.get('title','') or 'insider'}) ~${u.get('value',0):,.0f}")
+        lines.append("")
+    elif ctx.insider_note:
+        lines.append(f"Insider: {ctx.insider_note}")
+    if ctx.earnings_upcoming:
+        lines.append("Upcoming earnings (blackout window):")
+        for u in ctx.earnings_upcoming[:8]:
+            lines.append(f"    {u['symbol']}: {u['date']} {u.get('hour','')}")
+        lines.append("")
+    elif ctx.earnings_note:
+        lines.append(f"Earnings: {ctx.earnings_note}")
     if ctx.llm_note:
         lines.append(f"LLM: {ctx.llm_note}")
     if ctx.skipped:
