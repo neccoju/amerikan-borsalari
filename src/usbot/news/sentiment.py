@@ -93,17 +93,27 @@ def score_sentiment(items: list[NewsItem], model: str | None = None) -> Sentimen
     vader = _vader() if finbert is None else None
     used = "finbert" if finbert else ("vader" if vader else "lexicon")
 
+    # FinBERT: score the whole batch in one call (far faster than per-item on CPU).
+    if finbert is not None:
+        try:
+            texts = [it.text[:512] for it in items]
+            outs = finbert(texts, batch_size=16, truncation=True) if texts else []
+            for it, out in zip(items, outs):
+                lab = str(out["label"]).lower()
+                sc = float(out["score"])
+                it.sentiment = sc if lab == "positive" else (-sc if lab == "negative" else 0.0)
+        except Exception as exc:  # noqa: BLE001
+            log.warning("FinBERT batch failed (%s); falling back to lexicon", exc)
+            for it in items:
+                it.sentiment = _lexicon_score(it.text)
+        for it in items:
+            it.label = _label(it.sentiment)
+            it.category = _classify(it.text)
+        return SentimentResult(model=used, scored=len(items))
+
     for it in items:
         text = it.text
-        if finbert is not None:
-            try:
-                out = finbert(text[:512])[0]
-                lab = out["label"].lower()
-                sc = out["score"]
-                it.sentiment = sc if lab == "positive" else (-sc if lab == "negative" else 0.0)
-            except Exception:  # noqa: BLE001
-                it.sentiment = _lexicon_score(text)
-        elif vader is not None:
+        if vader is not None:
             it.sentiment = vader.polarity_scores(text)["compound"]
         else:
             it.sentiment = _lexicon_score(text)

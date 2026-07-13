@@ -227,8 +227,9 @@ def _holdings_signals(scores, top_n: int = 25) -> list[dict]:
             "symbol": sym, "score": float(comp.get(sym, float("nan"))),
             "technical": _fv(fs.get("technical"), sym),
             "fundamental": _fv(fs.get("fundamental"), sym),
-            "macro": _fv(fs.get("macro"), sym),
             "news": _fv(fs.get("news"), sym),
+            "insider": _fv(fs.get("insider"), sym),
+            "earnings": _fv(fs.get("earnings"), sym),
         })
     return out
 

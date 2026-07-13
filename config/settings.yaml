@@ -76,6 +76,18 @@ congress:
   enabled: true                  # keyless public datasets; auto-skips if unreachable
   lookback_days: 90              # disclosure data is delayed; use a wide window
 
+insider:
+  enabled: true                  # SEC Form 4 via Finnhub free tier; needs FINNHUB key
+  lookback_days: 90              # window for open-market buys/sells
+  max_symbols: 120               # bounded to the top-N scored names (shares Finnhub quota)
+
+earnings:
+  enabled: true                  # PEAD + earnings blackout via Finnhub free tier
+  lookback_days: 90              # drift window for recent surprises
+  blackout_days: 5               # Active sleeve won't open a new position within N days
+                                 # of a scheduled report (avoids a binary earnings bet)
+  max_symbols: 120
+
 email:
   enabled: true                  # auto-disabled if SMTP secrets are missing
   subject_prefix: "[usbot]"

@@ -87,6 +87,8 @@ def score_universe(indicators: dict[str, dict], fundamentals: dict[str, dict],
         "news": pd.Series(50.0, index=symbols),
         "institutional": pd.Series(50.0, index=symbols),
         "congress": pd.Series(50.0, index=symbols),
+        "insider": pd.Series(50.0, index=symbols),
+        "earnings": pd.Series(50.0, index=symbols),
         "llm": pd.Series(50.0, index=symbols),
     }
     # Fold in any supplied extra factor scores (reindexed; missing -> neutral 50).
