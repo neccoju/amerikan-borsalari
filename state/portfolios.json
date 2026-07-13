@@ -3,47 +3,61 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 70.200634,
+      "cash": 67.999081,
       "holdings": [
         {
           "symbol": "AMD",
           "shares": 0.25747707,
-          "avg_cost": 508.890015
+          "avg_cost": 508.890015,
+          "high_water": 534.390015
         },
         {
           "symbol": "BNY",
           "shares": 1.41354978,
-          "avg_cost": 152.910004
+          "avg_cost": 152.910004,
+          "high_water": 152.910004
         },
         {
           "symbol": "C",
           "shares": 1.68203617,
-          "avg_cost": 142.940002
+          "avg_cost": 142.940002,
+          "high_water": 142.940002
         },
         {
-          "symbol": "CGNX",
-          "shares": 3.09582729,
-          "avg_cost": 72.419998
+          "symbol": "DELL",
+          "shares": 0.26214569,
+          "avg_cost": 427.109985,
+          "high_water": 427.109985
         },
         {
           "symbol": "GEV",
           "shares": 0.15551265,
-          "avg_cost": 1152.040039
+          "avg_cost": 1152.040039,
+          "high_water": 1152.040039
         },
         {
           "symbol": "ILMN",
           "shares": 0.50795772,
-          "avg_cost": 187.809998
+          "avg_cost": 187.809998,
+          "high_water": 190.050003
         },
         {
           "symbol": "LLY",
           "shares": 0.19618422,
-          "avg_cost": 1223.339966
+          "avg_cost": 1223.339966,
+          "high_water": 1223.339966
         },
         {
           "symbol": "MU",
           "shares": 0.07821494,
-          "avg_cost": 1053.27002
+          "avg_cost": 1053.27002,
+          "high_water": 1053.27002
+        },
+        {
+          "symbol": "SPG",
+          "shares": 0.38084117,
+          "avg_cost": 219.490005,
+          "high_water": 219.490005
         }
       ],
       "history": [
@@ -91,9 +105,14 @@
           "date": "2026-07-10",
           "total_value": 1457.75,
           "cash": 70.2
+        },
+        {
+          "date": "2026-07-13",
+          "total_value": 1415.48,
+          "cash": 68.0
         }
       ],
-      "last_decision_date": "2026-07-10",
+      "last_decision_date": "2026-07-13",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -239,9 +258,42 @@
           "price": 187.809998,
           "cost": 1.5,
           "reason": "entry(score=79)"
+        },
+        {
+          "date": "2026-07-13",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "CGNX",
+          "shares": 3.09582729,
+          "price": 63.91,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-07-13",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "DELL",
+          "shares": 0.26214569,
+          "price": 427.109985,
+          "cost": 1.5,
+          "reason": "entry(score=73)"
+        },
+        {
+          "date": "2026-07-13",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "SPG",
+          "shares": 0.38084117,
+          "price": 219.490005,
+          "cost": 1.5,
+          "reason": "entry(score=72)"
         }
       ],
-      "updated_at": "2026-07-10T20:33:16Z"
+      "updated_at": "2026-07-13T20:42:55Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -251,77 +303,92 @@
         {
           "symbol": "ALGM",
           "shares": 0.29032863,
-          "avg_cost": 69.620003
+          "avg_cost": 69.620003,
+          "high_water": 0.0
         },
         {
           "symbol": "AMAT",
           "shares": 0.02757892,
-          "avg_cost": 723.0
+          "avg_cost": 723.0,
+          "high_water": 0.0
         },
         {
           "symbol": "CAT",
           "shares": 0.0187641,
-          "avg_cost": 1064.900024
+          "avg_cost": 1064.900024,
+          "high_water": 0.0
         },
         {
           "symbol": "CGNX",
           "shares": 0.2847918,
-          "avg_cost": 72.419998
+          "avg_cost": 72.419998,
+          "high_water": 0.0
         },
         {
           "symbol": "FIX",
           "shares": 0.01015386,
-          "avg_cost": 1981.949951
+          "avg_cost": 1981.949951,
+          "high_water": 0.0
         },
         {
           "symbol": "FLEX",
           "shares": 0.12292619,
-          "avg_cost": 162.070007
+          "avg_cost": 162.070007,
+          "high_water": 0.0
         },
         {
           "symbol": "GLW",
           "shares": 0.07920524,
-          "avg_cost": 255.429993
+          "avg_cost": 255.429993,
+          "high_water": 0.0
         },
         {
           "symbol": "JAZZ",
           "shares": 0.08318071,
-          "avg_cost": 240.970001
+          "avg_cost": 240.970001,
+          "high_water": 0.0
         },
         {
           "symbol": "LSCC",
           "shares": 0.13069414,
-          "avg_cost": 152.960007
+          "avg_cost": 152.960007,
+          "high_water": 0.0
         },
         {
           "symbol": "MKSI",
           "shares": 0.04516873,
-          "avg_cost": 444.799988
+          "avg_cost": 444.799988,
+          "high_water": 0.0
         },
         {
           "symbol": "MSGS",
           "shares": 0.04974712,
-          "avg_cost": 401.839996
+          "avg_cost": 401.839996,
+          "high_water": 0.0
         },
         {
           "symbol": "ONTO",
           "shares": 0.05254772,
-          "avg_cost": 378.450012
+          "avg_cost": 378.450012,
+          "high_water": 0.0
         },
         {
           "symbol": "TER",
           "shares": 0.04209257,
-          "avg_cost": 483.839996
+          "avg_cost": 483.839996,
+          "high_water": 0.0
         },
         {
           "symbol": "VICR",
           "shares": 0.05430211,
-          "avg_cost": 379.779999
+          "avg_cost": 379.779999,
+          "high_water": 0.0
         },
         {
           "symbol": "VSAT",
           "shares": 0.22515024,
-          "avg_cost": 89.809998
+          "avg_cost": 89.809998,
+          "high_water": 0.0
         }
       ],
       "history": [
@@ -369,6 +436,11 @@
           "date": "2026-07-10",
           "total_value": 961.59,
           "cash": 705.25
+        },
+        {
+          "date": "2026-07-13",
+          "total_value": 951.17,
+          "cash": 705.25
         }
       ],
       "last_decision_date": null,
@@ -387,7 +459,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-10T20:33:16Z"
+      "updated_at": "2026-07-13T20:42:54Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -397,77 +469,92 @@
         {
           "symbol": "ACMR",
           "shares": 0.12920267,
-          "avg_cost": 126.889999
+          "avg_cost": 126.889999,
+          "high_water": 0.0
         },
         {
           "symbol": "ALGM",
           "shares": 0.23770961,
-          "avg_cost": 69.620003
+          "avg_cost": 69.620003,
+          "high_water": 0.0
         },
         {
           "symbol": "AMAT",
           "shares": 0.02291719,
-          "avg_cost": 723.0
+          "avg_cost": 723.0,
+          "high_water": 0.0
         },
         {
           "symbol": "APH",
           "shares": 0.09278015,
-          "avg_cost": 176.320007
+          "avg_cost": 176.320007,
+          "high_water": 0.0
         },
         {
           "symbol": "CAT",
           "shares": 0.01555146,
-          "avg_cost": 1064.900024
+          "avg_cost": 1064.900024,
+          "high_water": 0.0
         },
         {
           "symbol": "CGNX",
           "shares": 0.23170655,
-          "avg_cost": 72.419998
+          "avg_cost": 72.419998,
+          "high_water": 0.0
         },
         {
           "symbol": "FIX",
           "shares": 0.00844204,
-          "avg_cost": 1981.949951
+          "avg_cost": 1981.949951,
+          "high_water": 0.0
         },
         {
           "symbol": "FLEX",
           "shares": 0.10134769,
-          "avg_cost": 162.070007
+          "avg_cost": 162.070007,
+          "high_water": 0.0
         },
         {
           "symbol": "GLW",
           "shares": 0.0646687,
-          "avg_cost": 255.429993
+          "avg_cost": 255.429993,
+          "high_water": 0.0
         },
         {
           "symbol": "JAZZ",
           "shares": 0.06835067,
-          "avg_cost": 240.970001
+          "avg_cost": 240.970001,
+          "high_water": 0.0
         },
         {
           "symbol": "LSCC",
           "shares": 0.1077494,
-          "avg_cost": 152.960007
+          "avg_cost": 152.960007,
+          "high_water": 0.0
         },
         {
           "symbol": "MKSI",
           "shares": 0.03729672,
-          "avg_cost": 444.799988
+          "avg_cost": 444.799988,
+          "high_water": 0.0
         },
         {
           "symbol": "MSGS",
           "shares": 0.0410975,
-          "avg_cost": 401.839996
+          "avg_cost": 401.839996,
+          "high_water": 0.0
         },
         {
           "symbol": "TER",
           "shares": 0.03463492,
-          "avg_cost": 483.839996
+          "avg_cost": 483.839996,
+          "high_water": 0.0
         },
         {
           "symbol": "VICR",
           "shares": 0.0444239,
-          "avg_cost": 379.779999
+          "avg_cost": 379.779999,
+          "high_water": 0.0
         }
       ],
       "history": [
@@ -515,6 +602,11 @@
           "date": "2026-07-10",
           "total_value": 957.32,
           "cash": 745.72
+        },
+        {
+          "date": "2026-07-13",
+          "total_value": 948.8,
+          "cash": 745.72
         }
       ],
       "last_decision_date": null,
@@ -533,7 +625,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-10T20:33:16Z"
+      "updated_at": "2026-07-13T20:42:55Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -543,77 +635,92 @@
         {
           "symbol": "ACMR",
           "shares": 0.14771575,
-          "avg_cost": 126.889999
+          "avg_cost": 126.889999,
+          "high_water": 0.0
         },
         {
           "symbol": "ALGM",
           "shares": 0.27279905,
-          "avg_cost": 69.620003
+          "avg_cost": 69.620003,
+          "high_water": 0.0
         },
         {
           "symbol": "AMAT",
           "shares": 0.0261542,
-          "avg_cost": 723.0
+          "avg_cost": 723.0,
+          "high_water": 0.0
         },
         {
           "symbol": "CAT",
           "shares": 0.01776784,
-          "avg_cost": 1064.900024
+          "avg_cost": 1064.900024,
+          "high_water": 0.0
         },
         {
           "symbol": "CGNX",
           "shares": 0.26663889,
-          "avg_cost": 72.419998
+          "avg_cost": 72.419998,
+          "high_water": 0.0
         },
         {
           "symbol": "FIX",
           "shares": 0.00962444,
-          "avg_cost": 1981.949951
+          "avg_cost": 1981.949951,
+          "high_water": 0.0
         },
         {
           "symbol": "FLEX",
           "shares": 0.11573929,
-          "avg_cost": 162.070007
+          "avg_cost": 162.070007,
+          "high_water": 0.0
         },
         {
           "symbol": "GLW",
           "shares": 0.07427966,
-          "avg_cost": 255.429993
+          "avg_cost": 255.429993,
+          "high_water": 0.0
         },
         {
           "symbol": "JAZZ",
           "shares": 0.07823013,
-          "avg_cost": 240.970001
+          "avg_cost": 240.970001,
+          "high_water": 0.0
         },
         {
           "symbol": "LSCC",
           "shares": 0.12307841,
-          "avg_cost": 152.960007
+          "avg_cost": 152.960007,
+          "high_water": 0.0
         },
         {
           "symbol": "MKSI",
           "shares": 0.04273767,
-          "avg_cost": 444.799988
+          "avg_cost": 444.799988,
+          "high_water": 0.0
         },
         {
           "symbol": "MSGS",
           "shares": 0.04692408,
-          "avg_cost": 401.839996
+          "avg_cost": 401.839996,
+          "high_water": 0.0
         },
         {
           "symbol": "TER",
           "shares": 0.03970346,
-          "avg_cost": 483.839996
+          "avg_cost": 483.839996,
+          "high_water": 0.0
         },
         {
           "symbol": "VICR",
           "shares": 0.05102714,
-          "avg_cost": 379.779999
+          "avg_cost": 379.779999,
+          "high_water": 0.0
         },
         {
           "symbol": "VSAT",
           "shares": 0.20926858,
-          "avg_cost": 89.809998
+          "avg_cost": 89.809998,
+          "high_water": 0.0
         }
       ],
       "history": [
@@ -661,6 +768,11 @@
           "date": "2026-07-10",
           "total_value": 972.54,
           "cash": 731.85
+        },
+        {
+          "date": "2026-07-13",
+          "total_value": 962.28,
+          "cash": 731.85
         }
       ],
       "last_decision_date": null,
@@ -679,7 +791,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-10T20:33:16Z"
+      "updated_at": "2026-07-13T20:42:55Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -689,77 +801,92 @@
         {
           "symbol": "ACMR",
           "shares": 0.15853234,
-          "avg_cost": 126.889999
+          "avg_cost": 126.889999,
+          "high_water": 0.0
         },
         {
           "symbol": "ALGM",
           "shares": 0.29277495,
-          "avg_cost": 69.620003
+          "avg_cost": 69.620003,
+          "high_water": 0.0
         },
         {
           "symbol": "AMAT",
           "shares": 0.02806936,
-          "avg_cost": 723.0
+          "avg_cost": 723.0,
+          "high_water": 0.0
         },
         {
           "symbol": "CAT",
           "shares": 0.0190689,
-          "avg_cost": 1064.900024
+          "avg_cost": 1064.900024,
+          "high_water": 0.0
         },
         {
           "symbol": "CGNX",
           "shares": 0.28616372,
-          "avg_cost": 72.419998
+          "avg_cost": 72.419998,
+          "high_water": 0.0
         },
         {
           "symbol": "FIX",
           "shares": 0.01032919,
-          "avg_cost": 1981.949951
+          "avg_cost": 1981.949951,
+          "high_water": 0.0
         },
         {
           "symbol": "FLEX",
           "shares": 0.12421439,
-          "avg_cost": 162.070007
+          "avg_cost": 162.070007,
+          "high_water": 0.0
         },
         {
           "symbol": "GLW",
           "shares": 0.07971884,
-          "avg_cost": 255.429993
+          "avg_cost": 255.429993,
+          "high_water": 0.0
         },
         {
           "symbol": "JAZZ",
           "shares": 0.08395858,
-          "avg_cost": 240.970001
+          "avg_cost": 240.970001,
+          "high_water": 0.0
         },
         {
           "symbol": "LSCC",
           "shares": 0.13209091,
-          "avg_cost": 152.960007
+          "avg_cost": 152.960007,
+          "high_water": 0.0
         },
         {
           "symbol": "MKSI",
           "shares": 0.04586717,
-          "avg_cost": 444.799988
+          "avg_cost": 444.799988,
+          "high_water": 0.0
         },
         {
           "symbol": "MSGS",
           "shares": 0.05036014,
-          "avg_cost": 401.839996
+          "avg_cost": 401.839996,
+          "high_water": 0.0
         },
         {
           "symbol": "TER",
           "shares": 0.04261078,
-          "avg_cost": 483.839996
+          "avg_cost": 483.839996,
+          "high_water": 0.0
         },
         {
           "symbol": "VICR",
           "shares": 0.05476364,
-          "avg_cost": 379.779999
+          "avg_cost": 379.779999,
+          "high_water": 0.0
         },
         {
           "symbol": "VSAT",
           "shares": 0.2245924,
-          "avg_cost": 89.809998
+          "avg_cost": 89.809998,
+          "high_water": 0.0
         }
       ],
       "history": [
@@ -807,24 +934,31 @@
           "date": "2026-07-10",
           "total_value": 971.03,
           "cash": 712.72
+        },
+        {
+          "date": "2026-07-13",
+          "total_value": 960.01,
+          "cash": 712.72
         }
       ],
       "last_decision_date": null,
       "last_rebalance_date": "2026-06-30",
       "meta": {
         "factor_weights": {
-          "macro": 0.163043,
-          "fundamental": 0.326087,
-          "technical": 0.271739,
-          "news": 0.130435,
-          "institutional": 0.108696
+          "fundamental": 0.323599,
+          "technical": 0.269666,
+          "news": 0.12944,
+          "institutional": 0.107867,
+          "insider": 0.096817,
+          "earnings": 0.072612
         },
         "static_weights": {
-          "macro": 0.163043,
-          "fundamental": 0.326087,
-          "technical": 0.271739,
-          "news": 0.130435,
-          "institutional": 0.108696
+          "fundamental": 0.329268,
+          "technical": 0.268293,
+          "news": 0.121951,
+          "institutional": 0.109756,
+          "insider": 0.097561,
+          "earnings": 0.073171
         },
         "weight_history": [],
         "last_scores": {
@@ -3853,7 +3987,7 @@
           "reason": "Paper rebuild with learned weights (fundamental:0.33, technical:0.27, macro:0.16, news:0.13)"
         }
       ],
-      "updated_at": "2026-07-10T20:33:16Z"
+      "updated_at": "2026-07-13T20:42:55Z"
     }
   }
 }
