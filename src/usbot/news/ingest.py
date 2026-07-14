@@ -59,10 +59,14 @@ def _fetch_finnhub(symbols, api_key, days, max_per_symbol) -> NewsResult:
     except Exception as exc:  # noqa: BLE001
         return NewsResult(provider="finnhub", enabled=False,
                           skip_reason=f"finnhub package missing: {exc}")
+    from ..utils.ratelimit import get_limiter
+
+    limiter = get_limiter("finnhub")
     client = finnhub.Client(api_key=api_key)
     to = dt.date.today()
     frm = to - dt.timedelta(days=days)
     for sym in symbols:
+        limiter.acquire()
         try:
             raw = _finnhub_call(client, sym, frm.isoformat(), to.isoformat()) or []
         except Exception as exc:  # noqa: BLE001

@@ -26,8 +26,13 @@ def _defensive_filter(scores: pd.Series, fundamentals: dict, max_beta: float) ->
 
 
 def compute_model_targets(ptype: str, scores: pd.Series, sectors: dict[str, str],
-                          fundamentals: dict, risk_cfg: dict) -> dict[str, float]:
-    """Score-proportional target weights for a model sleeve, caps applied."""
+                          fundamentals: dict, risk_cfg: dict,
+                          vols: dict[str, float] | None = None) -> dict[str, float]:
+    """Target weights for a model sleeve, caps applied, optional inverse-vol tilt.
+
+    ``inv_vol_weight`` (per-sleeve risk config) blends score-proportional sizing
+    toward inverse-volatility; Defensive defaults to a stronger tilt.
+    """
     scores = scores.dropna()
     if ptype == "defensive":
         scores = _defensive_filter(scores, fundamentals, risk_cfg.get("max_beta", 0.80))
@@ -36,19 +41,25 @@ def compute_model_targets(ptype: str, scores: pd.Series, sectors: dict[str, str]
         max_position=risk_cfg.get("max_position", 0.12),
         sectors=sectors,
         max_sector=risk_cfg.get("max_sector", 0.30),
+        vols=vols,
+        inv_vol_weight=float(risk_cfg.get("inv_vol_weight", 0.0)),
     )
 
 
 def rebalance_to_targets(state: PortfolioState, target_weights: dict[str, float],
                          prices: dict[str, float], txn_cost: float = 0.0,
-                         min_trade_value: float = 1.0) -> list[dict]:
+                         min_trade_value: float = 1.0, band: float = 0.0) -> list[dict]:
     """Rebalance ``state`` in place to ``target_weights`` by trading DELTAS.
 
     Only the difference between current and target shares is traded, at current
     prices. Carried names keep their cost basis (weighted-average ``avg_cost`` on
     adds, unchanged on trims), so per-holding P/L stays meaningful across
-    rebalances instead of resetting monthly. Trades below ``min_trade_value``
-    dollars are skipped as dust. Fractional shares.
+    rebalances instead of resetting monthly.
+
+    A NO-TRADE BAND suppresses churn: a name is only traded when its delta exceeds
+    ``max(min_trade_value, band * total_value)`` dollars, so tiny drifts (a name
+    a few tenths of a percent off target) are left alone. This cuts turnover and
+    cost materially versus rebalancing every position to the exact target.
 
     Returns an itemised trade list ``[{side, symbol, shares, price, cost}]``
     where ``shares`` is the traded delta (buys positive, sells the amount sold).
@@ -57,6 +68,8 @@ def rebalance_to_targets(state: PortfolioState, target_weights: dict[str, float]
     trades: list[dict] = []
     if total <= 0:
         return trades
+
+    threshold = max(min_trade_value, band * total)
 
     if not target_weights:
         log.warning("[%s] no eligible names; holding 100%% cash", state.name)
@@ -71,7 +84,7 @@ def rebalance_to_targets(state: PortfolioState, target_weights: dict[str, float]
         price = float(prices.get(sym, h.avg_cost))
         target_shares = target_alloc.get(sym, 0.0) / price if price > 0 else 0.0
         delta = h.shares - target_shares
-        if delta * price < min_trade_value:
+        if delta * price < threshold:
             continue
         state.cash += delta * price - txn_cost
         trades.append({"side": "sell", "symbol": sym, "shares": delta,
@@ -87,7 +100,7 @@ def rebalance_to_targets(state: PortfolioState, target_weights: dict[str, float]
         held = state.holdings.get(sym)
         cur_shares = held.shares if held else 0.0
         delta = alloc / price - cur_shares
-        if delta * price < min_trade_value:
+        if delta * price < threshold:
             continue
         state.cash -= delta * price + txn_cost
         if held:

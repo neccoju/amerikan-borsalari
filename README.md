@@ -44,6 +44,10 @@ adaptive self-learning sleeve. See [`docs/`](docs/) for the full design.
   TradingView-style sector rotation, a StockCharts-style RRG, an estimated
   smart-money rotation proxy (Sankey), holdings/signals, and the monthly LLM
   review. Every chart degrades to a labelled placeholder when data is thin.
+- **Risk-aware portfolio construction:** inverse-volatility weighting (risk-parity
+  tilt, strongest on Defensive), a no-trade rebalance band that suppresses churn,
+  a per-position trailing stop, and a **drawdown circuit breaker** that de-risks a
+  sinking sleeve to cash between rebalances (flagged in red at the top of the email).
 - **Trading-day aware:** weekends/US holidays produce a "market closed" report.
 - **External trigger ready:** `workflow_dispatch` + `repository_dispatch` for
   cron-job.org (see [`docs/cron_job_org_setup.md`](docs/cron_job_org_setup.md)).

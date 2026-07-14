@@ -57,6 +57,8 @@ class ReportContext:
     dashboard_generated: bool = False
     # Whether this run is a month-end rebalance day (model/self-learning rebuild).
     is_month_end: bool = False
+    # Risk-overlay alerts (e.g. circuit-breaker de-risk events) — shown prominently.
+    risk_alerts: list[str] = field(default_factory=list)
     # Transaction journal: today's entries across all sleeves + cost totals.
     ledger_today: list[dict] = field(default_factory=list)
     cost_today: float = 0.0
@@ -92,6 +94,10 @@ def _build_text(ctx: ReportContext) -> str:
         f"Month-end rebalance day: {'YES' if ctx.is_month_end else 'no'}",
         "",
     ]
+    for a in ctx.risk_alerts:
+        lines.append(f"⚠️ RISK: {a}")
+    if ctx.risk_alerts:
+        lines.append("")
     if ctx.dashboard_url:
         lines.append("Dashboard:")
         lines.append(f"    Open Dashboard: {ctx.dashboard_url}")

@@ -105,13 +105,70 @@ def apply_sector_cap(weights: dict[str, float], sectors: dict[str, str],
 
 
 def target_weights_from_scores(scores: pd.Series, n: int, max_position: float,
-                               sectors: dict[str, str], max_sector: float) -> dict[str, float]:
-    """Score-proportional target weights for the top-n names, caps enforced."""
+                               sectors: dict[str, str], max_sector: float,
+                               vols: dict[str, float] | None = None,
+                               inv_vol_weight: float = 0.0) -> dict[str, float]:
+    """Target weights for the top-n names, caps enforced.
+
+    Base weights are score-proportional. When ``vols`` (annualized realized vol
+    per symbol) and ``inv_vol_weight`` in (0,1] are given, the weights are blended
+    toward INVERSE-VOLATILITY sizing — lower-vol names get proportionally more.
+    This is the low-volatility-anomaly / risk-parity tilt: it equalizes each
+    name's risk contribution instead of letting a few high-vol names dominate
+    portfolio variance.
+    """
     top = scores.sort_values(ascending=False).head(n)
     if top.empty or top.sum() <= 0:
         return {}
-    total = float(top.sum())
-    weights = {sym: float(sc) / total for sym, sc in top.items()}
+    names = list(top.index)
+    ssum = float(top.sum()) or 1.0
+    weights = {s: float(top[s]) / ssum for s in names}
+
+    lam = min(1.0, max(0.0, float(inv_vol_weight)))
+    if vols and lam > 0:
+        inv = {s: 1.0 / max(float(vols.get(s) or 0.0), 0.05) for s in names}  # floor 5% vol
+        isum = sum(inv.values()) or 1.0
+        inv = {s: v / isum for s, v in inv.items()}
+        weights = {s: (1.0 - lam) * weights[s] + lam * inv[s] for s in names}
+
     weights = apply_caps(weights, max_position)
     weights = apply_sector_cap(weights, sectors, max_sector, max_position=max_position)
     return weights
+
+
+def circuit_breaker_trim(state, prices: dict[str, float], history: list[dict],
+                         threshold: float, breaker_cash: float) -> tuple[list[dict], float, bool]:
+    """De-risk a sleeve when its drawdown from peak equity breaches ``threshold``.
+
+    On a between-rebalance day, if drawdown <= ``-threshold`` and the book isn't
+    already de-risked, trim EVERY holding proportionally so cash reaches
+    ``breaker_cash`` of total value. Re-arming is natural: once trimmed the book
+    is already at target cash, so it won't trim again; the next month-end
+    rebalance re-deploys per the regime exposure. Returns (trades, drawdown,
+    triggered). Mutates ``state`` in place. avg_cost is preserved (a partial
+    sell doesn't change cost basis).
+    """
+    total = state.total_value(prices)
+    if total <= 0:
+        return [], 0.0, False
+    peak = max([float(h.get("total_value", 0.0)) for h in (history or [])] + [total]) or 1.0
+    dd = total / peak - 1.0
+    equity = state.equity_value(prices)
+    equity_frac = equity / total if total > 0 else 0.0
+    target_equity_frac = 1.0 - breaker_cash
+    if dd > -threshold or equity_frac <= target_equity_frac + 0.02 or equity <= 0:
+        return [], dd, False
+
+    sell_frac = 1.0 - (target_equity_frac * total) / equity   # fraction of each name to sell
+    trades: list[dict] = []
+    for sym, h in list(state.holdings.items()):
+        px = float(prices.get(sym, h.avg_cost))
+        sh = h.shares * sell_frac
+        if sh * px < 1.0:
+            continue
+        state.cash += sh * px
+        h.shares -= sh
+        if h.shares * px < 1.0:
+            del state.holdings[sym]
+        trades.append({"side": "sell", "symbol": sym, "shares": sh, "price": px, "cost": 0.0})
+    return trades, dd, True
