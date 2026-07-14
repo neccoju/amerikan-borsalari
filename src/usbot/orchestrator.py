@@ -138,7 +138,8 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
                                cache=cache)
 
     # ---- preliminary score (no news) to pick which names to pull news for ----
-    prelim = score_universe(indicators, fundamentals, macro, settings.scoring)
+    prelim = score_universe(indicators, fundamentals, macro, settings.scoring,
+                            sectors=sectors)
     news_top_n = int(settings.get("news", {}).get("top_n", 50))
     news_targets = _news_targets(prelim, news_top_n)
 
@@ -168,7 +169,7 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
 
     # ---- final scoring (with alternative-data factors) ----
     scores = score_universe(indicators, fundamentals, macro, settings.scoring,
-                            extra_factor_scores=extra_scores)
+                            extra_factor_scores=extra_scores, sectors=sectors)
     if scores.macro:
         ctx.regime_label = scores.macro.label
         ctx.regime_score = scores.macro.score

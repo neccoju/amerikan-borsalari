@@ -13,6 +13,7 @@ import pandas as pd
 from ..utils.logging import get_logger
 from .fundamental_score import fundamental_scores
 from .macro_score import MacroRegime, compute_macro_regime
+from .sector_neutral import sector_neutralize
 from .technical_score import technical_scores
 
 log = get_logger(__name__)
@@ -49,13 +50,18 @@ def _effective_weights(factor_weights: dict, enabled: list[str]) -> dict[str, fl
 
 def score_universe(indicators: dict[str, dict], fundamentals: dict[str, dict],
                    macro: dict[str, pd.DataFrame], scoring_cfg: dict,
-                   extra_factor_scores: dict[str, pd.Series] | None = None) -> ScoreResult:
+                   extra_factor_scores: dict[str, pd.Series] | None = None,
+                   sectors: dict[str, str] | None = None) -> ScoreResult:
     """Run all live sub-scores and assemble per-portfolio composites.
 
     ``extra_factor_scores`` maps a factor name (e.g. 'news', 'institutional',
     'congress', 'llm') to a 0..100 per-symbol Series. A factor is enabled for this
     run only when a non-empty Series is supplied; its configured weight then joins
     the renormalization. Absent/empty factors stay neutral and excluded.
+
+    ``sectors`` (symbol -> GICS sector) enables optional sector-neutralization of
+    the final per-portfolio composite (see scoring.sector_neutral); falls back to
+    the sector recorded in ``fundamentals`` when not supplied.
     """
     extra = {k: v for k, v in (extra_factor_scores or {}).items()
              if v is not None and len(v) > 0}
@@ -95,6 +101,14 @@ def score_universe(indicators: dict[str, dict], fundamentals: dict[str, dict],
     for factor, series in extra.items():
         sub_values[factor] = series.reindex(symbols).fillna(50.0)
 
+    # Sectors for optional sector-neutralization: caller-supplied wins, else the
+    # sector recorded on each fundamentals row (Wikipedia GICS merged upstream).
+    sec_map = dict(sectors) if sectors else {
+        s: m["sector"] for s, m in fundamentals.items() if m.get("sector")}
+    sn_cfg = scoring_cfg.get("sector_neutral", {})
+    sn_default = (sn_cfg.get("default", 0.0) if isinstance(sn_cfg, dict)
+                  else float(sn_cfg or 0.0))
+
     result = ScoreResult(technical=tech, fundamental=fund, macro=regime,
                          factor_scores=sub_values, enabled_factors=list(enabled))
     for pf in PORTFOLIO_KEYS:
@@ -103,7 +117,11 @@ def score_universe(indicators: dict[str, dict], fundamentals: dict[str, dict],
         for factor, w in weights.items():
             composite = composite.add(sub_values[factor].reindex(symbols).fillna(50.0) * w,
                                       fill_value=0.0)
+        strength = sn_cfg.get(pf, sn_default) if isinstance(sn_cfg, dict) else sn_default
+        if strength and sec_map:
+            composite = sector_neutralize(composite, sec_map, float(strength))
         result.composite[pf] = composite.sort_values(ascending=False)
-        log.info("Composite[%s]: %d symbols, top=%.1f", pf, len(composite),
-                 composite.max() if len(composite) else float("nan"))
+        log.info("Composite[%s]: %d symbols, top=%.1f (sector_neutral=%.2f)", pf,
+                 len(composite), composite.max() if len(composite) else float("nan"),
+                 float(strength) if sec_map else 0.0)
     return result
