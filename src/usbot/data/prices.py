@@ -169,6 +169,11 @@ _FUNDAMENTAL_FIELDS = {
     "market_cap": "marketCap",
     "beta": "beta",
     "sector": "sector",
+    # short-interest inputs for the short-interest factor (keyless, from .info)
+    "short_percent_float": "shortPercentOfFloat",
+    "short_ratio": "shortRatio",              # days-to-cover
+    "shares_short": "sharesShort",
+    "shares_short_prior": "sharesShortPriorMonth",
 }
 
 

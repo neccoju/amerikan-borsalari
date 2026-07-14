@@ -49,6 +49,9 @@ class ReportContext:
     # Upcoming earnings (blackout + drift): list of {symbol, date, hour}
     earnings_upcoming: list[dict] = field(default_factory=list)
     earnings_note: str = ""
+    # Most-shorted names: list of {symbol, pct_float, short_ratio, change}
+    short_interest_updates: list[dict] = field(default_factory=list)
+    short_interest_note: str = ""
     llm_note: str = ""
     # Dashboard link surfaced in the email. ``dashboard_url`` comes from the
     # DASHBOARD_URL secret (empty if unset); ``dashboard_generated`` is True once
@@ -187,6 +190,15 @@ def _build_text(ctx: ReportContext) -> str:
         lines.append("")
     elif ctx.earnings_note:
         lines.append(f"Earnings: {ctx.earnings_note}")
+    if ctx.short_interest_updates:
+        lines.append("Most-shorted names (% of float):")
+        for u in ctx.short_interest_updates[:8]:
+            chg = u.get("change")
+            chg_s = f" ({chg*100:+.0f}% MoM)" if isinstance(chg, (int, float)) else ""
+            lines.append(f"    {u['symbol']}: {u['pct_float']*100:.1f}% of float{chg_s}")
+        lines.append("")
+    elif ctx.short_interest_note:
+        lines.append(f"Short interest: {ctx.short_interest_note}")
     if ctx.llm_note:
         lines.append(f"LLM: {ctx.llm_note}")
     if ctx.skipped:

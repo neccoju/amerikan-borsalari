@@ -30,6 +30,9 @@ def main(argv: list[str] | None = None) -> int:
     bt.add_argument("--top-n", type=int, default=10)
     bt.add_argument("--lookback", type=int, default=126, help="Momentum lookback (trading days)")
     bt.add_argument("--cost-bps", type=float, default=10.0)
+    bt.add_argument("--trials", type=int, default=1,
+                    help="Number of strategy configs explored — deflates the Sharpe "
+                         "for multiple testing (López de Prado). 1 = no deflation.")
     bt.add_argument("--walk-forward", action="store_true",
                     help="Compare adaptive vs static factor weighting (Phase 4)")
     bt.add_argument("--config-dir", default=None)
@@ -85,7 +88,12 @@ def _run_backtest_cmd(args) -> int:
         weight_fn=momentum_weight_fn(top_n=args.top_n, lookback=args.lookback),
         config=cfg,
     )
-    print(json.dumps(result.summary(), indent=2))
+    from .backtest import deflated_sharpe_from_equity
+
+    summary = result.summary()
+    summary["deflated_sharpe"] = deflated_sharpe_from_equity(
+        result.equity, n_trials=int(args.trials)).as_dict()
+    print(json.dumps(summary, indent=2))
     return 0
 
 

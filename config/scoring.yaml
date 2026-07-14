@@ -12,6 +12,7 @@ factors:
     news: 0.12
     insider: 0.10        # opportunistic cluster buys (Cohen-Malloy-Pomorski 2012)
     earnings: 0.07       # post-earnings drift (Bernard-Thomas)
+    short_interest: 0.05 # bearish high/rising short interest (Boehmer-Jones-Zhang)
     institutional: 0.06
     congress: 0.03
     llm: 0.03
@@ -22,6 +23,7 @@ factors:
     news: 0.08
     insider: 0.07
     earnings: 0.05
+    short_interest: 0.06 # defensive: avoid crowded-short blow-up risk
     institutional: 0.09
     congress: 0.04
     llm: 0.05
@@ -32,6 +34,7 @@ factors:
     news: 0.10
     insider: 0.08
     earnings: 0.06
+    short_interest: 0.05
     institutional: 0.09
     congress: 0.04
     llm: 0.03

@@ -230,6 +230,7 @@ def _holdings_signals(scores, top_n: int = 25) -> list[dict]:
             "news": _fv(fs.get("news"), sym),
             "insider": _fv(fs.get("insider"), sym),
             "earnings": _fv(fs.get("earnings"), sym),
+            "short_interest": _fv(fs.get("short_interest"), sym),
         })
     return out
 

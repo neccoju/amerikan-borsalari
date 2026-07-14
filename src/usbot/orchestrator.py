@@ -161,6 +161,10 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     earn_series, earnings_blackout = _run_earnings(settings, secrets, news_targets, ctx)
     if earn_series is not None:
         extra_scores["earnings"] = earn_series.reindex(sorted(set(indicators))).fillna(50.0)
+    # Short interest (keyless): derived from the fundamentals already fetched.
+    si_series = _run_short_interest(settings, fundamentals, sorted(set(indicators)), ctx)
+    if si_series is not None:
+        extra_scores["short_interest"] = si_series.reindex(sorted(set(indicators))).fillna(50.0)
 
     # ---- final scoring (with alternative-data factors) ----
     scores = score_universe(indicators, fundamentals, macro, settings.scoring,
@@ -583,6 +587,33 @@ def _run_earnings(settings: Settings, secrets: Secrets, symbols: list[str],
         for u in sorted(result.upcoming, key=lambda u: u.date)][:12]
     log.info("Earnings: %s", ctx.earnings_note)
     return series, blackout
+
+
+def _run_short_interest(settings: Settings, fundamentals: dict[str, dict],
+                        symbols: list[str], ctx: ReportContext) -> "pd.Series | None":
+    """Score short-interest level + change from the yfinance fundamentals we
+    already have (no extra network call). Bearish high/rising short interest."""
+    sicfg = settings.get("short_interest", {})
+    if not sicfg.get("enabled", True):
+        return None
+    try:
+        from .scoring.short_interest import short_interest_highlights, short_interest_scores
+
+        series = short_interest_scores(
+            fundamentals, symbols, level_weight=float(sicfg.get("level_weight", 0.6)))
+    except Exception as exc:  # noqa: BLE001
+        ctx.short_interest_note = f"Short interest skipped: {exc}"
+        ctx.skipped.append(ctx.short_interest_note)
+        return None
+    covered = sum(1 for s in symbols
+                  if isinstance(fundamentals.get(s, {}).get("short_percent_float"), (int, float)))
+    if not covered:
+        ctx.short_interest_note = "No short-interest data available this run"
+        return None
+    ctx.short_interest_updates = short_interest_highlights(fundamentals, symbols)
+    ctx.short_interest_note = f"short-interest data for {covered}/{len(symbols)} names"
+    log.info("Short interest: %s", ctx.short_interest_note)
+    return series
 
 
 def _holding_rows(state, prices: dict[str, float]) -> list[dict]:

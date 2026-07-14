@@ -320,13 +320,13 @@
   {% if d.holdings_signals %}
   <div class="tbl-wrap">
     <table>
-      <thead><tr><th>Symbol</th><th>Composite</th><th>Technical</th><th>Fundamental</th><th>News</th><th>Insider</th><th>Earnings</th></tr></thead>
+      <thead><tr><th>Symbol</th><th>Composite</th><th>Technical</th><th>Fundamental</th><th>News</th><th>Insider</th><th>Earnings</th><th>Short&nbsp;Int.</th></tr></thead>
       <tbody>
       {% for h in d.holdings_signals %}
         <tr>
           <td>{{ h.symbol }}</td>
           <td><strong>{{ "%.0f"|format(h.score) }}</strong></td>
-          {% for f in ['technical','fundamental','news','insider','earnings'] %}
+          {% for f in ['technical','fundamental','news','insider','earnings','short_interest'] %}
             {% set v = h[f] %}
             <td>{{ ("%.0f"|format(v)) if v == v else "—" }}</td>
           {% endfor %}

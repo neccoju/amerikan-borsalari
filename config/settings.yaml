@@ -98,6 +98,11 @@ earnings:
                                  # of a scheduled report (avoids a binary earnings bet)
   max_symbols: 120
 
+short_interest:
+  enabled: true                  # keyless: derived from yfinance .info fundamentals
+  level_weight: 0.6              # blend of short-interest LEVEL (0.6) vs month-over-month
+                                 # CHANGE (0.4); both bearish when high/rising
+
 email:
   enabled: true                  # auto-disabled if SMTP secrets are missing
   subject_prefix: "[usbot]"
