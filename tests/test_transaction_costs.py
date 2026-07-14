@@ -9,6 +9,7 @@ def _active(min_edge=0.0):
         risk_cfg={"max_position": 0.15, "max_daily_turnover": 1.0,
                   "min_expected_edge_after_cost": min_edge},
         txn_cost=1.5, min_cash_buffer_pct=0.05, initial_deploy_pct=0.25,
+        fill_timing="close",   # these tests assert immediate-fill accounting
     )
 
 

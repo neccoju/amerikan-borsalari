@@ -47,7 +47,7 @@ class ActivePortfolio:
     EDGE_PER_SCORE_POINT = 0.004  # 0.4% expected edge per point above threshold
 
     def __init__(self, risk_cfg: dict, txn_cost: float, min_cash_buffer_pct: float,
-                 initial_deploy_pct: float) -> None:
+                 initial_deploy_pct: float, fill_timing: str = "t1_open") -> None:
         self.max_position = risk_cfg.get("max_position", 0.15)
         self.max_daily_turnover = risk_cfg.get("max_daily_turnover", 0.25)
         self.min_edge_after_cost = risk_cfg.get("min_expected_edge_after_cost", 0.0)
@@ -59,6 +59,44 @@ class ActivePortfolio:
         self.txn_cost = txn_cost
         self.min_cash_buffer_pct = min_cash_buffer_pct
         self.initial_deploy_pct = initial_deploy_pct
+        # "t1_open": entries decided at today's close fill at the NEXT session's
+        # open (no look-ahead). "close": legacy immediate fill at the signal close.
+        # Risk EXITS are always immediate — a stop shouldn't wait a day.
+        self.fill_timing = fill_timing
+
+    def _fill_pending(self, state: PortfolioState, opens: dict[str, float],
+                      prices: dict[str, float], date: str) -> list[TradePlan]:
+        """Fill entry orders decided on a PRIOR day at today's open (T+1 exec)."""
+        filled: list[TradePlan] = []
+        keep: list[dict] = []
+        for o in state.pending_orders:
+            if str(o.get("decided_date", "")) >= date:   # today's / not matured -> keep
+                keep.append(o)
+                continue
+            sym = o["symbol"]
+            notional = float(o.get("notional", 0.0))
+            fill_px = float(opens.get(sym) or prices.get(sym) or 0.0)   # open, else close
+            if fill_px <= 0 or notional <= 0:
+                continue                                  # unfillable (no price) -> drop
+            if state.cash - self.txn_cost < notional:     # cash moved since decision
+                notional = max(0.0, state.cash - self.txn_cost)
+            if notional < self.MIN_POSITION_NOTIONAL:
+                continue
+            shares = notional / fill_px
+            if sym in state.holdings:                     # scale-in: weighted avg cost
+                h = state.holdings[sym]
+                total = h.shares + shares
+                h.avg_cost = (h.avg_cost * h.shares + fill_px * shares) / total if total else fill_px
+                h.shares = total
+                h.high_water = max(h.high_water, fill_px)
+            else:
+                state.holdings[sym] = Holding(symbol=sym, shares=shares, avg_cost=fill_px,
+                                              high_water=fill_px)
+            state.cash -= notional + self.txn_cost
+            filled.append(TradePlan(sym, "buy", shares, fill_px, self.txn_cost,
+                                    str(o.get("reason", "entry")) + " [T+1 open]"))
+        state.pending_orders = keep
+        return filled
 
     def _target_deploy_fraction(self, regime_label: str, invested_frac: float) -> float:
         """How much of capital should be deployed given regime + current state."""
@@ -74,9 +112,19 @@ class ActivePortfolio:
 
     def decide(self, state: PortfolioState, scores: pd.Series,
                prices: dict[str, float], indicators: dict[str, dict],
-               regime_label: str, blackout: set | None = None) -> ActiveDecision:
+               regime_label: str, blackout: set | None = None,
+               opens: dict[str, float] | None = None, date: str = "") -> ActiveDecision:
         dec = ActiveDecision(state=state)
         blackout = blackout or set()
+
+        # ---- 0. FILL prior pending entries at today's OPEN (T+1 execution) ----
+        if self.fill_timing == "t1_open":
+            dec.trades.extend(self._fill_pending(state, opens or {}, prices, date))
+            # drop any stale same-day pending (idempotent force re-runs) so the
+            # entry pass below re-queues today's orders exactly once
+            state.pending_orders = [o for o in state.pending_orders
+                                    if str(o.get("decided_date", "")) != date]
+
         total_value = state.total_value(prices)
         if total_value <= 0:
             dec.notes.append("non-positive portfolio value; no action")
@@ -152,17 +200,25 @@ class ActivePortfolio:
             benefit = self._expected_benefit(score, size)
             if benefit < self.txn_cost + self.min_edge_after_cost:
                 continue
-            shares = size / price
-            state.holdings[sym] = Holding(symbol=sym, shares=shares, avg_cost=price,
-                                          high_water=price)
-            state.cash -= size + self.txn_cost
             deployable -= size
             turnover_used += size
-            dec.trades.append(TradePlan(sym, "buy", shares, price, self.txn_cost,
-                                        f"entry(score={score:.0f})"))
+            if self.fill_timing == "t1_open":
+                # queue for next-open fill; cash/holdings change when it fills
+                state.pending_orders.append({
+                    "symbol": sym, "notional": round(size, 2),
+                    "score": round(float(score), 1),
+                    "reason": f"entry(score={score:.0f})", "decided_date": date})
+            else:
+                shares = size / price
+                state.holdings[sym] = Holding(symbol=sym, shares=shares, avg_cost=price,
+                                              high_water=price)
+                state.cash -= size + self.txn_cost
+                dec.trades.append(TradePlan(sym, "buy", shares, price, self.txn_cost,
+                                            f"entry(score={score:.0f})"))
 
+        queued = len(state.pending_orders)
         dec.notes.append(
             f"regime={regime_label}, target_deploy={target_frac:.0%}, "
-            f"trades={len(dec.trades)}, cash={state.cash:.2f}"
+            f"fills={len(dec.trades)}, queued_for_open={queued}, cash={state.cash:.2f}"
         )
         return dec

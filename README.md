@@ -62,6 +62,11 @@ adaptive self-learning sleeve. See [`docs/`](docs/) for the full design.
   tilt, strongest on Defensive), a no-trade rebalance band that suppresses churn,
   a per-position trailing stop, and a **drawdown circuit breaker** that de-risks a
   sinking sleeve to cash between rebalances (flagged in red at the top of the email).
+- **Honest execution (T+1):** the Active sleeve decides on today's close but fills
+  new entries at the **next session's open** (`portfolios.fill_timing`), removing
+  the look-ahead of transacting at a close you've already observed and matching the
+  backtest engine's T+1 convention. Risk exits stay immediate — a stop shouldn't
+  wait a day. Set `fill_timing: close` to restore legacy same-close fills.
 - **Trading-day aware:** weekends/US holidays produce a "market closed" report.
 - **External trigger ready:** `workflow_dispatch` + `repository_dispatch` for
   cron-job.org (see [`docs/cron_job_org_setup.md`](docs/cron_job_org_setup.md)).

@@ -95,6 +95,7 @@ class PortfolioStore:
             state.holdings[h["symbol"]] = Holding(
                 symbol=h["symbol"], shares=float(h["shares"]), avg_cost=float(h["avg_cost"]),
                 high_water=float(h.get("high_water", 0.0)))
+        state.pending_orders = list(p.get("pending_orders", []))
         return LoadedState(
             state=state,
             history=list(p.get("history", [])),
@@ -128,6 +129,7 @@ class PortfolioStore:
                  "high_water": round(h.high_water, 6)}
                 for s, h in sorted(state.holdings.items())
             ],
+            "pending_orders": list(state.pending_orders),
             "history": history,
             "last_decision_date": last_decision_date,
             "last_rebalance_date": last_rebalance_date,
