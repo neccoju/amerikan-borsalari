@@ -104,7 +104,7 @@ def test_earnings_parse_surprises_prefers_surprise_percent():
 # ---- Active-sleeve earnings blackout integration -----------------------------
 def test_active_skips_entry_for_blackout_names():
     act = ActivePortfolio(risk_cfg={}, txn_cost=1.5, min_cash_buffer_pct=0.05,
-                          initial_deploy_pct=0.95)
+                          initial_deploy_pct=0.95, fill_timing="close")
     st = PortfolioState(name="Active Entry", ptype="active", cash=1600.0,
                         starting_capital=1600.0)
     scores = pd.Series({"AAA": 85.0, "BBB": 84.0})

@@ -28,6 +28,10 @@ class PortfolioState:
     txn_cost: float = 0.0
     paper_only: bool = True
     holdings: dict[str, Holding] = field(default_factory=dict)
+    # Entry orders decided at one close, awaiting fill at the NEXT session's open
+    # (T+1 execution — removes the look-ahead of filling at an observed close).
+    # Each: {symbol, notional, score, reason, decided_date}. Empty for close-fill.
+    pending_orders: list[dict] = field(default_factory=list)
 
     def total_value(self, prices: dict[str, float]) -> float:
         equity = sum(

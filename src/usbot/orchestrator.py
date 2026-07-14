@@ -724,13 +724,18 @@ def _run_active(ctx, store, scores, prices, indicators, pcfg, rcfg, date: str,
                                                 last_date, "Active Entry", date)
     ledger.extend(ca_rows)
 
+    fill_timing = str(pcfg.get("fill_timing", "t1_open"))
     active = ActivePortfolio(
         risk_cfg=rcfg.get("active", {}),
         txn_cost=txn_cost,
         min_cash_buffer_pct=float(pcfg.get("min_cash_buffer_pct", 0.05)),
         initial_deploy_pct=float(pcfg.get("active_initial_deploy_pct", 0.25)),
+        fill_timing=fill_timing,
     )
     comp = scores.composite.get("active", pd.Series(dtype=float))
+    # today's OPEN per symbol -> honest T+1 fill price for queued entries
+    opens = {s: float(df["open"].iloc[-1]) for s, df in (price_history or {}).items()
+             if "open" in getattr(df, "columns", []) and not df.empty}
 
     already_decided_today = (loaded.last_decision_date == date) and not force
     actions: list[str] = list(ca_notes)
@@ -738,7 +743,11 @@ def _run_active(ctx, store, scores, prices, indicators, pcfg, rcfg, date: str,
         actions.append("Already decided today — revalue only (no new trades)")
     else:
         decision = active.decide(state, comp, prices, indicators, ctx.regime_label,
-                                 blackout=blackout)
+                                 blackout=blackout, opens=opens, date=date)
+        if fill_timing == "t1_open" and state.pending_orders:
+            actions.append(f"Queued {len(state.pending_orders)} entr"
+                           f"{'y' if len(state.pending_orders) == 1 else 'ies'} "
+                           f"for next-open fill (T+1)")
         if blackout:
             actions.append(f"Earnings blackout: {len(blackout)} names excluded from entry")
         actions += [f"{t.side.upper()} {t.symbol} ({t.reason})" for t in decision.trades[:10]]

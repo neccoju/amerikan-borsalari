@@ -48,6 +48,11 @@ portfolios:
   rebalance: "month_end"         # model portfolios rebalance on last trading day
   rebalance_band: 0.015          # no-trade zone: skip drifts < 1.5% of the book
                                  # (cuts turnover; only meaningful deltas trade)
+  fill_timing: "t1_open"         # Active sleeve: "t1_open" queues entries decided
+                                 # at today's close and fills them at the NEXT
+                                 # session's open (removes fill-at-observed-close
+                                 # look-ahead). "close" = legacy immediate fill.
+                                 # Risk exits are always immediate either way.
   active_initial_deploy_pct: 0.25
   min_cash_buffer_pct: 0.05
   # All sleeves persist here across runs (committed back by the workflow) so they
