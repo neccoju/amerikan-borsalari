@@ -57,6 +57,17 @@ factors:
 # and gates the Active sleeve's deployment ceiling.
 enabled_factors: ["fundamental", "technical"]
 
+# Sector-neutralization of the final composite: score each name on how much it
+# beats its OWN sector rather than the whole market, so the top ranks don't pile
+# into one hot sector (0 = off, 1 = fully sector-neutral). Preserves the
+# cross-sectional mean, so absolute thresholds (Active entry score) still hold.
+sector_neutral:
+  default: 0.35
+  growth: 0.25        # growth tolerates more sector tilt (ride the leaders)
+  defensive: 0.50     # defensive stays the most diversified across sectors
+  balanced: 0.35
+  active: 0.30
+
 technical:
   rsi_period: 14
   rsi_low: 30

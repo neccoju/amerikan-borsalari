@@ -49,7 +49,10 @@ adaptive self-learning sleeve. See [`docs/`](docs/) for the full design.
 - **Five portfolios:** Growth ($1000), Defensive ($1000), Balanced ($1000),
   Active Entry ($1600, $1.5/trade cost-aware), Self-Learning (paper).
 - **Transparent scoring:** technical + fundamental + macro-regime composite,
-  with per-portfolio weights in `config/scoring.yaml`.
+  with per-portfolio weights in `config/scoring.yaml`. Optional **sector-
+  neutralization** scores each name on how much it beats its *own* sector, so the
+  top ranks don't pile into one hot sector (configurable per sleeve; Defensive
+  stays the most diversified).
 - **Interactive dashboard:** a dark-theme `site/index.html` with KPI cards, a
   Finviz-style sector→ticker treemap, portfolio-vs-benchmark curves + drawdowns,
   TradingView-style sector rotation, a StockCharts-style RRG, an estimated
