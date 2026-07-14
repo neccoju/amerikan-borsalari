@@ -38,7 +38,10 @@ adaptive self-learning sleeve. See [`docs/`](docs/) for the full design.
   and **Deflated Sharpe Ratio** (López de Prado 2014) — pass `--trials N` for the
   number of strategy variants explored and the Sharpe is deflated by the return
   you'd expect from luck alone after that many trials, so a strategy that merely
-  won a big search stops looking significant.
+  won a big search stops looking significant. `--composite` backtests the actual
+  shipped technical-momentum specification (the 12-1 blend + risk-adjusted
+  momentum + drawdown legs, reconstructed point-in-time), not a toy proxy; the
+  `--walk-forward` adaptive-vs-static comparison carries the Deflated Sharpe too.
 - **Sentiment engine is swappable:** VADER by default (keyless, fast); set
   `news.sentiment_model: finbert` + install the `[finbert]` extra to use the
   finance-domain FinBERT model (heavier — adds torch; best with a persistent
@@ -82,6 +85,10 @@ python -m usbot status
 # Run a look-ahead-safe momentum backtest vs a benchmark (needs price history)
 # --trials N deflates the Sharpe for multiple testing (Deflated Sharpe Ratio)
 python -m usbot backtest --start 2015-01-01 --benchmark SPY --top-n 10 --cost-bps 10 --trials 20
+
+# Backtest the LIVE technical-momentum composite (12-1 blend + risk-adj momentum
+# + drawdown) — the honest point-in-time subset of the production score
+python -m usbot backtest --composite --start 2015-01-01 --benchmark SPY --trials 20
 ```
 
 Run the tests:
