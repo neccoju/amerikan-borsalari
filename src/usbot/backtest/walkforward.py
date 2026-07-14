@@ -13,7 +13,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-import numpy as np
 import pandas as pd
 
 from ..learning import update_weights
@@ -51,9 +50,18 @@ PRICE_FACTORS = {
 class WalkForwardComparison:
     adaptive: BacktestResult
     static: BacktestResult
+    n_trials: int = 1        # config count for the multiple-testing deflation
 
     def summary(self) -> dict:
-        return {"adaptive": self.adaptive.summary(), "static": self.static.summary(),
+        from .metrics import deflated_sharpe_from_equity
+
+        a = {**self.adaptive.summary(),
+             "deflated_sharpe": deflated_sharpe_from_equity(
+                 self.adaptive.equity, self.n_trials).as_dict()}
+        s = {**self.static.summary(),
+             "deflated_sharpe": deflated_sharpe_from_equity(
+                 self.static.equity, self.n_trials).as_dict()}
+        return {"adaptive": a, "static": s,
                 "adaptive_minus_static_cagr": self.adaptive.metrics.cagr - self.static.metrics.cagr}
 
 
@@ -109,8 +117,13 @@ def _make_weight_fn(adaptive: bool, lr: float, top_n: int, max_weight: float):
 
 def walk_forward_compare(prices: dict[str, pd.DataFrame], config: BacktestConfig,
                          *, lr: float = 0.5, top_n: int = 10,
-                         max_weight: float = 0.15) -> WalkForwardComparison:
-    """Run adaptive vs static factor weighting through the backtest engine."""
+                         max_weight: float = 0.15, n_trials: int = 1) -> WalkForwardComparison:
+    """Run adaptive vs static factor weighting through the backtest engine.
+
+    ``n_trials`` deflates each sleeve's Sharpe for the breadth of the factor
+    search (López de Prado): the adaptive/static split is only credible if the
+    winner still clears the Sharpe you'd expect from luck after that many trials.
+    """
     adaptive = run_backtest(prices, _make_weight_fn(True, lr, top_n, max_weight), config)
     static = run_backtest(prices, _make_weight_fn(False, lr, top_n, max_weight), config)
-    return WalkForwardComparison(adaptive=adaptive, static=static)
+    return WalkForwardComparison(adaptive=adaptive, static=static, n_trials=n_trials)

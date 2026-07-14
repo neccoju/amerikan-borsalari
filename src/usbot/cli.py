@@ -35,6 +35,9 @@ def main(argv: list[str] | None = None) -> int:
                          "for multiple testing (López de Prado). 1 = no deflation.")
     bt.add_argument("--walk-forward", action="store_true",
                     help="Compare adaptive vs static factor weighting (Phase 4)")
+    bt.add_argument("--composite", action="store_true",
+                    help="Backtest the live technical-momentum composite (12-1 blend + "
+                         "risk-adjusted momentum + drawdown) instead of single-lookback momentum")
     bt.add_argument("--config-dir", default=None)
 
     args = parser.parse_args(argv)
@@ -80,14 +83,17 @@ def _run_backtest_cmd(args) -> int:
     if getattr(args, "walk_forward", False):
         from .backtest import walk_forward_compare
 
-        comp = walk_forward_compare(pdata.history, cfg, top_n=args.top_n)
+        comp = walk_forward_compare(pdata.history, cfg, top_n=args.top_n,
+                                    n_trials=int(args.trials))
         print(json.dumps(comp.summary(), indent=2))
         return 0
-    result = run_backtest(
-        pdata.history,
-        weight_fn=momentum_weight_fn(top_n=args.top_n, lookback=args.lookback),
-        config=cfg,
-    )
+    if getattr(args, "composite", False):
+        from .backtest import composite_momentum_weight_fn
+
+        weight_fn = composite_momentum_weight_fn(top_n=args.top_n)
+    else:
+        weight_fn = momentum_weight_fn(top_n=args.top_n, lookback=args.lookback)
+    result = run_backtest(pdata.history, weight_fn=weight_fn, config=cfg)
     from .backtest import deflated_sharpe_from_equity
 
     summary = result.summary()

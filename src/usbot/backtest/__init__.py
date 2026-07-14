@@ -1,4 +1,5 @@
 """Backtesting (Phase 2). Look-ahead-safe engine + metrics."""
+from .composite_bt import composite_momentum_weight_fn, composite_scores
 from .engine import (
     BacktestConfig,
     BacktestResult,
@@ -21,6 +22,8 @@ __all__ = [
     "BacktestResult",
     "run_backtest",
     "momentum_weight_fn",
+    "composite_momentum_weight_fn",
+    "composite_scores",
     "walk_forward_windows",
     "Metrics",
     "compute_metrics",
