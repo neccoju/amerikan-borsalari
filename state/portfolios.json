@@ -3,31 +3,25 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 67.999081,
+      "cash": 126.71847,
       "holdings": [
         {
           "symbol": "AMD",
           "shares": 0.25747707,
           "avg_cost": 508.890015,
-          "high_water": 534.390015
+          "high_water": 548.130005
         },
         {
           "symbol": "BNY",
           "shares": 1.41354978,
           "avg_cost": 152.910004,
-          "high_water": 152.910004
-        },
-        {
-          "symbol": "C",
-          "shares": 1.68203617,
-          "avg_cost": 142.940002,
-          "high_water": 142.940002
+          "high_water": 154.5
         },
         {
           "symbol": "DELL",
           "shares": 0.26214569,
           "avg_cost": 427.109985,
-          "high_water": 427.109985
+          "high_water": 457.540009
         },
         {
           "symbol": "GEV",
@@ -39,7 +33,7 @@
           "symbol": "ILMN",
           "shares": 0.50795772,
           "avg_cost": 187.809998,
-          "high_water": 190.050003
+          "high_water": 191.199997
         },
         {
           "symbol": "LLY",
@@ -54,10 +48,16 @@
           "high_water": 1053.27002
         },
         {
+          "symbol": "NVDA",
+          "shares": 0.76697628,
+          "avg_cost": 211.800003,
+          "high_water": 211.800003
+        },
+        {
           "symbol": "SPG",
           "shares": 0.38084117,
           "avg_cost": 219.490005,
-          "high_water": 219.490005
+          "high_water": 221.279999
         }
       ],
       "history": [
@@ -110,9 +110,14 @@
           "date": "2026-07-13",
           "total_value": 1415.48,
           "cash": 68.0
+        },
+        {
+          "date": "2026-07-14",
+          "total_value": 1418.81,
+          "cash": 126.72
         }
       ],
-      "last_decision_date": "2026-07-13",
+      "last_decision_date": "2026-07-14",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -291,9 +296,31 @@
           "price": 219.490005,
           "cost": 1.5,
           "reason": "entry(score=72)"
+        },
+        {
+          "date": "2026-07-14",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "C",
+          "shares": 1.68203617,
+          "price": 133.270004,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-07-14",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "NVDA",
+          "shares": 0.76697628,
+          "price": 211.800003,
+          "cost": 1.5,
+          "reason": "entry(score=70)"
         }
       ],
-      "updated_at": "2026-07-13T20:42:55Z"
+      "updated_at": "2026-07-14T20:40:53Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -441,6 +468,11 @@
           "date": "2026-07-13",
           "total_value": 951.17,
           "cash": 705.25
+        },
+        {
+          "date": "2026-07-14",
+          "total_value": 956.39,
+          "cash": 705.25
         }
       ],
       "last_decision_date": null,
@@ -459,7 +491,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-13T20:42:54Z"
+      "updated_at": "2026-07-14T20:40:53Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -607,6 +639,11 @@
           "date": "2026-07-13",
           "total_value": 948.8,
           "cash": 745.72
+        },
+        {
+          "date": "2026-07-14",
+          "total_value": 953.23,
+          "cash": 745.72
         }
       ],
       "last_decision_date": null,
@@ -625,7 +662,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-13T20:42:55Z"
+      "updated_at": "2026-07-14T20:40:53Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -773,6 +810,11 @@
           "date": "2026-07-13",
           "total_value": 962.28,
           "cash": 731.85
+        },
+        {
+          "date": "2026-07-14",
+          "total_value": 967.15,
+          "cash": 731.85
         }
       ],
       "last_decision_date": null,
@@ -791,7 +833,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-13T20:42:55Z"
+      "updated_at": "2026-07-14T20:40:53Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -938,6 +980,11 @@
         {
           "date": "2026-07-13",
           "total_value": 960.01,
+          "cash": 712.72
+        },
+        {
+          "date": "2026-07-14",
+          "total_value": 965.25,
           "cash": 712.72
         }
       ],
@@ -3987,7 +4034,7 @@
           "reason": "Paper rebuild with learned weights (fundamental:0.33, technical:0.27, macro:0.16, news:0.13)"
         }
       ],
-      "updated_at": "2026-07-13T20:42:55Z"
+      "updated_at": "2026-07-14T20:40:53Z"
     }
   }
 }
