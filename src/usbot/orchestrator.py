@@ -185,12 +185,16 @@ def _run_pipeline(settings: Settings, secrets: Secrets, ctx: ReportContext,
     rcfg = settings.get("risk", {})
     store = PortfolioStore(pcfg.get("state_path", "state/portfolios.json"))
 
+    # annualized realized vol per name -> inverse-vol sizing + risk overlays
+    vols = {s: indicators[s]["realized_vol"] for s in indicators
+            if indicators[s].get("realized_vol") == indicators[s].get("realized_vol")}
+
     _build_model_sleeves(ctx, store, scores, prices, sectors, fundamentals, pcfg, rcfg,
-                         ctx.date, is_month_end, price_history=pdata.history)
+                         ctx.date, is_month_end, price_history=pdata.history, vols=vols)
     _run_active(ctx, store, scores, prices, indicators, pcfg, rcfg, ctx.date,
                 force=force, price_history=pdata.history, blackout=earnings_blackout)
     _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, ctx.date,
-                         is_month_end, price_history=pdata.history)
+                         is_month_end, price_history=pdata.history, vols=vols)
 
     # ---- transaction journal (today's activity + cost totals) ----
     ctx.is_month_end = is_month_end
@@ -597,12 +601,17 @@ def _holding_rows(state, prices: dict[str, float]) -> list[dict]:
 
 
 def _build_model_sleeves(ctx, store, scores, prices, sectors, fundamentals, pcfg, rcfg,
-                         date: str, is_month_end: bool, price_history: dict | None = None) -> None:
+                         date: str, is_month_end: bool, price_history: dict | None = None,
+                         vols: dict | None = None) -> None:
     """Model sleeves hold real positions; rebalance at month-end, hold otherwise."""
     from .portfolio import (apply_corporate_actions, compute_model_targets,
                             performance_from_history, rebalance_to_targets, trade_row)
+    from .portfolio.risk import circuit_breaker_trim
 
     capital = float(pcfg.get("model_capital", 1000.0))
+    band = float(pcfg.get("rebalance_band", 0.0))
+    breaker = float(rcfg.get("circuit_breaker", 0.0))
+    breaker_cash = float(rcfg.get("circuit_breaker_cash", 0.5))
     for display, key in [("Growth", "growth"), ("Defensive", "defensive"),
                          ("Balanced", "balanced")]:
         loaded = store.load(display, capital, txn_cost=0.0)
@@ -623,14 +632,16 @@ def _build_model_sleeves(ctx, store, scores, prices, sectors, fundamentals, pcfg
         already_rebalanced_today = loaded.last_rebalance_date == date
         do_rebalance = ((is_month_end and not already_rebalanced_today)
                         or not loaded.existed or not state.holdings)
+        extra_notes: list[str] = []
         if do_rebalance:
-            targets = compute_model_targets(key, comp, sectors, fundamentals, rcfg.get(key, {}))
+            targets = compute_model_targets(key, comp, sectors, fundamentals, rcfg.get(key, {}),
+                                            vols=vols)
             # Regime scales gross exposure (risk_on 100% / neutral 80% / risk_off
             # 50% invested); the remainder stays in cash until conditions improve.
             mult = scores.macro.exposure_multiplier if scores.macro else 1.0
             if mult < 1.0:
                 targets = {s: w * mult for s, w in targets.items()}
-            trades = rebalance_to_targets(state, targets, prices, txn_cost=0.0)
+            trades = rebalance_to_targets(state, targets, prices, txn_cost=0.0, band=band)
             reason = "Initial allocation" if not loaded.existed else "Month-end rebalance"
             action = (f"{reason} into {len(state.holdings)} names at live prices "
                       f"(exposure {mult:.0%}, {ctx.regime_label})")
@@ -639,6 +650,19 @@ def _build_model_sleeves(ctx, store, scores, prices, sectors, fundamentals, pcfg
                                         t["price"], t["cost"], reason))
         else:
             action = "Hold (rebalance only at month-end)"
+            # Between rebalances: drawdown circuit breaker de-risks a sinking book.
+            if breaker > 0:
+                cb_trades, dd, fired = circuit_breaker_trim(
+                    state, prices, loaded.history, breaker, breaker_cash)
+                if fired:
+                    note = (f"CIRCUIT BREAKER: {display} drawdown {dd:.1%} ≤ -{breaker:.0%} "
+                            f"→ trimmed to {breaker_cash:.0%} cash")
+                    extra_notes.append(note)
+                    ctx.risk_alerts.append(note)
+                    for t in cb_trades:
+                        ledger.append(trade_row(date, display, t["side"], t["symbol"],
+                                                t["shares"], t["price"], t["cost"],
+                                                "circuit breaker de-risk"))
 
         history, tv = store.stage(state, prices, date, loaded.history, ptype=key,
                                   last_rebalance_date=date if do_rebalance
@@ -647,7 +671,7 @@ def _build_model_sleeves(ctx, store, scores, prices, sectors, fundamentals, pcfg
         ctx.portfolios.append(PortfolioReport(
             name=display, total_value=tv, cash=state.cash, equity=tv - state.cash,
             daily_pl=perf["daily_pl"], total_pl=perf["total_pl"],
-            holdings=_holding_rows(state, prices), actions=[action] + ca_notes,
+            holdings=_holding_rows(state, prices), actions=[action] + extra_notes + ca_notes,
         ))
 
 
@@ -707,7 +731,8 @@ def _run_active(ctx, store, scores, prices, indicators, pcfg, rcfg, date: str,
 
 
 def _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, date: str,
-                         is_month_end: bool, price_history: dict | None = None) -> None:
+                         is_month_end: bool, price_history: dict | None = None,
+                         vols: dict | None = None) -> None:
     """Adaptive Self-Learning paper sleeve (Phase 4).
 
     Monthly it (1) scores how each factor's *previous* scores predicted the
@@ -783,12 +808,15 @@ def _build_self_learning(ctx, store, scores, prices, sectors, settings, pcfg, da
         comp = pd.Series(0.0, index=symbols)
         for f, w in weights.items():
             comp = comp.add(factor_scores[f].reindex(symbols).fillna(50.0) * w, fill_value=0.0)
-        targets = target_weights_from_scores(comp.dropna(), n=15, max_position=0.12,
-                                             sectors=sectors, max_sector=0.30)
+        targets = target_weights_from_scores(
+            comp.dropna(), n=15, max_position=0.12, sectors=sectors, max_sector=0.30,
+            vols=vols, inv_vol_weight=float(settings.get("risk", {})
+                                            .get("self_learning", {}).get("inv_vol_weight", 0.0)))
         mult = scores.macro.exposure_multiplier if scores.macro else 1.0
         if mult < 1.0:
             targets = {s: w * mult for s, w in targets.items()}
-        trades = rebalance_to_targets(state, targets, prices, txn_cost=0.0)
+        trades = rebalance_to_targets(state, targets, prices, txn_cost=0.0,
+                                      band=float(pcfg.get("rebalance_band", 0.0)))
         wtxt = ", ".join(f"{f}:{w:.2f}" for f, w in sorted(weights.items(),
                                                            key=lambda kv: -kv[1])[:4])
         actions.append(f"PAPER — rebuilt with learned weights ({wtxt})")

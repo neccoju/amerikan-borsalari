@@ -46,16 +46,26 @@ portfolios:
   active_txn_cost: 1.5           # USD per buy/sell
   self_learning_capital: 1000.0  # paper only
   rebalance: "month_end"         # model portfolios rebalance on last trading day
+  rebalance_band: 0.015          # no-trade zone: skip drifts < 1.5% of the book
+                                 # (cuts turnover; only meaningful deltas trade)
   active_initial_deploy_pct: 0.25
   min_cash_buffer_pct: 0.05
   # All sleeves persist here across runs (committed back by the workflow) so they
   # hold real positions bought at live prices and accumulate real P/L.
   state_path: "state/portfolios.json"
 
+# Per-sleeve risk controls. inv_vol_weight blends score-proportional sizing
+# toward inverse-volatility (risk parity); circuit_breaker de-risks a sinking
+# book between rebalances (drawdown from peak equity), trimming to
+# circuit_breaker_cash fraction in cash.
 risk:
-  growth:    { max_position: 0.12, max_sector: 0.30, max_names: 15 }
-  defensive: { max_position: 0.10, max_sector: 0.25, max_names: 15, max_beta: 0.80 }
-  balanced:  { max_position: 0.10, max_sector: 0.28, max_names: 15 }
+  growth:    { max_position: 0.12, max_sector: 0.30, max_names: 15,
+               inv_vol_weight: 0.30, circuit_breaker: 0.25, circuit_breaker_cash: 0.50 }
+  defensive: { max_position: 0.10, max_sector: 0.25, max_names: 15, max_beta: 0.80,
+               inv_vol_weight: 0.55, circuit_breaker: 0.18, circuit_breaker_cash: 0.50 }
+  balanced:  { max_position: 0.10, max_sector: 0.28, max_names: 15,
+               inv_vol_weight: 0.40, circuit_breaker: 0.22, circuit_breaker_cash: 0.50 }
+  self_learning: { inv_vol_weight: 0.35 }
   active:    { max_position: 0.15, max_sector: 0.35, max_daily_turnover: 0.25,
                min_expected_edge_after_cost: 0.0,
                trail_drawdown: -0.15 }   # exit when 15% below the position's high-water mark

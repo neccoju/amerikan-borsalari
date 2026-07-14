@@ -10,7 +10,6 @@ All wrapped: any failure degrades to a clean skip.
 from __future__ import annotations
 
 import datetime as dt
-import time
 from dataclasses import dataclass, field
 
 from ..utils.logging import get_logger
@@ -53,7 +52,7 @@ def _parse_surprises(symbol: str, rows: list[dict], since: dt.date) -> list[Earn
 
 def fetch_earnings(symbols: list[str], api_key: str | None, *,
                    lookback_days: int = 90, days_ahead: int = 10,
-                   max_symbols: int = 120, rate_per_min: int = 40,
+                   max_symbols: int = 120, rate_per_min: int = 55,
                    timeout: float = 10.0) -> EarningsResult:
     res = EarningsResult()
     if not api_key:
@@ -61,12 +60,16 @@ def fetch_earnings(symbols: list[str], api_key: str | None, *,
         return res
     import requests
 
+    from ..utils.ratelimit import get_limiter
+
+    limiter = get_limiter("finnhub", rate_per_min)
     session = requests.Session()
     today = dt.date.today()
     since = today - dt.timedelta(days=lookback_days)
     res.enabled = True
 
     # ---- upcoming calendar: one call for the whole universe window ----
+    limiter.acquire()
     try:
         resp = session.get(_CALENDAR_URL, params={
             "from": today.isoformat(),
@@ -86,9 +89,9 @@ def fetch_earnings(symbols: list[str], api_key: str | None, *,
     except Exception as exc:  # noqa: BLE001
         res.errors.append(f"calendar: {exc}")
 
-    # ---- per-symbol surprises (bounded, rate-limited) ----
-    interval = 60.0 / max(1, rate_per_min)
-    for i, sym in enumerate(symbols[:max_symbols]):
+    # ---- per-symbol surprises (bounded, globally rate-limited) ----
+    for sym in symbols[:max_symbols]:
+        limiter.acquire()
         try:
             resp = session.get(_SURPRISE_URL, params={"symbol": sym, "token": api_key},
                                timeout=timeout)
@@ -96,8 +99,6 @@ def fetch_earnings(symbols: list[str], api_key: str | None, *,
             res.surprises.extend(_parse_surprises(sym, resp.json() or [], since))
         except Exception as exc:  # noqa: BLE001
             res.errors.append(f"{sym}: {exc}")
-        if i + 1 < min(len(symbols), max_symbols):
-            time.sleep(interval)
     log.info("Earnings: %d surprises, %d upcoming reports",
              len(res.surprises), len(res.upcoming))
     return res

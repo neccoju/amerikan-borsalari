@@ -25,6 +25,12 @@
   <h1>usbot — Daily Report</h1>
   <div class="muted">{{ ctx.date }} · Market: {{ ctx.market_status }} ·
     Month-end rebalance: <b>{{ 'YES' if ctx.is_month_end else 'no' }}</b></div>
+  {% if ctx.risk_alerts %}
+  <div style="margin:12px 0; padding:10px 12px; border-radius:6px;
+              background:#fce8e6; border:1px solid #f5c2bd; color:#c5221f;">
+    {% for a in ctx.risk_alerts %}<div>⚠️ <b>RISK:</b> {{ a }}</div>{% endfor %}
+  </div>
+  {% endif %}
 
   {% if ctx.dashboard_url %}
   <div style="margin:14px 0;">

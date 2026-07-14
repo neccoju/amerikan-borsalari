@@ -11,7 +11,6 @@ are converted here to yfinance conventions (decimals, absolute USD).
 """
 from __future__ import annotations
 
-import time
 
 from ..utils.logging import get_logger
 
@@ -50,33 +49,33 @@ def _one(session, sym: str, api_key: str, timeout: float) -> dict[str, float]:
 
 
 def fetch_finnhub_fundamentals(symbols: list[str], api_key: str | None,
-                               max_calls: int = 150, rate_per_min: int = 40,
+                               max_calls: int = 150, rate_per_min: int = 55,
                                timeout: float = 10.0) -> dict[str, dict[str, float]]:
     """Best-effort metrics for up to ``max_calls`` symbols.
 
-    ``rate_per_min`` is deliberately below the free tier's 60/min so the news
-    module (same shared API quota, runs right after) doesn't start its first
-    minute rate-limited. Per-symbol isolation; empty dict when the key is
-    missing. With the 7-day fundamentals cache the bounded budget converges to
-    full universe coverage over a few runs and then just rolls the weekly
-    refresh.
+    Paced through the process-wide Finnhub limiter shared with insider, earnings
+    and news, so the free-tier quota is respected globally (no cross-module
+    bursts). Per-symbol isolation; empty dict when the key is missing. With the
+    7-day cache the bounded budget converges to full universe coverage over a few
+    runs and then just rolls the weekly refresh.
     """
     if not api_key or not symbols:
         return {}
     import requests
 
+    from ..utils.ratelimit import get_limiter
+
+    limiter = get_limiter("finnhub", rate_per_min)
     session = requests.Session()
     out: dict[str, dict[str, float]] = {}
-    interval = 60.0 / max(1, rate_per_min)
-    for i, sym in enumerate(symbols[:max_calls]):
+    for sym in symbols[:max_calls]:
+        limiter.acquire()
         try:
             metrics = _one(session, sym, api_key, timeout)
             if metrics:
                 out[sym] = metrics
         except Exception as exc:  # noqa: BLE001
             log.debug("finnhub metrics failed for %s: %s", sym, exc)
-        if i + 1 < min(len(symbols), max_calls):
-            time.sleep(interval)
     log.info("Finnhub fundamentals: %d/%d symbols (budget %d)",
              len(out), min(len(symbols), max_calls), max_calls)
     return out

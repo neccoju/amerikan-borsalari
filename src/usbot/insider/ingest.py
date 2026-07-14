@@ -13,7 +13,6 @@ signal (see insider.score).
 from __future__ import annotations
 
 import datetime as dt
-import time
 from dataclasses import dataclass, field
 
 from ..utils.logging import get_logger
@@ -64,7 +63,7 @@ def _parse_rows(symbol: str, rows: list[dict], since: dt.date) -> list[InsiderTr
 
 def fetch_insider_trades(symbols: list[str], api_key: str | None, *,
                          lookback_days: int = 90, max_symbols: int = 120,
-                         rate_per_min: int = 40, timeout: float = 10.0) -> InsiderResult:
+                         rate_per_min: int = 55, timeout: float = 10.0) -> InsiderResult:
     """Form 4 buys/sells for up to ``max_symbols`` names in the last window."""
     res = InsiderResult()
     if not api_key:
@@ -75,12 +74,15 @@ def fetch_insider_trades(symbols: list[str], api_key: str | None, *,
         return res
     import requests
 
+    from ..utils.ratelimit import get_limiter
+
+    limiter = get_limiter("finnhub", rate_per_min)
     session = requests.Session()
     since = dt.date.today() - dt.timedelta(days=lookback_days)
     frm, to = since.isoformat(), dt.date.today().isoformat()
-    interval = 60.0 / max(1, rate_per_min)
     res.enabled = True
-    for i, sym in enumerate(symbols[:max_symbols]):
+    for sym in symbols[:max_symbols]:
+        limiter.acquire()
         try:
             resp = session.get(_URL, params={"symbol": sym, "from": frm, "to": to,
                                              "token": api_key}, timeout=timeout)
@@ -90,8 +92,6 @@ def fetch_insider_trades(symbols: list[str], api_key: str | None, *,
             res.symbols_seen += 1
         except Exception as exc:  # noqa: BLE001
             res.errors.append(f"{sym}: {exc}")
-        if i + 1 < min(len(symbols), max_symbols):
-            time.sleep(interval)
     log.info("Insider: %d Form-4 P/S trades across %d symbols",
              len(res.trades), res.symbols_seen)
     return res
