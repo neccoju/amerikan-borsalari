@@ -27,10 +27,18 @@ adaptive self-learning sleeve. See [`docs/`](docs/) for the full design.
   volatility-scaled momentum rank (Barroso & Santa-Clara 2015) prefers smooth
   trends over crash-prone ones.
 - **Alt-data factors:** insider (SEC Form 4) opportunistic *cluster buys*
-  (Cohen–Malloy–Pomorski 2012) and post-earnings-announcement drift (PEAD;
-  Bernard–Thomas), both via Finnhub's free tier, feed the composite. The Active
-  sleeve also enforces an **earnings blackout** — it won't open a new position
-  within a few days of a scheduled report (no accidental binary earnings bets).
+  (Cohen–Malloy–Pomorski 2012), post-earnings-announcement drift (PEAD;
+  Bernard–Thomas) via Finnhub's free tier, and a keyless **short-interest**
+  factor (high/rising short interest is bearish — Boehmer–Jones–Zhang 2008,
+  Rapach–Ringgenberg–Zhou 2016; derived from the yfinance fundamentals already
+  fetched) all feed the composite. The Active sleeve also enforces an **earnings
+  blackout** — it won't open a new position within a few days of a scheduled
+  report (no accidental binary earnings bets).
+- **Multiple-testing-aware backtest:** `usbot backtest` reports the Probabilistic
+  and **Deflated Sharpe Ratio** (López de Prado 2014) — pass `--trials N` for the
+  number of strategy variants explored and the Sharpe is deflated by the return
+  you'd expect from luck alone after that many trials, so a strategy that merely
+  won a big search stops looking significant.
 - **Sentiment engine is swappable:** VADER by default (keyless, fast); set
   `news.sentiment_model: finbert` + install the `[finbert]` extra to use the
   finance-domain FinBERT model (heavier — adds torch; best with a persistent
@@ -72,7 +80,8 @@ python -m usbot run --force --dry-run
 python -m usbot status
 
 # Run a look-ahead-safe momentum backtest vs a benchmark (needs price history)
-python -m usbot backtest --start 2015-01-01 --benchmark SPY --top-n 10 --cost-bps 10
+# --trials N deflates the Sharpe for multiple testing (Deflated Sharpe Ratio)
+python -m usbot backtest --start 2015-01-01 --benchmark SPY --top-n 10 --cost-bps 10 --trials 20
 ```
 
 Run the tests:
