@@ -3,14 +3,8 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 503.965007,
+      "cash": 630.111842,
       "holdings": [
-        {
-          "symbol": "AMD",
-          "shares": 0.25747707,
-          "avg_cost": 508.890015,
-          "high_water": 548.130005
-        },
         {
           "symbol": "BNY",
           "shares": 1.41354978,
@@ -42,7 +36,22 @@
           "high_water": 228.490005
         }
       ],
-      "pending_orders": [],
+      "pending_orders": [
+        {
+          "symbol": "FIVE",
+          "notional": 192.33,
+          "score": 74.9,
+          "reason": "entry(score=75)",
+          "decided_date": "2026-07-17"
+        },
+        {
+          "symbol": "KRYS",
+          "notional": 140.28,
+          "score": 73.2,
+          "reason": "entry(score=73)",
+          "decided_date": "2026-07-17"
+        }
+      ],
       "history": [
         {
           "date": "2026-06-29",
@@ -108,9 +117,14 @@
           "date": "2026-07-16",
           "total_value": 1375.96,
           "cash": 503.97
+        },
+        {
+          "date": "2026-07-17",
+          "total_value": 1365.85,
+          "cash": 630.11
         }
       ],
-      "last_decision_date": "2026-07-16",
+      "last_decision_date": "2026-07-17",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -366,9 +380,20 @@
           "price": 353.809998,
           "cost": 1.5,
           "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-07-17",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "AMD",
+          "shares": 0.25747707,
+          "price": 495.76001,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
         }
       ],
-      "updated_at": "2026-07-16T20:39:18Z"
+      "updated_at": "2026-07-17T20:38:23Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -532,6 +557,11 @@
           "date": "2026-07-16",
           "total_value": 940.58,
           "cash": 705.25
+        },
+        {
+          "date": "2026-07-17",
+          "total_value": 946.16,
+          "cash": 705.25
         }
       ],
       "last_decision_date": null,
@@ -550,7 +580,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-16T20:39:18Z"
+      "updated_at": "2026-07-17T20:38:23Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -714,6 +744,11 @@
           "date": "2026-07-16",
           "total_value": 939.67,
           "cash": 745.72
+        },
+        {
+          "date": "2026-07-17",
+          "total_value": 949.17,
+          "cash": 745.72
         }
       ],
       "last_decision_date": null,
@@ -732,7 +767,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-16T20:39:18Z"
+      "updated_at": "2026-07-17T20:38:23Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -896,6 +931,11 @@
           "date": "2026-07-16",
           "total_value": 951.95,
           "cash": 731.85
+        },
+        {
+          "date": "2026-07-17",
+          "total_value": 963.6,
+          "cash": 731.85
         }
       ],
       "last_decision_date": null,
@@ -914,7 +954,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-16T20:39:18Z"
+      "updated_at": "2026-07-17T20:38:23Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -1077,6 +1117,11 @@
         {
           "date": "2026-07-16",
           "total_value": 948.93,
+          "cash": 712.72
+        },
+        {
+          "date": "2026-07-17",
+          "total_value": 961.43,
           "cash": 712.72
         }
       ],
@@ -4128,7 +4173,7 @@
           "reason": "Paper rebuild with learned weights (fundamental:0.33, technical:0.27, macro:0.16, news:0.13)"
         }
       ],
-      "updated_at": "2026-07-16T20:39:18Z"
+      "updated_at": "2026-07-17T20:38:23Z"
     }
   }
 }
