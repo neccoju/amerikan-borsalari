@@ -3,7 +3,7 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 630.111842,
+      "cash": 393.110039,
       "holdings": [
         {
           "symbol": "BNY",
@@ -12,16 +12,22 @@
           "high_water": 162.350006
         },
         {
-          "symbol": "DELL",
-          "shares": 0.26214569,
-          "avg_cost": 427.109985,
-          "high_water": 457.540009
+          "symbol": "FIVE",
+          "shares": 0.91248965,
+          "avg_cost": 210.774994,
+          "high_water": 210.774994
         },
         {
           "symbol": "ILMN",
           "shares": 0.50795772,
           "avg_cost": 187.809998,
           "high_water": 191.199997
+        },
+        {
+          "symbol": "KRYS",
+          "shares": 0.39515493,
+          "avg_cost": 355.0,
+          "high_water": 355.0
         },
         {
           "symbol": "LLY",
@@ -38,18 +44,18 @@
       ],
       "pending_orders": [
         {
-          "symbol": "FIVE",
-          "notional": 192.33,
-          "score": 74.9,
-          "reason": "entry(score=75)",
-          "decided_date": "2026-07-17"
+          "symbol": "LQDA",
+          "notional": 92.36,
+          "score": 72.7,
+          "reason": "entry(score=73)",
+          "decided_date": "2026-07-20"
         },
         {
-          "symbol": "KRYS",
-          "notional": 140.28,
-          "score": 73.2,
-          "reason": "entry(score=73)",
-          "decided_date": "2026-07-17"
+          "symbol": "ROST",
+          "notional": 184.73,
+          "score": 72.4,
+          "reason": "entry(score=72)",
+          "decided_date": "2026-07-20"
         }
       ],
       "history": [
@@ -122,9 +128,14 @@
           "date": "2026-07-17",
           "total_value": 1365.85,
           "cash": 630.11
+        },
+        {
+          "date": "2026-07-20",
+          "total_value": 1340.98,
+          "cash": 393.11
         }
       ],
-      "last_decision_date": "2026-07-17",
+      "last_decision_date": "2026-07-20",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -391,9 +402,42 @@
           "price": 495.76001,
           "cost": 1.5,
           "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-07-20",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "FIVE",
+          "shares": 0.91248965,
+          "price": 210.774994,
+          "cost": 1.5,
+          "reason": "entry(score=75) [T+1 open]"
+        },
+        {
+          "date": "2026-07-20",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "KRYS",
+          "shares": 0.39515493,
+          "price": 355.0,
+          "cost": 1.5,
+          "reason": "entry(score=73) [T+1 open]"
+        },
+        {
+          "date": "2026-07-20",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "DELL",
+          "shares": 0.26214569,
+          "price": 381.880005,
+          "cost": 1.5,
+          "reason": "trailing_stop(-16.5% from high)"
         }
       ],
-      "updated_at": "2026-07-17T20:38:23Z"
+      "updated_at": "2026-07-20T20:38:13Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -562,6 +606,11 @@
           "date": "2026-07-17",
           "total_value": 946.16,
           "cash": 705.25
+        },
+        {
+          "date": "2026-07-20",
+          "total_value": 939.63,
+          "cash": 705.25
         }
       ],
       "last_decision_date": null,
@@ -580,7 +629,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-17T20:38:23Z"
+      "updated_at": "2026-07-20T20:38:13Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -749,6 +798,11 @@
           "date": "2026-07-17",
           "total_value": 949.17,
           "cash": 745.72
+        },
+        {
+          "date": "2026-07-20",
+          "total_value": 938.42,
+          "cash": 745.72
         }
       ],
       "last_decision_date": null,
@@ -767,7 +821,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-17T20:38:23Z"
+      "updated_at": "2026-07-20T20:38:13Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -936,6 +990,11 @@
           "date": "2026-07-17",
           "total_value": 963.6,
           "cash": 731.85
+        },
+        {
+          "date": "2026-07-20",
+          "total_value": 950.96,
+          "cash": 731.85
         }
       ],
       "last_decision_date": null,
@@ -954,7 +1013,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-17T20:38:23Z"
+      "updated_at": "2026-07-20T20:38:13Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -1122,6 +1181,11 @@
         {
           "date": "2026-07-17",
           "total_value": 961.43,
+          "cash": 712.72
+        },
+        {
+          "date": "2026-07-20",
+          "total_value": 947.87,
           "cash": 712.72
         }
       ],
@@ -4173,7 +4237,7 @@
           "reason": "Paper rebuild with learned weights (fundamental:0.33, technical:0.27, macro:0.16, news:0.13)"
         }
       ],
-      "updated_at": "2026-07-17T20:38:23Z"
+      "updated_at": "2026-07-20T20:38:13Z"
     }
   }
 }
