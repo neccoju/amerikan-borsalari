@@ -3,13 +3,19 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 240.933279,
+      "cash": 66.313279,
       "holdings": [
         {
           "symbol": "BNY",
           "shares": 1.41354978,
           "avg_cost": 152.910004,
           "high_water": 162.350006
+        },
+        {
+          "symbol": "CF",
+          "shares": 1.36864577,
+          "avg_cost": 126.489998,
+          "high_water": 126.489998
         },
         {
           "symbol": "FIVE",
@@ -39,24 +45,16 @@
           "symbol": "ROST",
           "shares": 0.77826929,
           "avg_cost": 237.360001,
-          "high_water": 238.210007
+          "high_water": 238.889999
         },
         {
           "symbol": "SPG",
           "shares": 0.38084117,
           "avg_cost": 219.490005,
-          "high_water": 228.490005
+          "high_water": 229.779999
         }
       ],
-      "pending_orders": [
-        {
-          "symbol": "CF",
-          "notional": 173.12,
-          "score": 71.3,
-          "reason": "entry(score=71)",
-          "decided_date": "2026-07-23"
-        }
-      ],
+      "pending_orders": [],
       "history": [
         {
           "date": "2026-06-29",
@@ -147,9 +145,14 @@
           "date": "2026-07-23",
           "total_value": 1354.71,
           "cash": 240.93
+        },
+        {
+          "date": "2026-07-24",
+          "total_value": 1355.37,
+          "cash": 66.31
         }
       ],
-      "last_decision_date": "2026-07-23",
+      "last_decision_date": "2026-07-24",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -482,9 +485,20 @@
           "price": 327.5,
           "cost": 1.5,
           "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-07-24",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "CF",
+          "shares": 1.36864577,
+          "price": 126.489998,
+          "cost": 1.5,
+          "reason": "entry(score=71) [T+1 open]"
         }
       ],
-      "updated_at": "2026-07-23T20:40:20Z"
+      "updated_at": "2026-07-24T20:40:20Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -673,6 +687,11 @@
           "date": "2026-07-23",
           "total_value": 951.63,
           "cash": 705.25
+        },
+        {
+          "date": "2026-07-24",
+          "total_value": 940.68,
+          "cash": 705.25
         }
       ],
       "last_decision_date": null,
@@ -691,7 +710,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-23T20:40:20Z"
+      "updated_at": "2026-07-24T20:40:19Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -880,6 +899,11 @@
           "date": "2026-07-23",
           "total_value": 948.29,
           "cash": 745.72
+        },
+        {
+          "date": "2026-07-24",
+          "total_value": 939.59,
+          "cash": 745.72
         }
       ],
       "last_decision_date": null,
@@ -898,7 +922,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-23T20:40:20Z"
+      "updated_at": "2026-07-24T20:40:19Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -1087,6 +1111,11 @@
           "date": "2026-07-23",
           "total_value": 962.51,
           "cash": 731.85
+        },
+        {
+          "date": "2026-07-24",
+          "total_value": 952.52,
+          "cash": 731.85
         }
       ],
       "last_decision_date": null,
@@ -1105,7 +1134,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-23T20:40:20Z"
+      "updated_at": "2026-07-24T20:40:19Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -1293,6 +1322,11 @@
         {
           "date": "2026-07-23",
           "total_value": 960.27,
+          "cash": 712.72
+        },
+        {
+          "date": "2026-07-24",
+          "total_value": 949.54,
           "cash": 712.72
         }
       ],
@@ -4344,7 +4378,7 @@
           "reason": "Paper rebuild with learned weights (fundamental:0.33, technical:0.27, macro:0.16, news:0.13)"
         }
       ],
-      "updated_at": "2026-07-23T20:40:20Z"
+      "updated_at": "2026-07-24T20:40:20Z"
     }
   }
 }
