@@ -15,7 +15,7 @@
           "symbol": "CF",
           "shares": 1.36864577,
           "avg_cost": 126.489998,
-          "high_water": 126.489998
+          "high_water": 127.349998
         },
         {
           "symbol": "FIVE",
@@ -45,7 +45,7 @@
           "symbol": "ROST",
           "shares": 0.77826929,
           "avg_cost": 237.360001,
-          "high_water": 243.350006
+          "high_water": 251.960007
         },
         {
           "symbol": "SPG",
@@ -160,9 +160,14 @@
           "date": "2026-07-28",
           "total_value": 1359.81,
           "cash": 66.31
+        },
+        {
+          "date": "2026-07-29",
+          "total_value": 1371.39,
+          "cash": 66.31
         }
       ],
-      "last_decision_date": "2026-07-28",
+      "last_decision_date": "2026-07-29",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -508,7 +513,7 @@
           "reason": "entry(score=71) [T+1 open]"
         }
       ],
-      "updated_at": "2026-07-28T20:37:49Z"
+      "updated_at": "2026-07-29T20:40:24Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -712,6 +717,11 @@
           "date": "2026-07-28",
           "total_value": 937.39,
           "cash": 705.25
+        },
+        {
+          "date": "2026-07-29",
+          "total_value": 916.78,
+          "cash": 705.25
         }
       ],
       "last_decision_date": null,
@@ -730,7 +740,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-28T20:37:49Z"
+      "updated_at": "2026-07-29T20:40:23Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -934,6 +944,11 @@
           "date": "2026-07-28",
           "total_value": 935.38,
           "cash": 745.72
+        },
+        {
+          "date": "2026-07-29",
+          "total_value": 919.84,
+          "cash": 745.72
         }
       ],
       "last_decision_date": null,
@@ -952,7 +967,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-28T20:37:49Z"
+      "updated_at": "2026-07-29T20:40:24Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -1156,6 +1171,11 @@
           "date": "2026-07-28",
           "total_value": 949.12,
           "cash": 731.85
+        },
+        {
+          "date": "2026-07-29",
+          "total_value": 929.85,
+          "cash": 731.85
         }
       ],
       "last_decision_date": null,
@@ -1174,7 +1194,7 @@
           "reason": "Month-end rebalance into 15 names at live prices"
         }
       ],
-      "updated_at": "2026-07-28T20:37:49Z"
+      "updated_at": "2026-07-29T20:40:24Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -1377,6 +1397,11 @@
         {
           "date": "2026-07-28",
           "total_value": 945.89,
+          "cash": 712.72
+        },
+        {
+          "date": "2026-07-29",
+          "total_value": 925.21,
           "cash": 712.72
         }
       ],
@@ -4428,7 +4453,7 @@
           "reason": "Paper rebuild with learned weights (fundamental:0.33, technical:0.27, macro:0.16, news:0.13)"
         }
       ],
-      "updated_at": "2026-07-28T20:37:49Z"
+      "updated_at": "2026-07-29T20:40:24Z"
     }
   }
 }
