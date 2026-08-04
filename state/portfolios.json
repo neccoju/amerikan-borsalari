@@ -3,7 +3,7 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 284.806413,
+      "cash": 104.536413,
       "holdings": [
         {
           "symbol": "BNY",
@@ -18,10 +18,16 @@
           "high_water": 127.349998
         },
         {
+          "symbol": "DINO",
+          "shares": 2.03517768,
+          "avg_cost": 87.839996,
+          "high_water": 88.25
+        },
+        {
           "symbol": "FIVE",
           "shares": 0.91248965,
           "avg_cost": 210.774994,
-          "high_water": 219.169998
+          "high_water": 222.300003
         },
         {
           "symbol": "ILMN",
@@ -48,15 +54,7 @@
           "high_water": 236.699997
         }
       ],
-      "pending_orders": [
-        {
-          "symbol": "DINO",
-          "notional": 178.77,
-          "score": 75.3,
-          "reason": "entry(score=75)",
-          "decided_date": "2026-08-03"
-        }
-      ],
+      "pending_orders": [],
       "history": [
         {
           "date": "2026-06-29",
@@ -182,9 +180,14 @@
           "date": "2026-08-03",
           "total_value": 1348.42,
           "cash": 284.81
+        },
+        {
+          "date": "2026-08-04",
+          "total_value": 1358.58,
+          "cash": 104.54
         }
       ],
-      "last_decision_date": "2026-08-03",
+      "last_decision_date": "2026-08-04",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -539,9 +542,20 @@
           "price": 1121.359985,
           "cost": 1.5,
           "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-08-04",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "DINO",
+          "shares": 2.03517768,
+          "price": 87.839996,
+          "cost": 1.5,
+          "reason": "entry(score=75) [T+1 open]"
         }
       ],
-      "updated_at": "2026-08-03T20:48:17Z"
+      "updated_at": "2026-08-04T20:38:22Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -806,6 +820,11 @@
         {
           "date": "2026-08-03",
           "total_value": 928.26,
+          "cash": -89.27
+        },
+        {
+          "date": "2026-08-04",
+          "total_value": 963.12,
           "cash": -89.27
         }
       ],
@@ -1078,7 +1097,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-03T20:48:17Z"
+      "updated_at": "2026-08-04T20:38:22Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -1362,6 +1381,11 @@
           "date": "2026-08-03",
           "total_value": 930.21,
           "cash": -111.21
+        },
+        {
+          "date": "2026-08-04",
+          "total_value": 939.18,
+          "cash": -111.21
         }
       ],
       "last_decision_date": null,
@@ -1600,7 +1624,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-03T20:48:17Z"
+      "updated_at": "2026-08-04T20:38:22Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -1859,6 +1883,11 @@
         {
           "date": "2026-08-03",
           "total_value": 941.15,
+          "cash": -72.34
+        },
+        {
+          "date": "2026-08-04",
+          "total_value": 970.44,
           "cash": -72.34
         }
       ],
@@ -2131,7 +2160,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-03T20:48:17Z"
+      "updated_at": "2026-08-04T20:38:22Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -2384,6 +2413,11 @@
         {
           "date": "2026-08-03",
           "total_value": 935.38,
+          "cash": -63.38
+        },
+        {
+          "date": "2026-08-04",
+          "total_value": 969.5,
           "cash": -63.38
         }
       ],
@@ -12702,7 +12736,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.32, technical:0.24, news:0.12, institutional:0.10)"
         }
       ],
-      "updated_at": "2026-08-03T20:48:17Z"
+      "updated_at": "2026-08-04T20:38:22Z"
     }
   }
 }
