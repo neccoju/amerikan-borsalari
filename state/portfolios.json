@@ -27,7 +27,7 @@
           "symbol": "FIVE",
           "shares": 0.91248965,
           "avg_cost": 210.774994,
-          "high_water": 222.300003
+          "high_water": 224.160004
         },
         {
           "symbol": "ILMN",
@@ -39,13 +39,13 @@
           "symbol": "LQDA",
           "shares": 1.17357057,
           "avg_cost": 78.699997,
-          "high_water": 89.029999
+          "high_water": 89.120003
         },
         {
           "symbol": "ROST",
           "shares": 0.77826929,
           "avg_cost": 237.360001,
-          "high_water": 252.910004
+          "high_water": 253.220001
         },
         {
           "symbol": "SPG",
@@ -185,9 +185,14 @@
           "date": "2026-08-04",
           "total_value": 1358.58,
           "cash": 104.54
+        },
+        {
+          "date": "2026-08-05",
+          "total_value": 1350.89,
+          "cash": 104.54
         }
       ],
-      "last_decision_date": "2026-08-04",
+      "last_decision_date": "2026-08-05",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -555,7 +560,7 @@
           "reason": "entry(score=75) [T+1 open]"
         }
       ],
-      "updated_at": "2026-08-04T20:38:22Z"
+      "updated_at": "2026-08-05T20:38:05Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -825,6 +830,11 @@
         {
           "date": "2026-08-04",
           "total_value": 963.12,
+          "cash": -89.27
+        },
+        {
+          "date": "2026-08-05",
+          "total_value": 954.56,
           "cash": -89.27
         }
       ],
@@ -1097,7 +1107,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-04T20:38:22Z"
+      "updated_at": "2026-08-05T20:38:05Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -1386,6 +1396,11 @@
           "date": "2026-08-04",
           "total_value": 939.18,
           "cash": -111.21
+        },
+        {
+          "date": "2026-08-05",
+          "total_value": 925.61,
+          "cash": -111.21
         }
       ],
       "last_decision_date": null,
@@ -1624,7 +1639,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-04T20:38:22Z"
+      "updated_at": "2026-08-05T20:38:05Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -1888,6 +1903,11 @@
         {
           "date": "2026-08-04",
           "total_value": 970.44,
+          "cash": -72.34
+        },
+        {
+          "date": "2026-08-05",
+          "total_value": 960.81,
           "cash": -72.34
         }
       ],
@@ -2160,7 +2180,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-04T20:38:22Z"
+      "updated_at": "2026-08-05T20:38:05Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -2418,6 +2438,11 @@
         {
           "date": "2026-08-04",
           "total_value": 969.5,
+          "cash": -63.38
+        },
+        {
+          "date": "2026-08-05",
+          "total_value": 957.03,
           "cash": -63.38
         }
       ],
@@ -12736,7 +12761,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.32, technical:0.24, news:0.12, institutional:0.10)"
         }
       ],
-      "updated_at": "2026-08-04T20:38:22Z"
+      "updated_at": "2026-08-05T20:38:05Z"
     }
   }
 }
