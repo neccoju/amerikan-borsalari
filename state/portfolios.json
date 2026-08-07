@@ -3,19 +3,13 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 104.536413,
+      "cash": 259.541055,
       "holdings": [
         {
           "symbol": "BNY",
           "shares": 1.41354978,
           "avg_cost": 152.910004,
           "high_water": 162.350006
-        },
-        {
-          "symbol": "CF",
-          "shares": 1.36864577,
-          "avg_cost": 126.489998,
-          "high_water": 127.349998
         },
         {
           "symbol": "DINO",
@@ -27,7 +21,7 @@
           "symbol": "FIVE",
           "shares": 0.91248965,
           "avg_cost": 210.774994,
-          "high_water": 224.160004
+          "high_water": 244.369995
         },
         {
           "symbol": "ILMN",
@@ -39,7 +33,7 @@
           "symbol": "LQDA",
           "shares": 1.17357057,
           "avg_cost": 78.699997,
-          "high_water": 89.120003
+          "high_water": 90.220001
         },
         {
           "symbol": "ROST",
@@ -54,7 +48,15 @@
           "high_water": 236.699997
         }
       ],
-      "pending_orders": [],
+      "pending_orders": [
+        {
+          "symbol": "GEN",
+          "notional": 192.44,
+          "score": 71.8,
+          "reason": "entry(score=72)",
+          "decided_date": "2026-08-07"
+        }
+      ],
       "history": [
         {
           "date": "2026-06-29",
@@ -190,9 +192,14 @@
           "date": "2026-08-05",
           "total_value": 1350.89,
           "cash": 104.54
+        },
+        {
+          "date": "2026-08-07",
+          "total_value": 1340.6,
+          "cash": 259.54
         }
       ],
-      "last_decision_date": "2026-08-05",
+      "last_decision_date": "2026-08-07",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -558,9 +565,20 @@
           "price": 87.839996,
           "cost": 1.5,
           "reason": "entry(score=75) [T+1 open]"
+        },
+        {
+          "date": "2026-08-07",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "CF",
+          "shares": 1.36864577,
+          "price": 114.349998,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
         }
       ],
-      "updated_at": "2026-08-05T20:38:05Z"
+      "updated_at": "2026-08-07T20:40:01Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -836,6 +854,11 @@
           "date": "2026-08-05",
           "total_value": 954.56,
           "cash": -89.27
+        },
+        {
+          "date": "2026-08-07",
+          "total_value": 940.67,
+          "cash": -89.27
         }
       ],
       "last_decision_date": null,
@@ -1107,7 +1130,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-05T20:38:05Z"
+      "updated_at": "2026-08-07T20:40:01Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -1401,6 +1424,11 @@
           "date": "2026-08-05",
           "total_value": 925.61,
           "cash": -111.21
+        },
+        {
+          "date": "2026-08-07",
+          "total_value": 917.32,
+          "cash": -111.21
         }
       ],
       "last_decision_date": null,
@@ -1639,7 +1667,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-05T20:38:05Z"
+      "updated_at": "2026-08-07T20:40:01Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -1908,6 +1936,11 @@
         {
           "date": "2026-08-05",
           "total_value": 960.81,
+          "cash": -72.34
+        },
+        {
+          "date": "2026-08-07",
+          "total_value": 946.07,
           "cash": -72.34
         }
       ],
@@ -2180,7 +2213,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-05T20:38:05Z"
+      "updated_at": "2026-08-07T20:40:01Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -2443,6 +2476,11 @@
         {
           "date": "2026-08-05",
           "total_value": 957.03,
+          "cash": -63.38
+        },
+        {
+          "date": "2026-08-07",
+          "total_value": 944.36,
           "cash": -63.38
         }
       ],
@@ -12761,7 +12799,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.32, technical:0.24, news:0.12, institutional:0.10)"
         }
       ],
-      "updated_at": "2026-08-05T20:38:05Z"
+      "updated_at": "2026-08-07T20:40:01Z"
     }
   }
 }
