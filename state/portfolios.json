@@ -3,7 +3,7 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 259.541055,
+      "cash": 148.095576,
       "holdings": [
         {
           "symbol": "BNY",
@@ -24,6 +24,12 @@
           "high_water": 244.369995
         },
         {
+          "symbol": "GEN",
+          "shares": 6.68194462,
+          "avg_cost": 28.799999,
+          "high_water": 29.290001
+        },
+        {
           "symbol": "ILMN",
           "shares": 0.50795772,
           "avg_cost": 187.809998,
@@ -33,28 +39,22 @@
           "symbol": "LQDA",
           "shares": 1.17357057,
           "avg_cost": 78.699997,
-          "high_water": 90.220001
+          "high_water": 91.029999
         },
         {
           "symbol": "ROST",
           "shares": 0.77826929,
           "avg_cost": 237.360001,
-          "high_water": 253.220001
-        },
-        {
-          "symbol": "SPG",
-          "shares": 0.38084117,
-          "avg_cost": 219.490005,
-          "high_water": 236.699997
+          "high_water": 254.824997
         }
       ],
       "pending_orders": [
         {
-          "symbol": "GEN",
-          "notional": 192.44,
-          "score": 71.8,
-          "reason": "entry(score=72)",
-          "decided_date": "2026-08-07"
+          "symbol": "NTRS",
+          "notional": 80.02,
+          "score": 77.7,
+          "reason": "entry(score=78)",
+          "decided_date": "2026-08-10"
         }
       ],
       "history": [
@@ -197,9 +197,14 @@
           "date": "2026-08-07",
           "total_value": 1340.6,
           "cash": 259.54
+        },
+        {
+          "date": "2026-08-10",
+          "total_value": 1359.95,
+          "cash": 148.1
         }
       ],
-      "last_decision_date": "2026-08-07",
+      "last_decision_date": "2026-08-10",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -576,9 +581,31 @@
           "price": 114.349998,
           "cost": 1.5,
           "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-08-10",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "GEN",
+          "shares": 6.68194462,
+          "price": 28.799999,
+          "cost": 1.5,
+          "reason": "entry(score=72) [T+1 open]"
+        },
+        {
+          "date": "2026-08-10",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "SPG",
+          "shares": 0.38084117,
+          "price": 220.550003,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
         }
       ],
-      "updated_at": "2026-08-07T20:40:01Z"
+      "updated_at": "2026-08-10T20:38:27Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -859,6 +886,11 @@
           "date": "2026-08-07",
           "total_value": 940.67,
           "cash": -89.27
+        },
+        {
+          "date": "2026-08-10",
+          "total_value": 940.25,
+          "cash": -89.27
         }
       ],
       "last_decision_date": null,
@@ -1130,7 +1162,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-07T20:40:01Z"
+      "updated_at": "2026-08-10T20:38:27Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -1429,6 +1461,11 @@
           "date": "2026-08-07",
           "total_value": 917.32,
           "cash": -111.21
+        },
+        {
+          "date": "2026-08-10",
+          "total_value": 926.28,
+          "cash": -111.21
         }
       ],
       "last_decision_date": null,
@@ -1667,7 +1704,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-07T20:40:01Z"
+      "updated_at": "2026-08-10T20:38:27Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -1942,6 +1979,11 @@
           "date": "2026-08-07",
           "total_value": 946.07,
           "cash": -72.34
+        },
+        {
+          "date": "2026-08-10",
+          "total_value": 942.01,
+          "cash": -72.34
         }
       ],
       "last_decision_date": null,
@@ -2213,7 +2255,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-07T20:40:01Z"
+      "updated_at": "2026-08-10T20:38:27Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -2481,6 +2523,11 @@
         {
           "date": "2026-08-07",
           "total_value": 944.36,
+          "cash": -63.38
+        },
+        {
+          "date": "2026-08-10",
+          "total_value": 932.28,
           "cash": -63.38
         }
       ],
@@ -12799,7 +12846,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.32, technical:0.24, news:0.12, institutional:0.10)"
         }
       ],
-      "updated_at": "2026-08-07T20:40:01Z"
+      "updated_at": "2026-08-10T20:38:27Z"
     }
   }
 }
