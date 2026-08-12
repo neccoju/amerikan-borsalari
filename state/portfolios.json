@@ -9,7 +9,7 @@
           "symbol": "BNY",
           "shares": 1.41354978,
           "avg_cost": 152.910004,
-          "high_water": 162.350006
+          "high_water": 162.929993
         },
         {
           "symbol": "DINO",
@@ -45,7 +45,7 @@
           "symbol": "NTRS",
           "shares": 0.42552512,
           "avg_cost": 188.050003,
-          "high_water": 188.050003
+          "high_water": 191.330002
         },
         {
           "symbol": "ROST",
@@ -205,9 +205,14 @@
           "date": "2026-08-11",
           "total_value": 1352.05,
           "cash": 66.58
+        },
+        {
+          "date": "2026-08-12",
+          "total_value": 1349.59,
+          "cash": 66.58
         }
       ],
-      "last_decision_date": "2026-08-11",
+      "last_decision_date": "2026-08-12",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -619,7 +624,7 @@
           "reason": "entry(score=78) [T+1 open]"
         }
       ],
-      "updated_at": "2026-08-11T20:38:53Z"
+      "updated_at": "2026-08-12T20:36:59Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -910,6 +915,11 @@
           "date": "2026-08-11",
           "total_value": 931.42,
           "cash": -89.27
+        },
+        {
+          "date": "2026-08-12",
+          "total_value": 938.23,
+          "cash": -89.27
         }
       ],
       "last_decision_date": null,
@@ -1181,7 +1191,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-11T20:38:53Z"
+      "updated_at": "2026-08-12T20:36:59Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -1490,6 +1500,11 @@
           "date": "2026-08-11",
           "total_value": 922.67,
           "cash": -111.21
+        },
+        {
+          "date": "2026-08-12",
+          "total_value": 932.41,
+          "cash": -111.21
         }
       ],
       "last_decision_date": null,
@@ -1739,7 +1754,7 @@
           "reason": "2:1 split \u2014 shares x2, cost basis adjusted (2026-08-11)"
         }
       ],
-      "updated_at": "2026-08-11T20:38:53Z"
+      "updated_at": "2026-08-12T20:36:59Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -2024,6 +2039,11 @@
           "date": "2026-08-11",
           "total_value": 936.01,
           "cash": -72.34
+        },
+        {
+          "date": "2026-08-12",
+          "total_value": 947.63,
+          "cash": -72.34
         }
       ],
       "last_decision_date": null,
@@ -2295,7 +2315,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-11T20:38:53Z"
+      "updated_at": "2026-08-12T20:36:59Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -2573,6 +2593,11 @@
         {
           "date": "2026-08-11",
           "total_value": 931.36,
+          "cash": -63.38
+        },
+        {
+          "date": "2026-08-12",
+          "total_value": 948.54,
           "cash": -63.38
         }
       ],
@@ -12891,7 +12916,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.32, technical:0.24, news:0.12, institutional:0.10)"
         }
       ],
-      "updated_at": "2026-08-11T20:38:53Z"
+      "updated_at": "2026-08-12T20:36:59Z"
     }
   }
 }
