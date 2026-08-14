@@ -3,25 +3,31 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 149.690012,
+      "cash": 66.260012,
       "holdings": [
         {
           "symbol": "BNY",
           "shares": 1.41354978,
           "avg_cost": 152.910004,
-          "high_water": 162.929993
+          "high_water": 163.240005
+        },
+        {
+          "symbol": "DAR",
+          "shares": 1.2348154,
+          "avg_cost": 66.349998,
+          "high_water": 67.040001
         },
         {
           "symbol": "DINO",
           "shares": 2.03517768,
           "avg_cost": 87.839996,
-          "high_water": 91.870003
+          "high_water": 93.669998
         },
         {
           "symbol": "FIVE",
           "shares": 0.91248965,
           "avg_cost": 210.774994,
-          "high_water": 244.369995
+          "high_water": 244.539993
         },
         {
           "symbol": "GEN",
@@ -39,7 +45,7 @@
           "symbol": "NTRS",
           "shares": 0.42552512,
           "avg_cost": 188.050003,
-          "high_water": 191.330002
+          "high_water": 191.410004
         },
         {
           "symbol": "ROST",
@@ -48,15 +54,7 @@
           "high_water": 254.824997
         }
       ],
-      "pending_orders": [
-        {
-          "symbol": "DAR",
-          "notional": 81.93,
-          "score": 77.9,
-          "reason": "entry(score=78)",
-          "decided_date": "2026-08-13"
-        }
-      ],
+      "pending_orders": [],
       "history": [
         {
           "date": "2026-06-29",
@@ -217,9 +215,14 @@
           "date": "2026-08-13",
           "total_value": 1353.71,
           "cash": 149.69
+        },
+        {
+          "date": "2026-08-14",
+          "total_value": 1347.01,
+          "cash": 66.26
         }
       ],
-      "last_decision_date": "2026-08-13",
+      "last_decision_date": "2026-08-14",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -640,9 +643,20 @@
           "price": 72.099998,
           "cost": 1.5,
           "reason": "trailing_stop(-20.8% from high)"
+        },
+        {
+          "date": "2026-08-14",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "DAR",
+          "shares": 1.2348154,
+          "price": 66.349998,
+          "cost": 1.5,
+          "reason": "entry(score=78) [T+1 open]"
         }
       ],
-      "updated_at": "2026-08-13T20:38:40Z"
+      "updated_at": "2026-08-14T20:37:47Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -943,6 +957,11 @@
           "date": "2026-08-13",
           "total_value": 944.94,
           "cash": -89.27
+        },
+        {
+          "date": "2026-08-14",
+          "total_value": 941.03,
+          "cash": -89.27
         }
       ],
       "last_decision_date": null,
@@ -1214,7 +1233,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-13T20:38:40Z"
+      "updated_at": "2026-08-14T20:37:47Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -1533,6 +1552,11 @@
           "date": "2026-08-13",
           "total_value": 939.88,
           "cash": -111.21
+        },
+        {
+          "date": "2026-08-14",
+          "total_value": 940.85,
+          "cash": -111.21
         }
       ],
       "last_decision_date": null,
@@ -1782,7 +1806,7 @@
           "reason": "2:1 split \u2014 shares x2, cost basis adjusted (2026-08-11)"
         }
       ],
-      "updated_at": "2026-08-13T20:38:40Z"
+      "updated_at": "2026-08-14T20:37:47Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -2077,6 +2101,11 @@
           "date": "2026-08-13",
           "total_value": 957.12,
           "cash": -72.34
+        },
+        {
+          "date": "2026-08-14",
+          "total_value": 957.64,
+          "cash": -72.34
         }
       ],
       "last_decision_date": null,
@@ -2348,7 +2377,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-13T20:38:40Z"
+      "updated_at": "2026-08-14T20:37:47Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -2636,6 +2665,11 @@
         {
           "date": "2026-08-13",
           "total_value": 962.45,
+          "cash": -63.38
+        },
+        {
+          "date": "2026-08-14",
+          "total_value": 960.67,
           "cash": -63.38
         }
       ],
@@ -12954,7 +12988,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.32, technical:0.24, news:0.12, institutional:0.10)"
         }
       ],
-      "updated_at": "2026-08-13T20:38:40Z"
+      "updated_at": "2026-08-14T20:37:47Z"
     }
   }
 }
