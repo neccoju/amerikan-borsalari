@@ -230,9 +230,14 @@
           "date": "2026-08-18",
           "total_value": 1340.17,
           "cash": 66.26
+        },
+        {
+          "date": "2026-08-19",
+          "total_value": 1337.91,
+          "cash": 66.26
         }
       ],
-      "last_decision_date": "2026-08-18",
+      "last_decision_date": "2026-08-19",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -666,7 +671,7 @@
           "reason": "entry(score=78) [T+1 open]"
         }
       ],
-      "updated_at": "2026-08-18T20:40:17Z"
+      "updated_at": "2026-08-19T20:36:41Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -982,6 +987,11 @@
           "date": "2026-08-18",
           "total_value": 931.16,
           "cash": -89.27
+        },
+        {
+          "date": "2026-08-19",
+          "total_value": 923.12,
+          "cash": -89.27
         }
       ],
       "last_decision_date": null,
@@ -1253,7 +1263,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-18T20:40:17Z"
+      "updated_at": "2026-08-19T20:36:41Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -1587,6 +1597,11 @@
           "date": "2026-08-18",
           "total_value": 940.55,
           "cash": -111.21
+        },
+        {
+          "date": "2026-08-19",
+          "total_value": 932.94,
+          "cash": -111.21
         }
       ],
       "last_decision_date": null,
@@ -1836,7 +1851,7 @@
           "reason": "2:1 split \u2014 shares x2, cost basis adjusted (2026-08-11)"
         }
       ],
-      "updated_at": "2026-08-18T20:40:17Z"
+      "updated_at": "2026-08-19T20:36:41Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -2146,6 +2161,11 @@
           "date": "2026-08-18",
           "total_value": 951.46,
           "cash": -72.34
+        },
+        {
+          "date": "2026-08-19",
+          "total_value": 942.41,
+          "cash": -72.34
         }
       ],
       "last_decision_date": null,
@@ -2417,7 +2437,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-18T20:40:17Z"
+      "updated_at": "2026-08-19T20:36:41Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -2720,6 +2740,11 @@
         {
           "date": "2026-08-18",
           "total_value": 961.35,
+          "cash": -63.38
+        },
+        {
+          "date": "2026-08-19",
+          "total_value": 951.8,
           "cash": -63.38
         }
       ],
@@ -13038,7 +13063,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.32, technical:0.24, news:0.12, institutional:0.10)"
         }
       ],
-      "updated_at": "2026-08-18T20:40:17Z"
+      "updated_at": "2026-08-19T20:36:41Z"
     }
   }
 }
