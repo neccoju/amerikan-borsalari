@@ -3,7 +3,7 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 242.975901,
+      "cash": 64.955901,
       "holdings": [
         {
           "symbol": "BNY",
@@ -21,13 +21,13 @@
           "symbol": "DINO",
           "shares": 2.03517768,
           "avg_cost": 87.839996,
-          "high_water": 95.699997
+          "high_water": 97.32
         },
         {
           "symbol": "FIVE",
           "shares": 0.91248965,
           "avg_cost": 210.774994,
-          "high_water": 244.539993
+          "high_water": 250.240005
         },
         {
           "symbol": "GEN",
@@ -39,24 +39,22 @@
           "symbol": "ILMN",
           "shares": 0.50795772,
           "avg_cost": 187.809998,
-          "high_water": 213.240005
+          "high_water": 219.399994
         },
         {
           "symbol": "NTRS",
           "shares": 0.42552512,
           "avg_cost": 188.050003,
           "high_water": 191.470001
-        }
-      ],
-      "pending_orders": [
+        },
         {
           "symbol": "VLO",
-          "notional": 176.52,
-          "score": 72.9,
-          "reason": "entry(score=73)",
-          "decided_date": "2026-08-20"
+          "shares": 0.51390144,
+          "avg_cost": 343.48999,
+          "high_water": 348.859985
         }
       ],
+      "pending_orders": [],
       "history": [
         {
           "date": "2026-06-29",
@@ -242,9 +240,14 @@
           "date": "2026-08-20",
           "total_value": 1327.59,
           "cash": 242.98
+        },
+        {
+          "date": "2026-08-21",
+          "total_value": 1358.86,
+          "cash": 64.96
         }
       ],
-      "last_decision_date": "2026-08-20",
+      "last_decision_date": "2026-08-21",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -687,9 +690,20 @@
           "price": 228.990005,
           "cost": 1.5,
           "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-08-21",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "VLO",
+          "shares": 0.51390144,
+          "price": 343.48999,
+          "cost": 1.5,
+          "reason": "entry(score=73) [T+1 open]"
         }
       ],
-      "updated_at": "2026-08-20T20:37:54Z"
+      "updated_at": "2026-08-21T20:37:38Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1015,6 +1029,11 @@
           "date": "2026-08-20",
           "total_value": 906.01,
           "cash": -89.27
+        },
+        {
+          "date": "2026-08-21",
+          "total_value": 930.11,
+          "cash": -89.27
         }
       ],
       "last_decision_date": null,
@@ -1286,7 +1305,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-20T20:37:54Z"
+      "updated_at": "2026-08-21T20:37:38Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -1630,6 +1649,11 @@
           "date": "2026-08-20",
           "total_value": 927.24,
           "cash": -111.21
+        },
+        {
+          "date": "2026-08-21",
+          "total_value": 937.7,
+          "cash": -111.21
         }
       ],
       "last_decision_date": null,
@@ -1879,7 +1903,7 @@
           "reason": "2:1 split \u2014 shares x2, cost basis adjusted (2026-08-11)"
         }
       ],
-      "updated_at": "2026-08-20T20:37:54Z"
+      "updated_at": "2026-08-21T20:37:38Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -2199,6 +2223,11 @@
           "date": "2026-08-20",
           "total_value": 928.74,
           "cash": -72.34
+        },
+        {
+          "date": "2026-08-21",
+          "total_value": 953.16,
+          "cash": -72.34
         }
       ],
       "last_decision_date": null,
@@ -2470,7 +2499,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-08-20T20:37:54Z"
+      "updated_at": "2026-08-21T20:37:38Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -2783,6 +2812,11 @@
         {
           "date": "2026-08-20",
           "total_value": 943.36,
+          "cash": -63.38
+        },
+        {
+          "date": "2026-08-21",
+          "total_value": 961.1,
           "cash": -63.38
         }
       ],
@@ -13101,7 +13135,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.32, technical:0.24, news:0.12, institutional:0.10)"
         }
       ],
-      "updated_at": "2026-08-20T20:37:54Z"
+      "updated_at": "2026-08-21T20:37:38Z"
     }
   }
 }
