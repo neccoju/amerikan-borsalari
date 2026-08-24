@@ -27,7 +27,7 @@
           "symbol": "FIVE",
           "shares": 0.91248965,
           "avg_cost": 210.774994,
-          "high_water": 250.240005
+          "high_water": 262.720001
         },
         {
           "symbol": "GEN",
@@ -39,7 +39,7 @@
           "symbol": "ILMN",
           "shares": 0.50795772,
           "avg_cost": 187.809998,
-          "high_water": 219.399994
+          "high_water": 223.220001
         },
         {
           "symbol": "NTRS",
@@ -245,9 +245,14 @@
           "date": "2026-08-21",
           "total_value": 1358.86,
           "cash": 64.96
+        },
+        {
+          "date": "2026-08-24",
+          "total_value": 1369.68,
+          "cash": 64.96
         }
       ],
-      "last_decision_date": "2026-08-21",
+      "last_decision_date": "2026-08-24",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -703,7 +708,7 @@
           "reason": "entry(score=73) [T+1 open]"
         }
       ],
-      "updated_at": "2026-08-21T20:37:38Z"
+      "updated_at": "2026-08-24T20:37:48Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -778,8 +783,8 @@
         },
         {
           "symbol": "IESC",
-          "shares": 0.06766788,
-          "avg_cost": 744.539978,
+          "shares": 0.13533576,
+          "avg_cost": 372.269989,
           "high_water": 744.539978
         },
         {
@@ -1033,6 +1038,11 @@
         {
           "date": "2026-08-21",
           "total_value": 930.11,
+          "cash": -89.27
+        },
+        {
+          "date": "2026-08-24",
+          "total_value": 932.34,
           "cash": -89.27
         }
       ],
@@ -1303,9 +1313,20 @@
           "price": 405.369995,
           "cost": 0.0,
           "reason": "Month-end rebalance"
+        },
+        {
+          "date": "2026-08-24",
+          "sleeve": "Growth",
+          "type": "split",
+          "side": "split",
+          "symbol": "IESC",
+          "shares": 0.13533576,
+          "price": 0.0,
+          "cost": 0.0,
+          "reason": "2:1 split \u2014 shares x2, cost basis adjusted (2026-08-24)"
         }
       ],
-      "updated_at": "2026-08-21T20:37:38Z"
+      "updated_at": "2026-08-24T20:37:48Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -1654,6 +1675,11 @@
           "date": "2026-08-21",
           "total_value": 937.7,
           "cash": -111.21
+        },
+        {
+          "date": "2026-08-24",
+          "total_value": 933.41,
+          "cash": -111.21
         }
       ],
       "last_decision_date": null,
@@ -1903,7 +1929,7 @@
           "reason": "2:1 split \u2014 shares x2, cost basis adjusted (2026-08-11)"
         }
       ],
-      "updated_at": "2026-08-21T20:37:38Z"
+      "updated_at": "2026-08-24T20:37:48Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -1978,8 +2004,8 @@
         },
         {
           "symbol": "IESC",
-          "shares": 0.06191198,
-          "avg_cost": 744.539978,
+          "shares": 0.12382396,
+          "avg_cost": 372.269989,
           "high_water": 744.539978
         },
         {
@@ -2227,6 +2253,11 @@
         {
           "date": "2026-08-21",
           "total_value": 953.16,
+          "cash": -72.34
+        },
+        {
+          "date": "2026-08-24",
+          "total_value": 951.5,
           "cash": -72.34
         }
       ],
@@ -2497,9 +2528,20 @@
           "price": 207.369995,
           "cost": 0.0,
           "reason": "Month-end rebalance"
+        },
+        {
+          "date": "2026-08-24",
+          "sleeve": "Balanced",
+          "type": "split",
+          "side": "split",
+          "symbol": "IESC",
+          "shares": 0.12382396,
+          "price": 0.0,
+          "cost": 0.0,
+          "reason": "2:1 split \u2014 shares x2, cost basis adjusted (2026-08-24)"
         }
       ],
-      "updated_at": "2026-08-21T20:37:38Z"
+      "updated_at": "2026-08-24T20:37:48Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -2574,8 +2616,8 @@
         },
         {
           "symbol": "IESC",
-          "shares": 0.06500947,
-          "avg_cost": 744.539978,
+          "shares": 0.13001894,
+          "avg_cost": 372.269989,
           "high_water": 744.539978
         },
         {
@@ -2817,6 +2859,11 @@
         {
           "date": "2026-08-21",
           "total_value": 961.1,
+          "cash": -63.38
+        },
+        {
+          "date": "2026-08-24",
+          "total_value": 956.02,
           "cash": -63.38
         }
       ],
@@ -13133,9 +13180,20 @@
           "price": 131.0,
           "cost": 0.0,
           "reason": "Paper rebuild (learned weights: fundamental:0.32, technical:0.24, news:0.12, institutional:0.10)"
+        },
+        {
+          "date": "2026-08-24",
+          "sleeve": "Self-Learning (paper)",
+          "type": "split",
+          "side": "split",
+          "symbol": "IESC",
+          "shares": 0.13001894,
+          "price": 0.0,
+          "cost": 0.0,
+          "reason": "2:1 split \u2014 shares x2, cost basis adjusted (2026-08-24)"
         }
       ],
-      "updated_at": "2026-08-21T20:37:38Z"
+      "updated_at": "2026-08-24T20:37:48Z"
     }
   }
 }
