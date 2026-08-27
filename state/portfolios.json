@@ -33,13 +33,13 @@
           "symbol": "GEN",
           "shares": 6.68194462,
           "avg_cost": 28.799999,
-          "high_water": 29.639999
+          "high_water": 30.5
         },
         {
           "symbol": "ILMN",
           "shares": 0.50795772,
           "avg_cost": 187.809998,
-          "high_water": 224.990005
+          "high_water": 227.690002
         },
         {
           "symbol": "NTRS",
@@ -260,9 +260,14 @@
           "date": "2026-08-26",
           "total_value": 1374.89,
           "cash": 64.96
+        },
+        {
+          "date": "2026-08-27",
+          "total_value": 1369.71,
+          "cash": 64.96
         }
       ],
-      "last_decision_date": "2026-08-26",
+      "last_decision_date": "2026-08-27",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -718,7 +723,7 @@
           "reason": "entry(score=73) [T+1 open]"
         }
       ],
-      "updated_at": "2026-08-26T20:40:55Z"
+      "updated_at": "2026-08-27T20:40:38Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1064,6 +1069,11 @@
           "date": "2026-08-26",
           "total_value": 945.84,
           "cash": -89.27
+        },
+        {
+          "date": "2026-08-27",
+          "total_value": 955.98,
+          "cash": -89.27
         }
       ],
       "last_decision_date": null,
@@ -1346,7 +1356,7 @@
           "reason": "2:1 split \u2014 shares x2, cost basis adjusted (2026-08-24)"
         }
       ],
-      "updated_at": "2026-08-26T20:40:55Z"
+      "updated_at": "2026-08-27T20:40:38Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -1710,6 +1720,11 @@
           "date": "2026-08-26",
           "total_value": 944.98,
           "cash": -111.21
+        },
+        {
+          "date": "2026-08-27",
+          "total_value": 943.42,
+          "cash": -111.21
         }
       ],
       "last_decision_date": null,
@@ -1959,7 +1974,7 @@
           "reason": "2:1 split \u2014 shares x2, cost basis adjusted (2026-08-11)"
         }
       ],
-      "updated_at": "2026-08-26T20:40:55Z"
+      "updated_at": "2026-08-27T20:40:38Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -2299,6 +2314,11 @@
           "date": "2026-08-26",
           "total_value": 962.04,
           "cash": -72.34
+        },
+        {
+          "date": "2026-08-27",
+          "total_value": 963.07,
+          "cash": -72.34
         }
       ],
       "last_decision_date": null,
@@ -2581,7 +2601,7 @@
           "reason": "2:1 split \u2014 shares x2, cost basis adjusted (2026-08-24)"
         }
       ],
-      "updated_at": "2026-08-26T20:40:55Z"
+      "updated_at": "2026-08-27T20:40:38Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -2914,6 +2934,11 @@
         {
           "date": "2026-08-26",
           "total_value": 968.23,
+          "cash": -63.38
+        },
+        {
+          "date": "2026-08-27",
+          "total_value": 976.74,
           "cash": -63.38
         }
       ],
@@ -13243,7 +13268,7 @@
           "reason": "2:1 split \u2014 shares x2, cost basis adjusted (2026-08-24)"
         }
       ],
-      "updated_at": "2026-08-26T20:40:55Z"
+      "updated_at": "2026-08-27T20:40:38Z"
     }
   }
 }
