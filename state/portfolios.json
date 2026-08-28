@@ -21,7 +21,7 @@
           "symbol": "DINO",
           "shares": 2.03517768,
           "avg_cost": 87.839996,
-          "high_water": 97.32
+          "high_water": 99.709999
         },
         {
           "symbol": "FIVE",
@@ -33,7 +33,7 @@
           "symbol": "GEN",
           "shares": 6.68194462,
           "avg_cost": 28.799999,
-          "high_water": 30.5
+          "high_water": 31.02
         },
         {
           "symbol": "ILMN",
@@ -51,7 +51,7 @@
           "symbol": "VLO",
           "shares": 0.51390144,
           "avg_cost": 343.48999,
-          "high_water": 348.859985
+          "high_water": 352.359985
         }
       ],
       "pending_orders": [],
@@ -265,9 +265,14 @@
           "date": "2026-08-27",
           "total_value": 1369.71,
           "cash": 64.96
+        },
+        {
+          "date": "2026-08-28",
+          "total_value": 1375.08,
+          "cash": 64.96
         }
       ],
-      "last_decision_date": "2026-08-27",
+      "last_decision_date": "2026-08-28",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -723,7 +728,7 @@
           "reason": "entry(score=73) [T+1 open]"
         }
       ],
-      "updated_at": "2026-08-27T20:40:38Z"
+      "updated_at": "2026-08-28T20:40:55Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1074,6 +1079,11 @@
           "date": "2026-08-27",
           "total_value": 955.98,
           "cash": -89.27
+        },
+        {
+          "date": "2026-08-28",
+          "total_value": 919.62,
+          "cash": -89.27
         }
       ],
       "last_decision_date": null,
@@ -1356,7 +1366,7 @@
           "reason": "2:1 split \u2014 shares x2, cost basis adjusted (2026-08-24)"
         }
       ],
-      "updated_at": "2026-08-27T20:40:38Z"
+      "updated_at": "2026-08-28T20:40:55Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -1725,6 +1735,11 @@
           "date": "2026-08-27",
           "total_value": 943.42,
           "cash": -111.21
+        },
+        {
+          "date": "2026-08-28",
+          "total_value": 926.41,
+          "cash": -111.21
         }
       ],
       "last_decision_date": null,
@@ -1974,7 +1989,7 @@
           "reason": "2:1 split \u2014 shares x2, cost basis adjusted (2026-08-11)"
         }
       ],
-      "updated_at": "2026-08-27T20:40:38Z"
+      "updated_at": "2026-08-28T20:40:55Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -2319,6 +2334,11 @@
           "date": "2026-08-27",
           "total_value": 963.07,
           "cash": -72.34
+        },
+        {
+          "date": "2026-08-28",
+          "total_value": 937.89,
+          "cash": -72.34
         }
       ],
       "last_decision_date": null,
@@ -2601,7 +2621,7 @@
           "reason": "2:1 split \u2014 shares x2, cost basis adjusted (2026-08-24)"
         }
       ],
-      "updated_at": "2026-08-27T20:40:38Z"
+      "updated_at": "2026-08-28T20:40:55Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -2939,6 +2959,11 @@
         {
           "date": "2026-08-27",
           "total_value": 976.74,
+          "cash": -63.38
+        },
+        {
+          "date": "2026-08-28",
+          "total_value": 944.74,
           "cash": -63.38
         }
       ],
@@ -13268,7 +13293,7 @@
           "reason": "2:1 split \u2014 shares x2, cost basis adjusted (2026-08-24)"
         }
       ],
-      "updated_at": "2026-08-27T20:40:38Z"
+      "updated_at": "2026-08-28T20:40:55Z"
     }
   }
 }
