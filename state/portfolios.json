@@ -21,7 +21,7 @@
           "symbol": "DINO",
           "shares": 2.03517768,
           "avg_cost": 87.839996,
-          "high_water": 106.150002
+          "high_water": 108.309998
         },
         {
           "symbol": "FIVE",
@@ -45,7 +45,7 @@
           "symbol": "VLO",
           "shares": 0.51390144,
           "avg_cost": 343.48999,
-          "high_water": 370.720001
+          "high_water": 382.850006
         }
       ],
       "pending_orders": [],
@@ -289,9 +289,14 @@
           "date": "2026-09-04",
           "total_value": 1367.72,
           "cash": 141.19
+        },
+        {
+          "date": "2026-09-08",
+          "total_value": 1401.98,
+          "cash": 141.19
         }
       ],
-      "last_decision_date": "2026-09-04",
+      "last_decision_date": "2026-09-08",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -758,7 +763,7 @@
           "reason": "technical_breakdown(<50DMA)"
         }
       ],
-      "updated_at": "2026-09-04T20:40:17Z"
+      "updated_at": "2026-09-08T20:40:22Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1132,6 +1137,11 @@
         {
           "date": "2026-09-04",
           "total_value": 938.09,
+          "cash": -91.56
+        },
+        {
+          "date": "2026-09-08",
+          "total_value": 948.99,
           "cash": -91.56
         }
       ],
@@ -1679,7 +1689,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-04T20:40:17Z"
+      "updated_at": "2026-09-08T20:40:22Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -2071,6 +2081,11 @@
         {
           "date": "2026-09-04",
           "total_value": 949.29,
+          "cash": 11.24
+        },
+        {
+          "date": "2026-09-08",
+          "total_value": 949.94,
           "cash": 11.24
         }
       ],
@@ -2563,7 +2578,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-04T20:40:17Z"
+      "updated_at": "2026-09-08T20:40:22Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -2937,6 +2952,11 @@
         {
           "date": "2026-09-04",
           "total_value": 962.54,
+          "cash": -90.24
+        },
+        {
+          "date": "2026-09-08",
+          "total_value": 964.61,
           "cash": -90.24
         }
       ],
@@ -3451,7 +3471,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-04T20:40:17Z"
+      "updated_at": "2026-09-08T20:40:22Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -3820,28 +3840,31 @@
           "date": "2026-09-04",
           "total_value": 980.68,
           "cash": -85.49
+        },
+        {
+          "date": "2026-09-08",
+          "total_value": 986.71,
+          "cash": -85.49
         }
       ],
       "last_decision_date": null,
       "last_rebalance_date": "2026-08-31",
       "meta": {
         "factor_weights": {
-          "fundamental": 0.32992,
-          "technical": 0.220984,
-          "news": 0.117457,
-          "institutional": 0.100501,
-          "insider": 0.099383,
-          "earnings": 0.073819,
-          "short_interest": 0.057937
+          "fundamental": 0.35021,
+          "technical": 0.234574,
+          "news": 0.12468,
+          "institutional": 0.106682,
+          "insider": 0.105495,
+          "earnings": 0.078359
         },
         "static_weights": {
-          "fundamental": 0.310345,
-          "technical": 0.252874,
-          "news": 0.114943,
-          "institutional": 0.103448,
-          "insider": 0.091954,
-          "earnings": 0.068966,
-          "short_interest": 0.057471
+          "fundamental": 0.329268,
+          "technical": 0.268293,
+          "news": 0.121951,
+          "institutional": 0.109756,
+          "insider": 0.097561,
+          "earnings": 0.073171
         },
         "weight_history": [
           {
@@ -14388,7 +14411,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.33, technical:0.22, news:0.12, institutional:0.10)"
         }
       ],
-      "updated_at": "2026-09-04T20:40:17Z"
+      "updated_at": "2026-09-08T20:40:22Z"
     }
   }
 }
