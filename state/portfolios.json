@@ -299,9 +299,14 @@
           "date": "2026-09-09",
           "total_value": 1402.72,
           "cash": 141.19
+        },
+        {
+          "date": "2026-09-10",
+          "total_value": 1392.9,
+          "cash": 141.19
         }
       ],
-      "last_decision_date": "2026-09-09",
+      "last_decision_date": "2026-09-10",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -768,7 +773,7 @@
           "reason": "technical_breakdown(<50DMA)"
         }
       ],
-      "updated_at": "2026-09-09T20:40:48Z"
+      "updated_at": "2026-09-10T20:40:13Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1152,6 +1157,11 @@
         {
           "date": "2026-09-09",
           "total_value": 933.15,
+          "cash": -91.56
+        },
+        {
+          "date": "2026-09-10",
+          "total_value": 925.59,
           "cash": -91.56
         }
       ],
@@ -1699,7 +1709,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-09T20:40:48Z"
+      "updated_at": "2026-09-10T20:40:13Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -2101,6 +2111,11 @@
         {
           "date": "2026-09-09",
           "total_value": 936.92,
+          "cash": 11.24
+        },
+        {
+          "date": "2026-09-10",
+          "total_value": 918.22,
           "cash": 11.24
         }
       ],
@@ -2593,7 +2608,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-09T20:40:48Z"
+      "updated_at": "2026-09-10T20:40:13Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -2977,6 +2992,11 @@
         {
           "date": "2026-09-09",
           "total_value": 947.87,
+          "cash": -90.24
+        },
+        {
+          "date": "2026-09-10",
+          "total_value": 937.84,
           "cash": -90.24
         }
       ],
@@ -3491,7 +3511,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-09T20:40:48Z"
+      "updated_at": "2026-09-10T20:40:13Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -3870,26 +3890,33 @@
           "date": "2026-09-09",
           "total_value": 969.13,
           "cash": -85.49
+        },
+        {
+          "date": "2026-09-10",
+          "total_value": 958.88,
+          "cash": -85.49
         }
       ],
       "last_decision_date": null,
       "last_rebalance_date": "2026-08-31",
       "meta": {
         "factor_weights": {
-          "fundamental": 0.35021,
-          "technical": 0.234574,
-          "news": 0.12468,
-          "institutional": 0.106682,
-          "insider": 0.105495,
-          "earnings": 0.078359
+          "fundamental": 0.331177,
+          "technical": 0.221825,
+          "news": 0.117904,
+          "institutional": 0.100884,
+          "insider": 0.099762,
+          "earnings": 0.0741,
+          "short_interest": 0.054348
         },
         "static_weights": {
-          "fundamental": 0.329268,
-          "technical": 0.268293,
-          "news": 0.121951,
-          "institutional": 0.109756,
-          "insider": 0.097561,
-          "earnings": 0.073171
+          "fundamental": 0.310345,
+          "technical": 0.252874,
+          "news": 0.114943,
+          "institutional": 0.103448,
+          "insider": 0.091954,
+          "earnings": 0.068966,
+          "short_interest": 0.057471
         },
         "weight_history": [
           {
@@ -14436,7 +14463,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.33, technical:0.22, news:0.12, institutional:0.10)"
         }
       ],
-      "updated_at": "2026-09-09T20:40:48Z"
+      "updated_at": "2026-09-10T20:40:13Z"
     }
   }
 }
