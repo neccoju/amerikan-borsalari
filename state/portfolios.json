@@ -3,14 +3,8 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 141.190827,
+      "cash": 362.55109,
       "holdings": [
-        {
-          "symbol": "BNY",
-          "shares": 1.41354978,
-          "avg_cost": 152.910004,
-          "high_water": 164.839996
-        },
         {
           "symbol": "DAR",
           "shares": 1.2348154,
@@ -33,7 +27,7 @@
           "symbol": "GEN",
           "shares": 6.68194462,
           "avg_cost": 28.799999,
-          "high_water": 31.33
+          "high_water": 31.41
         },
         {
           "symbol": "ILMN",
@@ -48,7 +42,15 @@
           "high_water": 390.420013
         }
       ],
-      "pending_orders": [],
+      "pending_orders": [
+        {
+          "symbol": "ARW",
+          "notional": 136.05,
+          "score": 72.0,
+          "reason": "entry(score=72)",
+          "decided_date": "2026-09-14"
+        }
+      ],
       "history": [
         {
           "date": "2026-06-29",
@@ -309,9 +311,14 @@
           "date": "2026-09-11",
           "total_value": 1361.18,
           "cash": 141.19
+        },
+        {
+          "date": "2026-09-14",
+          "total_value": 1400.48,
+          "cash": 362.55
         }
       ],
-      "last_decision_date": "2026-09-11",
+      "last_decision_date": "2026-09-14",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -776,9 +783,20 @@
           "price": 182.679993,
           "cost": 1.5,
           "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-09-14",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "BNY",
+          "shares": 1.41354978,
+          "price": 157.660004,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
         }
       ],
-      "updated_at": "2026-09-11T20:40:35Z"
+      "updated_at": "2026-09-14T20:40:39Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1172,6 +1190,11 @@
         {
           "date": "2026-09-11",
           "total_value": 926.19,
+          "cash": -91.56
+        },
+        {
+          "date": "2026-09-14",
+          "total_value": 912.45,
           "cash": -91.56
         }
       ],
@@ -1719,7 +1742,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-11T20:40:35Z"
+      "updated_at": "2026-09-14T20:40:39Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -2131,6 +2154,11 @@
         {
           "date": "2026-09-11",
           "total_value": 919.6,
+          "cash": 11.24
+        },
+        {
+          "date": "2026-09-14",
+          "total_value": 914.63,
           "cash": 11.24
         }
       ],
@@ -2623,7 +2651,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-11T20:40:35Z"
+      "updated_at": "2026-09-14T20:40:39Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -3017,6 +3045,11 @@
         {
           "date": "2026-09-11",
           "total_value": 939.3,
+          "cash": -90.24
+        },
+        {
+          "date": "2026-09-14",
+          "total_value": 921.92,
           "cash": -90.24
         }
       ],
@@ -3531,7 +3564,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-11T20:40:35Z"
+      "updated_at": "2026-09-14T20:40:39Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -3919,6 +3952,11 @@
         {
           "date": "2026-09-11",
           "total_value": 959.35,
+          "cash": -85.49
+        },
+        {
+          "date": "2026-09-14",
+          "total_value": 941.25,
           "cash": -85.49
         }
       ],
@@ -14488,7 +14526,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.33, technical:0.22, news:0.12, institutional:0.10)"
         }
       ],
-      "updated_at": "2026-09-11T20:40:36Z"
+      "updated_at": "2026-09-14T20:40:39Z"
     }
   }
 }
