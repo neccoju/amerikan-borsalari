@@ -3,13 +3,13 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 145.61551,
+      "cash": 326.465785,
       "holdings": [
         {
           "symbol": "ARW",
           "shares": 0.62678523,
           "avg_cost": 217.059998,
-          "high_water": 219.309998
+          "high_water": 221.830002
         },
         {
           "symbol": "DINO",
@@ -30,16 +30,10 @@
           "high_water": 262.720001
         },
         {
-          "symbol": "GEN",
-          "shares": 6.68194462,
-          "avg_cost": 28.799999,
-          "high_water": 31.41
-        },
-        {
           "symbol": "ILMN",
           "shares": 0.50795772,
           "avg_cost": 187.809998,
-          "high_water": 245.179993
+          "high_water": 247.460007
         },
         {
           "symbol": "VLO",
@@ -48,7 +42,15 @@
           "high_water": 413.279999
         }
       ],
-      "pending_orders": [],
+      "pending_orders": [
+        {
+          "symbol": "TGTX",
+          "notional": 204.79,
+          "score": 78.0,
+          "reason": "entry(score=78)",
+          "decided_date": "2026-09-22"
+        }
+      ],
       "history": [
         {
           "date": "2026-06-29",
@@ -339,9 +341,14 @@
           "date": "2026-09-21",
           "total_value": 1392.38,
           "cash": 145.62
+        },
+        {
+          "date": "2026-09-22",
+          "total_value": 1363.74,
+          "cash": 326.47
         }
       ],
-      "last_decision_date": "2026-09-21",
+      "last_decision_date": "2026-09-22",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -850,9 +857,20 @@
           "price": 63.259998,
           "cost": 1.5,
           "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-09-22",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "GEN",
+          "shares": 6.68194462,
+          "price": 27.290001,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
         }
       ],
-      "updated_at": "2026-09-21T20:39:23Z"
+      "updated_at": "2026-09-22T20:40:35Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1276,6 +1294,11 @@
         {
           "date": "2026-09-21",
           "total_value": 914.75,
+          "cash": -91.56
+        },
+        {
+          "date": "2026-09-22",
+          "total_value": 912.66,
           "cash": -91.56
         }
       ],
@@ -1823,7 +1846,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-21T20:39:23Z"
+      "updated_at": "2026-09-22T20:40:35Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -2265,6 +2288,11 @@
         {
           "date": "2026-09-21",
           "total_value": 902.64,
+          "cash": 11.24
+        },
+        {
+          "date": "2026-09-22",
+          "total_value": 908.99,
           "cash": 11.24
         }
       ],
@@ -2757,7 +2785,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-21T20:39:23Z"
+      "updated_at": "2026-09-22T20:40:35Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -3181,6 +3209,11 @@
         {
           "date": "2026-09-21",
           "total_value": 927.9,
+          "cash": -90.24
+        },
+        {
+          "date": "2026-09-22",
+          "total_value": 926.1,
           "cash": -90.24
         }
       ],
@@ -3695,7 +3728,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-21T20:39:23Z"
+      "updated_at": "2026-09-22T20:40:35Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -4113,6 +4146,11 @@
         {
           "date": "2026-09-21",
           "total_value": 943.13,
+          "cash": -85.49
+        },
+        {
+          "date": "2026-09-22",
+          "total_value": 945.39,
           "cash": -85.49
         }
       ],
@@ -14682,7 +14720,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.33, technical:0.22, news:0.12, institutional:0.10)"
         }
       ],
-      "updated_at": "2026-09-21T20:39:23Z"
+      "updated_at": "2026-09-22T20:40:35Z"
     }
   }
 }
