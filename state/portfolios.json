@@ -3,13 +3,13 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 326.465785,
+      "cash": 326.18506,
       "holdings": [
         {
           "symbol": "ARW",
           "shares": 0.62678523,
           "avg_cost": 217.059998,
-          "high_water": 221.830002
+          "high_water": 226.820007
         },
         {
           "symbol": "DINO",
@@ -24,16 +24,16 @@
           "high_water": 193.600006
         },
         {
-          "symbol": "FIVE",
-          "shares": 0.91248965,
-          "avg_cost": 210.774994,
-          "high_water": 262.720001
-        },
-        {
           "symbol": "ILMN",
           "shares": 0.50795772,
           "avg_cost": 187.809998,
-          "high_water": 247.460007
+          "high_water": 255.380005
+        },
+        {
+          "symbol": "TGTX",
+          "shares": 3.52417825,
+          "avg_cost": 58.110001,
+          "high_water": 58.110001
         },
         {
           "symbol": "VLO",
@@ -44,11 +44,11 @@
       ],
       "pending_orders": [
         {
-          "symbol": "TGTX",
-          "notional": 204.79,
-          "score": 78.0,
-          "reason": "entry(score=78)",
-          "decided_date": "2026-09-22"
+          "symbol": "AMG",
+          "notional": 203.42,
+          "score": 73.7,
+          "reason": "entry(score=74)",
+          "decided_date": "2026-09-23"
         }
       ],
       "history": [
@@ -346,9 +346,14 @@
           "date": "2026-09-22",
           "total_value": 1363.74,
           "cash": 326.47
+        },
+        {
+          "date": "2026-09-23",
+          "total_value": 1354.64,
+          "cash": 326.19
         }
       ],
-      "last_decision_date": "2026-09-22",
+      "last_decision_date": "2026-09-23",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -868,9 +873,31 @@
           "price": 27.290001,
           "cost": 1.5,
           "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-09-23",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "TGTX",
+          "shares": 3.52417825,
+          "price": 58.110001,
+          "cost": 1.5,
+          "reason": "entry(score=78) [T+1 open]"
+        },
+        {
+          "date": "2026-09-23",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "FIVE",
+          "shares": 0.91248965,
+          "price": 227.410004,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
         }
       ],
-      "updated_at": "2026-09-22T20:40:35Z"
+      "updated_at": "2026-09-23T20:42:18Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1299,6 +1326,11 @@
         {
           "date": "2026-09-22",
           "total_value": 912.66,
+          "cash": -91.56
+        },
+        {
+          "date": "2026-09-23",
+          "total_value": 906.02,
           "cash": -91.56
         }
       ],
@@ -1846,7 +1878,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-22T20:40:35Z"
+      "updated_at": "2026-09-23T20:42:18Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -2293,6 +2325,11 @@
         {
           "date": "2026-09-22",
           "total_value": 908.99,
+          "cash": 11.24
+        },
+        {
+          "date": "2026-09-23",
+          "total_value": 899.96,
           "cash": 11.24
         }
       ],
@@ -2785,7 +2822,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-22T20:40:35Z"
+      "updated_at": "2026-09-23T20:42:18Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -3214,6 +3251,11 @@
         {
           "date": "2026-09-22",
           "total_value": 926.1,
+          "cash": -90.24
+        },
+        {
+          "date": "2026-09-23",
+          "total_value": 916.72,
           "cash": -90.24
         }
       ],
@@ -3728,7 +3770,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-22T20:40:35Z"
+      "updated_at": "2026-09-23T20:42:18Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -4151,6 +4193,11 @@
         {
           "date": "2026-09-22",
           "total_value": 945.39,
+          "cash": -85.49
+        },
+        {
+          "date": "2026-09-23",
+          "total_value": 939.81,
           "cash": -85.49
         }
       ],
@@ -14720,7 +14767,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.33, technical:0.22, news:0.12, institutional:0.10)"
         }
       ],
-      "updated_at": "2026-09-22T20:40:35Z"
+      "updated_at": "2026-09-23T20:42:18Z"
     }
   }
 }
