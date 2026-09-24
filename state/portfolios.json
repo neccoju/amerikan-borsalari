@@ -3,13 +3,19 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 326.18506,
+      "cash": 121.26506,
       "holdings": [
+        {
+          "symbol": "AMG",
+          "shares": 0.55441388,
+          "avg_cost": 366.910004,
+          "high_water": 370.709991
+        },
         {
           "symbol": "ARW",
           "shares": 0.62678523,
           "avg_cost": 217.059998,
-          "high_water": 226.820007
+          "high_water": 227.330002
         },
         {
           "symbol": "DINO",
@@ -27,7 +33,7 @@
           "symbol": "ILMN",
           "shares": 0.50795772,
           "avg_cost": 187.809998,
-          "high_water": 255.380005
+          "high_water": 273.899994
         },
         {
           "symbol": "TGTX",
@@ -42,15 +48,7 @@
           "high_water": 413.279999
         }
       ],
-      "pending_orders": [
-        {
-          "symbol": "AMG",
-          "notional": 203.42,
-          "score": 73.7,
-          "reason": "entry(score=74)",
-          "decided_date": "2026-09-23"
-        }
-      ],
+      "pending_orders": [],
       "history": [
         {
           "date": "2026-06-29",
@@ -351,9 +349,14 @@
           "date": "2026-09-23",
           "total_value": 1354.64,
           "cash": 326.19
+        },
+        {
+          "date": "2026-09-24",
+          "total_value": 1369.74,
+          "cash": 121.27
         }
       ],
-      "last_decision_date": "2026-09-23",
+      "last_decision_date": "2026-09-24",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -895,9 +898,20 @@
           "price": 227.410004,
           "cost": 1.5,
           "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-09-24",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "AMG",
+          "shares": 0.55441388,
+          "price": 366.910004,
+          "cost": 1.5,
+          "reason": "entry(score=74) [T+1 open]"
         }
       ],
-      "updated_at": "2026-09-23T20:42:18Z"
+      "updated_at": "2026-09-24T20:36:52Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1331,6 +1345,11 @@
         {
           "date": "2026-09-23",
           "total_value": 906.02,
+          "cash": -91.56
+        },
+        {
+          "date": "2026-09-24",
+          "total_value": 906.01,
           "cash": -91.56
         }
       ],
@@ -1878,7 +1897,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-23T20:42:18Z"
+      "updated_at": "2026-09-24T20:36:52Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -2330,6 +2349,11 @@
         {
           "date": "2026-09-23",
           "total_value": 899.96,
+          "cash": 11.24
+        },
+        {
+          "date": "2026-09-24",
+          "total_value": 898.19,
           "cash": 11.24
         }
       ],
@@ -2822,7 +2846,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-23T20:42:18Z"
+      "updated_at": "2026-09-24T20:36:52Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -3256,6 +3280,11 @@
         {
           "date": "2026-09-23",
           "total_value": 916.72,
+          "cash": -90.24
+        },
+        {
+          "date": "2026-09-24",
+          "total_value": 917.37,
           "cash": -90.24
         }
       ],
@@ -3770,7 +3799,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-23T20:42:18Z"
+      "updated_at": "2026-09-24T20:36:52Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -4198,6 +4227,11 @@
         {
           "date": "2026-09-23",
           "total_value": 939.81,
+          "cash": -85.49
+        },
+        {
+          "date": "2026-09-24",
+          "total_value": 934.16,
           "cash": -85.49
         }
       ],
@@ -14767,7 +14801,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.33, technical:0.22, news:0.12, institutional:0.10)"
         }
       ],
-      "updated_at": "2026-09-23T20:42:18Z"
+      "updated_at": "2026-09-24T20:36:52Z"
     }
   }
 }
