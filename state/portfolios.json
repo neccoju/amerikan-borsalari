@@ -364,9 +364,14 @@
           "date": "2026-09-28",
           "total_value": 1372.76,
           "cash": 121.27
+        },
+        {
+          "date": "2026-09-29",
+          "total_value": 1371.53,
+          "cash": 121.27
         }
       ],
-      "last_decision_date": "2026-09-28",
+      "last_decision_date": "2026-09-29",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -921,7 +926,7 @@
           "reason": "entry(score=74) [T+1 open]"
         }
       ],
-      "updated_at": "2026-09-28T20:36:46Z"
+      "updated_at": "2026-09-29T20:40:08Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1370,6 +1375,11 @@
         {
           "date": "2026-09-28",
           "total_value": 898.25,
+          "cash": -91.56
+        },
+        {
+          "date": "2026-09-29",
+          "total_value": 899.29,
           "cash": -91.56
         }
       ],
@@ -1917,7 +1927,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-28T20:36:46Z"
+      "updated_at": "2026-09-29T20:40:08Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -2384,6 +2394,11 @@
         {
           "date": "2026-09-28",
           "total_value": 893.68,
+          "cash": 11.24
+        },
+        {
+          "date": "2026-09-29",
+          "total_value": 901.15,
           "cash": 11.24
         }
       ],
@@ -2876,7 +2891,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-28T20:36:46Z"
+      "updated_at": "2026-09-29T20:40:08Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -3325,6 +3340,11 @@
         {
           "date": "2026-09-28",
           "total_value": 910.43,
+          "cash": -90.24
+        },
+        {
+          "date": "2026-09-29",
+          "total_value": 919.28,
           "cash": -90.24
         }
       ],
@@ -3839,7 +3859,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-28T20:36:46Z"
+      "updated_at": "2026-09-29T20:40:08Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -4282,6 +4302,11 @@
         {
           "date": "2026-09-28",
           "total_value": 926.8,
+          "cash": -85.49
+        },
+        {
+          "date": "2026-09-29",
+          "total_value": 934.45,
           "cash": -85.49
         }
       ],
@@ -14851,7 +14876,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.33, technical:0.22, news:0.12, institutional:0.10)"
         }
       ],
-      "updated_at": "2026-09-28T20:36:46Z"
+      "updated_at": "2026-09-29T20:40:08Z"
     }
   }
 }
