@@ -3,7 +3,7 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 121.26506,
+      "cash": 308.731494,
       "holdings": [
         {
           "symbol": "AMG",
@@ -36,19 +36,21 @@
           "high_water": 273.899994
         },
         {
-          "symbol": "TGTX",
-          "shares": 3.52417825,
-          "avg_cost": 58.110001,
-          "high_water": 58.110001
-        },
-        {
           "symbol": "VLO",
           "shares": 0.51390144,
           "avg_cost": 343.48999,
           "high_water": 413.279999
         }
       ],
-      "pending_orders": [],
+      "pending_orders": [
+        {
+          "symbol": "KEYS",
+          "notional": 175.11,
+          "score": 73.6,
+          "reason": "entry(score=74)",
+          "decided_date": "2026-10-01"
+        }
+      ],
       "history": [
         {
           "date": "2026-06-29",
@@ -374,9 +376,14 @@
           "date": "2026-09-30",
           "total_value": 1366.8,
           "cash": 121.27
+        },
+        {
+          "date": "2026-10-01",
+          "total_value": 1384.2,
+          "cash": 308.73
         }
       ],
-      "last_decision_date": "2026-09-30",
+      "last_decision_date": "2026-10-01",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -929,9 +936,20 @@
           "price": 366.910004,
           "cost": 1.5,
           "reason": "entry(score=74) [T+1 open]"
+        },
+        {
+          "date": "2026-10-01",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "TGTX",
+          "shares": 3.52417825,
+          "price": 53.619999,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
         }
       ],
-      "updated_at": "2026-09-30T20:40:11Z"
+      "updated_at": "2026-10-01T20:55:43Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1372,6 +1390,11 @@
         {
           "date": "2026-09-30",
           "total_value": 892.78,
+          "cash": 161.69
+        },
+        {
+          "date": "2026-10-01",
+          "total_value": 907.16,
           "cash": 161.69
         }
       ],
@@ -2249,7 +2272,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-30T20:40:11Z"
+      "updated_at": "2026-10-01T20:55:43Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -2720,6 +2743,11 @@
         {
           "date": "2026-09-30",
           "total_value": 891.87,
+          "cash": -30.04
+        },
+        {
+          "date": "2026-10-01",
+          "total_value": 905.38,
           "cash": -30.04
         }
       ],
@@ -3344,7 +3372,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-30T20:40:11Z"
+      "updated_at": "2026-10-01T20:55:43Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -3803,6 +3831,11 @@
         {
           "date": "2026-09-30",
           "total_value": 905.32,
+          "cash": 128.43
+        },
+        {
+          "date": "2026-10-01",
+          "total_value": 919.24,
           "cash": 128.43
         }
       ],
@@ -4603,7 +4636,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-09-30T20:40:11Z"
+      "updated_at": "2026-10-01T20:55:43Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -5057,13 +5090,18 @@
           "date": "2026-09-30",
           "total_value": 921.78,
           "cash": 141.23
+        },
+        {
+          "date": "2026-10-01",
+          "total_value": 943.83,
+          "cash": 141.23
         }
       ],
       "last_decision_date": null,
       "last_rebalance_date": "2026-09-30",
       "meta": {
         "factor_weights": {
-          "fundamental": 0.335839,
+          "fundamental": 0.335838,
           "technical": 0.217274,
           "news": 0.116221,
           "institutional": 0.10009,
@@ -15926,7 +15964,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.22, news:0.12, insider:0.10)"
         }
       ],
-      "updated_at": "2026-09-30T20:40:11Z"
+      "updated_at": "2026-10-01T20:55:44Z"
     }
   }
 }
