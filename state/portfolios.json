@@ -39,7 +39,7 @@
           "symbol": "KEYS",
           "shares": 0.45993222,
           "avg_cost": 380.730011,
-          "high_water": 384.640015
+          "high_water": 388.029999
         },
         {
           "symbol": "VLO",
@@ -389,9 +389,14 @@
           "date": "2026-10-05",
           "total_value": 1424.53,
           "cash": 132.12
+        },
+        {
+          "date": "2026-10-06",
+          "total_value": 1413.91,
+          "cash": 132.12
         }
       ],
-      "last_decision_date": "2026-10-05",
+      "last_decision_date": "2026-10-06",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -968,7 +973,7 @@
           "reason": "entry(score=74) [T+1 open]"
         }
       ],
-      "updated_at": "2026-10-05T20:50:57Z"
+      "updated_at": "2026-10-06T20:39:59Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1424,6 +1429,11 @@
         {
           "date": "2026-10-05",
           "total_value": 921.54,
+          "cash": 161.69
+        },
+        {
+          "date": "2026-10-06",
+          "total_value": 907.91,
           "cash": 161.69
         }
       ],
@@ -2301,7 +2311,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-05T20:50:57Z"
+      "updated_at": "2026-10-06T20:39:59Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -2787,6 +2797,11 @@
         {
           "date": "2026-10-05",
           "total_value": 906.48,
+          "cash": -30.04
+        },
+        {
+          "date": "2026-10-06",
+          "total_value": 908.24,
           "cash": -30.04
         }
       ],
@@ -3411,7 +3426,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-05T20:50:57Z"
+      "updated_at": "2026-10-06T20:39:59Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -3885,6 +3900,11 @@
         {
           "date": "2026-10-05",
           "total_value": 934.84,
+          "cash": 128.43
+        },
+        {
+          "date": "2026-10-06",
+          "total_value": 935.1,
           "cash": 128.43
         }
       ],
@@ -4685,7 +4705,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-05T20:50:57Z"
+      "updated_at": "2026-10-06T20:39:59Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -5153,6 +5173,11 @@
         {
           "date": "2026-10-05",
           "total_value": 955.08,
+          "cash": 141.23
+        },
+        {
+          "date": "2026-10-06",
+          "total_value": 959.36,
           "cash": 141.23
         }
       ],
@@ -16023,7 +16048,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.22, news:0.12, insider:0.10)"
         }
       ],
-      "updated_at": "2026-10-05T20:50:57Z"
+      "updated_at": "2026-10-06T20:39:59Z"
     }
   }
 }
