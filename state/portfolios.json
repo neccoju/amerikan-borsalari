@@ -3,7 +3,7 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 132.121494,
+      "cash": 287.955102,
       "holdings": [
         {
           "symbol": "AMG",
@@ -27,7 +27,7 @@
           "symbol": "EXPD",
           "shares": 0.79803716,
           "avg_cost": 193.600006,
-          "high_water": 196.380005
+          "high_water": 198.639999
         },
         {
           "symbol": "ILMN",
@@ -36,19 +36,28 @@
           "high_water": 293.690002
         },
         {
-          "symbol": "KEYS",
-          "shares": 0.45993222,
-          "avg_cost": 380.730011,
-          "high_water": 388.029999
-        },
-        {
           "symbol": "VLO",
           "shares": 0.51390144,
           "avg_cost": 343.48999,
           "high_water": 459.779999
         }
       ],
-      "pending_orders": [],
+      "pending_orders": [
+        {
+          "symbol": "VSXY",
+          "notional": 128.92,
+          "score": 73.1,
+          "reason": "entry(score=73)",
+          "decided_date": "2026-10-15"
+        },
+        {
+          "symbol": "NTNX",
+          "notional": 88.21,
+          "score": 72.5,
+          "reason": "entry(score=73)",
+          "decided_date": "2026-10-15"
+        }
+      ],
       "history": [
         {
           "date": "2026-06-29",
@@ -424,9 +433,14 @@
           "date": "2026-10-14",
           "total_value": 1445.05,
           "cash": 132.12
+        },
+        {
+          "date": "2026-10-15",
+          "total_value": 1414.93,
+          "cash": 287.96
         }
       ],
-      "last_decision_date": "2026-10-14",
+      "last_decision_date": "2026-10-15",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1001,9 +1015,20 @@
           "price": 380.730011,
           "cost": 1.5,
           "reason": "entry(score=74) [T+1 open]"
+        },
+        {
+          "date": "2026-10-15",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "KEYS",
+          "shares": 0.45993222,
+          "price": 342.079987,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
         }
       ],
-      "updated_at": "2026-10-14T20:39:33Z"
+      "updated_at": "2026-10-15T20:37:15Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1494,6 +1519,11 @@
         {
           "date": "2026-10-14",
           "total_value": 892.63,
+          "cash": 161.69
+        },
+        {
+          "date": "2026-10-15",
+          "total_value": 887.62,
           "cash": 161.69
         }
       ],
@@ -2371,7 +2401,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-14T20:39:33Z"
+      "updated_at": "2026-10-15T20:37:15Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -2892,6 +2922,11 @@
         {
           "date": "2026-10-14",
           "total_value": 919.16,
+          "cash": -30.04
+        },
+        {
+          "date": "2026-10-15",
+          "total_value": 919.68,
           "cash": -30.04
         }
       ],
@@ -3516,7 +3551,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-14T20:39:33Z"
+      "updated_at": "2026-10-15T20:37:15Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -4025,6 +4060,11 @@
         {
           "date": "2026-10-14",
           "total_value": 892.3,
+          "cash": 128.43
+        },
+        {
+          "date": "2026-10-15",
+          "total_value": 880.69,
           "cash": 128.43
         }
       ],
@@ -4825,7 +4865,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-14T20:39:33Z"
+      "updated_at": "2026-10-15T20:37:15Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -5328,6 +5368,11 @@
         {
           "date": "2026-10-14",
           "total_value": 917.12,
+          "cash": 141.23
+        },
+        {
+          "date": "2026-10-15",
+          "total_value": 899.99,
           "cash": 141.23
         }
       ],
@@ -16198,7 +16243,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.22, news:0.12, insider:0.10)"
         }
       ],
-      "updated_at": "2026-10-14T20:39:33Z"
+      "updated_at": "2026-10-15T20:37:15Z"
     }
   }
 }
