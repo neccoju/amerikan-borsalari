@@ -3,19 +3,13 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 287.955102,
+      "cash": 282.06378,
       "holdings": [
         {
           "symbol": "AMG",
           "shares": 0.55441388,
           "avg_cost": 366.910004,
           "high_water": 387.26001
-        },
-        {
-          "symbol": "ARW",
-          "shares": 0.62678523,
-          "avg_cost": 217.059998,
-          "high_water": 242.009995
         },
         {
           "symbol": "DINO",
@@ -40,24 +34,15 @@
           "shares": 0.51390144,
           "avg_cost": 343.48999,
           "high_water": 459.779999
-        }
-      ],
-      "pending_orders": [
-        {
-          "symbol": "VSXY",
-          "notional": 128.92,
-          "score": 73.1,
-          "reason": "entry(score=73)",
-          "decided_date": "2026-10-15"
         },
         {
-          "symbol": "NTNX",
-          "notional": 88.21,
-          "score": 72.5,
-          "reason": "entry(score=73)",
-          "decided_date": "2026-10-15"
+          "symbol": "VSXY",
+          "shares": 1.39463432,
+          "avg_cost": 92.440002,
+          "high_water": 92.440002
         }
       ],
+      "pending_orders": [],
       "history": [
         {
           "date": "2026-06-29",
@@ -438,9 +423,14 @@
           "date": "2026-10-15",
           "total_value": 1414.93,
           "cash": 287.96
+        },
+        {
+          "date": "2026-10-16",
+          "total_value": 1389.86,
+          "cash": 282.06
         }
       ],
-      "last_decision_date": "2026-10-15",
+      "last_decision_date": "2026-10-16",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1026,9 +1016,53 @@
           "price": 342.079987,
           "cost": 1.5,
           "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-10-16",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "VSXY",
+          "shares": 1.39463432,
+          "price": 92.440002,
+          "cost": 1.5,
+          "reason": "entry(score=73) [T+1 open]"
+        },
+        {
+          "date": "2026-10-16",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "NTNX",
+          "shares": 1.23579768,
+          "price": 71.378998,
+          "cost": 1.5,
+          "reason": "entry(score=73) [T+1 open]"
+        },
+        {
+          "date": "2026-10-16",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "ARW",
+          "shares": 0.62678523,
+          "price": 214.610001,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-10-16",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "NTNX",
+          "shares": 1.23579768,
+          "price": 66.940002,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
         }
       ],
-      "updated_at": "2026-10-15T20:37:15Z"
+      "updated_at": "2026-10-16T20:38:09Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1524,6 +1558,11 @@
         {
           "date": "2026-10-15",
           "total_value": 887.62,
+          "cash": 161.69
+        },
+        {
+          "date": "2026-10-16",
+          "total_value": 868.14,
           "cash": 161.69
         }
       ],
@@ -2401,7 +2440,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-15T20:37:15Z"
+      "updated_at": "2026-10-16T20:38:09Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -2927,6 +2966,11 @@
         {
           "date": "2026-10-15",
           "total_value": 919.68,
+          "cash": -30.04
+        },
+        {
+          "date": "2026-10-16",
+          "total_value": 921.68,
           "cash": -30.04
         }
       ],
@@ -3551,7 +3595,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-15T20:37:15Z"
+      "updated_at": "2026-10-16T20:38:09Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -4065,6 +4109,11 @@
         {
           "date": "2026-10-15",
           "total_value": 880.69,
+          "cash": 128.43
+        },
+        {
+          "date": "2026-10-16",
+          "total_value": 860.47,
           "cash": 128.43
         }
       ],
@@ -4865,7 +4914,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-15T20:37:15Z"
+      "updated_at": "2026-10-16T20:38:09Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -5373,6 +5422,11 @@
         {
           "date": "2026-10-15",
           "total_value": 899.99,
+          "cash": 141.23
+        },
+        {
+          "date": "2026-10-16",
+          "total_value": 887.42,
           "cash": 141.23
         }
       ],
@@ -16243,7 +16297,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.22, news:0.12, insider:0.10)"
         }
       ],
-      "updated_at": "2026-10-15T20:37:15Z"
+      "updated_at": "2026-10-16T20:38:09Z"
     }
   }
 }
