@@ -3,19 +3,25 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 282.06378,
+      "cash": 83.61378,
       "holdings": [
         {
           "symbol": "AMG",
           "shares": 0.55441388,
           "avg_cost": 366.910004,
-          "high_water": 387.26001
+          "high_water": 388.75
         },
         {
           "symbol": "DINO",
           "shares": 2.03517768,
           "avg_cost": 87.839996,
           "high_water": 128.229996
+        },
+        {
+          "symbol": "EOG",
+          "shares": 1.23201551,
+          "avg_cost": 159.860001,
+          "high_water": 159.860001
         },
         {
           "symbol": "EXPD",
@@ -42,15 +48,7 @@
           "high_water": 92.440002
         }
       ],
-      "pending_orders": [
-        {
-          "symbol": "EOG",
-          "notional": 196.95,
-          "score": 73.1,
-          "reason": "entry(score=73)",
-          "decided_date": "2026-10-19"
-        }
-      ],
+      "pending_orders": [],
       "history": [
         {
           "date": "2026-06-29",
@@ -441,9 +439,14 @@
           "date": "2026-10-19",
           "total_value": 1312.99,
           "cash": 282.06
+        },
+        {
+          "date": "2026-10-20",
+          "total_value": 1388.63,
+          "cash": 83.61
         }
       ],
-      "last_decision_date": "2026-10-19",
+      "last_decision_date": "2026-10-20",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1073,9 +1076,20 @@
           "price": 66.940002,
           "cost": 1.5,
           "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-10-20",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "EOG",
+          "shares": 1.23201551,
+          "price": 159.860001,
+          "cost": 1.5,
+          "reason": "entry(score=73) [T+1 open]"
         }
       ],
-      "updated_at": "2026-10-19T20:38:21Z"
+      "updated_at": "2026-10-20T20:38:05Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1581,6 +1595,11 @@
         {
           "date": "2026-10-19",
           "total_value": 874.6,
+          "cash": 161.69
+        },
+        {
+          "date": "2026-10-20",
+          "total_value": 872.94,
           "cash": 161.69
         }
       ],
@@ -2458,7 +2477,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-19T20:38:21Z"
+      "updated_at": "2026-10-20T20:38:04Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -2994,6 +3013,11 @@
         {
           "date": "2026-10-19",
           "total_value": 916.81,
+          "cash": -30.04
+        },
+        {
+          "date": "2026-10-20",
+          "total_value": 924.46,
           "cash": -30.04
         }
       ],
@@ -3618,7 +3642,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-19T20:38:21Z"
+      "updated_at": "2026-10-20T20:38:05Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -4142,6 +4166,11 @@
         {
           "date": "2026-10-19",
           "total_value": 865.87,
+          "cash": 128.43
+        },
+        {
+          "date": "2026-10-20",
+          "total_value": 861.23,
           "cash": 128.43
         }
       ],
@@ -4942,7 +4971,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-19T20:38:21Z"
+      "updated_at": "2026-10-20T20:38:05Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -5460,6 +5489,11 @@
         {
           "date": "2026-10-19",
           "total_value": 892.26,
+          "cash": 141.23
+        },
+        {
+          "date": "2026-10-20",
+          "total_value": 887.19,
           "cash": 141.23
         }
       ],
@@ -16330,7 +16364,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.22, news:0.12, insider:0.10)"
         }
       ],
-      "updated_at": "2026-10-19T20:38:21Z"
+      "updated_at": "2026-10-20T20:38:05Z"
     }
   }
 }
