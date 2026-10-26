@@ -21,7 +21,7 @@
           "symbol": "EOG",
           "shares": 1.23201551,
           "avg_cost": 159.860001,
-          "high_water": 163.029999
+          "high_water": 163.679993
         },
         {
           "symbol": "EXPD",
@@ -45,7 +45,7 @@
           "symbol": "VSXY",
           "shares": 1.39463432,
           "avg_cost": 92.440002,
-          "high_water": 92.440002
+          "high_water": 94.959999
         }
       ],
       "pending_orders": [],
@@ -459,9 +459,14 @@
           "date": "2026-10-23",
           "total_value": 1380.21,
           "cash": 83.61
+        },
+        {
+          "date": "2026-10-26",
+          "total_value": 1389.78,
+          "cash": 83.61
         }
       ],
-      "last_decision_date": "2026-10-23",
+      "last_decision_date": "2026-10-26",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1104,7 +1109,7 @@
           "reason": "entry(score=73) [T+1 open]"
         }
       ],
-      "updated_at": "2026-10-23T20:37:12Z"
+      "updated_at": "2026-10-26T20:39:17Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1630,6 +1635,11 @@
         {
           "date": "2026-10-23",
           "total_value": 864.62,
+          "cash": 161.69
+        },
+        {
+          "date": "2026-10-26",
+          "total_value": 879.5,
           "cash": 161.69
         }
       ],
@@ -2507,7 +2517,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-23T20:37:12Z"
+      "updated_at": "2026-10-26T20:39:17Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -3063,6 +3073,11 @@
         {
           "date": "2026-10-23",
           "total_value": 921.81,
+          "cash": -30.04
+        },
+        {
+          "date": "2026-10-26",
+          "total_value": 930.64,
           "cash": -30.04
         }
       ],
@@ -3687,7 +3702,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-23T20:37:12Z"
+      "updated_at": "2026-10-26T20:39:17Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -4231,6 +4246,11 @@
         {
           "date": "2026-10-23",
           "total_value": 829.03,
+          "cash": 128.43
+        },
+        {
+          "date": "2026-10-26",
+          "total_value": 842.46,
           "cash": 128.43
         }
       ],
@@ -5031,7 +5051,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-23T20:37:12Z"
+      "updated_at": "2026-10-26T20:39:17Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -5569,6 +5589,11 @@
         {
           "date": "2026-10-23",
           "total_value": 860.58,
+          "cash": 141.23
+        },
+        {
+          "date": "2026-10-26",
+          "total_value": 878.11,
           "cash": 141.23
         }
       ],
@@ -16439,7 +16464,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.22, news:0.12, insider:0.10)"
         }
       ],
-      "updated_at": "2026-10-23T20:37:12Z"
+      "updated_at": "2026-10-26T20:39:17Z"
     }
   }
 }
