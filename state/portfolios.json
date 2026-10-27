@@ -3,7 +3,7 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 83.61378,
+      "cash": 281.168362,
       "holdings": [
         {
           "symbol": "AMG",
@@ -27,7 +27,7 @@
           "symbol": "EXPD",
           "shares": 0.79803716,
           "avg_cost": 193.600006,
-          "high_water": 198.639999
+          "high_water": 199.639999
         },
         {
           "symbol": "ILMN",
@@ -36,19 +36,21 @@
           "high_water": 293.690002
         },
         {
-          "symbol": "VLO",
-          "shares": 0.51390144,
-          "avg_cost": 343.48999,
-          "high_water": 459.779999
-        },
-        {
           "symbol": "VSXY",
           "shares": 1.39463432,
           "avg_cost": 92.440002,
           "high_water": 94.959999
         }
       ],
-      "pending_orders": [],
+      "pending_orders": [
+        {
+          "symbol": "APA",
+          "notional": 192.66,
+          "score": 73.3,
+          "reason": "entry(score=73)",
+          "decided_date": "2026-10-27"
+        }
+      ],
       "history": [
         {
           "date": "2026-06-29",
@@ -464,9 +466,14 @@
           "date": "2026-10-26",
           "total_value": 1389.78,
           "cash": 83.61
+        },
+        {
+          "date": "2026-10-27",
+          "total_value": 1359.37,
+          "cash": 281.17
         }
       ],
-      "last_decision_date": "2026-10-26",
+      "last_decision_date": "2026-10-27",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1107,9 +1114,20 @@
           "price": 159.860001,
           "cost": 1.5,
           "reason": "entry(score=73) [T+1 open]"
+        },
+        {
+          "date": "2026-10-27",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "VLO",
+          "shares": 0.51390144,
+          "price": 387.339996,
+          "cost": 1.5,
+          "reason": "trailing_stop(-15.8% from high)"
         }
       ],
-      "updated_at": "2026-10-26T20:39:17Z"
+      "updated_at": "2026-10-27T20:39:44Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1640,6 +1658,11 @@
         {
           "date": "2026-10-26",
           "total_value": 879.5,
+          "cash": 161.69
+        },
+        {
+          "date": "2026-10-27",
+          "total_value": 875.9,
           "cash": 161.69
         }
       ],
@@ -2517,7 +2540,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-26T20:39:17Z"
+      "updated_at": "2026-10-27T20:39:44Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -3078,6 +3101,11 @@
         {
           "date": "2026-10-26",
           "total_value": 930.64,
+          "cash": -30.04
+        },
+        {
+          "date": "2026-10-27",
+          "total_value": 929.98,
           "cash": -30.04
         }
       ],
@@ -3702,7 +3730,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-26T20:39:17Z"
+      "updated_at": "2026-10-27T20:39:44Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -4251,6 +4279,11 @@
         {
           "date": "2026-10-26",
           "total_value": 842.46,
+          "cash": 128.43
+        },
+        {
+          "date": "2026-10-27",
+          "total_value": 865.69,
           "cash": 128.43
         }
       ],
@@ -5051,7 +5084,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-26T20:39:17Z"
+      "updated_at": "2026-10-27T20:39:44Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -5594,6 +5627,11 @@
         {
           "date": "2026-10-26",
           "total_value": 878.11,
+          "cash": 141.23
+        },
+        {
+          "date": "2026-10-27",
+          "total_value": 900.36,
           "cash": 141.23
         }
       ],
@@ -16464,7 +16502,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.22, news:0.12, insider:0.10)"
         }
       ],
-      "updated_at": "2026-10-26T20:39:17Z"
+      "updated_at": "2026-10-27T20:39:44Z"
     }
   }
 }
