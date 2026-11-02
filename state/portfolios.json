@@ -3,7 +3,7 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 87.008362,
+      "cash": 425.75896,
       "holdings": [
         {
           "symbol": "AMG",
@@ -18,12 +18,6 @@
           "high_water": 52.82
         },
         {
-          "symbol": "DINO",
-          "shares": 2.03517768,
-          "avg_cost": 87.839996,
-          "high_water": 128.229996
-        },
-        {
           "symbol": "EOG",
           "shares": 1.23201551,
           "avg_cost": 159.860001,
@@ -33,13 +27,7 @@
           "symbol": "EXPD",
           "shares": 0.79803716,
           "avg_cost": 193.600006,
-          "high_water": 199.639999
-        },
-        {
-          "symbol": "ILMN",
-          "shares": 0.50795772,
-          "avg_cost": 187.809998,
-          "high_water": 293.690002
+          "high_water": 200.419998
         },
         {
           "symbol": "VSXY",
@@ -484,9 +472,14 @@
           "date": "2026-10-30",
           "total_value": 1323.68,
           "cash": 87.01
+        },
+        {
+          "date": "2026-11-02",
+          "total_value": 1308.32,
+          "cash": 425.76
         }
       ],
-      "last_decision_date": "2026-10-30",
+      "last_decision_date": "2026-11-02",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1149,9 +1142,31 @@
           "price": 51.32,
           "cost": 1.5,
           "reason": "entry(score=73) [T+1 open]"
+        },
+        {
+          "date": "2026-11-02",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "DINO",
+          "shares": 2.03517768,
+          "price": 112.07,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-11-02",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "ILMN",
+          "shares": 0.50795772,
+          "price": 223.774994,
+          "cost": 1.5,
+          "reason": "trailing_stop(-23.8% from high)"
         }
       ],
-      "updated_at": "2026-10-30T20:39:22Z"
+      "updated_at": "2026-11-02T20:38:27Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1696,6 +1711,11 @@
         {
           "date": "2026-10-30",
           "total_value": 863.56,
+          "cash": -18.63
+        },
+        {
+          "date": "2026-11-02",
+          "total_value": 856.57,
           "cash": -18.63
         }
       ],
@@ -2903,7 +2923,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-30T20:39:22Z"
+      "updated_at": "2026-11-02T20:38:27Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -3472,6 +3492,11 @@
         {
           "date": "2026-10-30",
           "total_value": 954.44,
+          "cash": 3.03
+        },
+        {
+          "date": "2026-11-02",
+          "total_value": 943.59,
           "cash": 3.03
         }
       ],
@@ -4382,7 +4407,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-30T20:39:22Z"
+      "updated_at": "2026-11-02T20:38:27Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -4939,6 +4964,11 @@
         {
           "date": "2026-10-30",
           "total_value": 828.33,
+          "cash": -17.84
+        },
+        {
+          "date": "2026-11-02",
+          "total_value": 816.22,
           "cash": -17.84
         }
       ],
@@ -6080,7 +6110,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-10-30T20:39:22Z"
+      "updated_at": "2026-11-02T20:38:27Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -6631,6 +6661,11 @@
         {
           "date": "2026-10-30",
           "total_value": 873.06,
+          "cash": -25.98
+        },
+        {
+          "date": "2026-11-02",
+          "total_value": 858.36,
           "cash": -25.98
         }
       ],
@@ -17846,7 +17881,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.21, news:0.11, insider:0.10)"
         }
       ],
-      "updated_at": "2026-10-30T20:39:22Z"
+      "updated_at": "2026-11-02T20:38:27Z"
     }
   }
 }
