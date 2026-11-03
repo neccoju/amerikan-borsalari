@@ -27,16 +27,38 @@
           "symbol": "EXPD",
           "shares": 0.79803716,
           "avg_cost": 193.600006,
-          "high_water": 200.419998
+          "high_water": 204.800003
         },
         {
           "symbol": "VSXY",
           "shares": 1.39463432,
           "avg_cost": 92.440002,
-          "high_water": 99.139999
+          "high_water": 100.720001
         }
       ],
-      "pending_orders": [],
+      "pending_orders": [
+        {
+          "symbol": "DINO",
+          "notional": 145.02,
+          "score": 75.6,
+          "reason": "entry(score=76)",
+          "decided_date": "2026-11-03"
+        },
+        {
+          "symbol": "PBF",
+          "notional": 87.53,
+          "score": 73.6,
+          "reason": "entry(score=74)",
+          "decided_date": "2026-11-03"
+        },
+        {
+          "symbol": "MO",
+          "notional": 128.0,
+          "score": 71.9,
+          "reason": "entry(score=72)",
+          "decided_date": "2026-11-03"
+        }
+      ],
       "history": [
         {
           "date": "2026-06-29",
@@ -477,9 +499,14 @@
           "date": "2026-11-02",
           "total_value": 1308.32,
           "cash": 425.76
+        },
+        {
+          "date": "2026-11-03",
+          "total_value": 1303.92,
+          "cash": 425.76
         }
       ],
-      "last_decision_date": "2026-11-02",
+      "last_decision_date": "2026-11-03",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1166,7 +1193,7 @@
           "reason": "trailing_stop(-23.8% from high)"
         }
       ],
-      "updated_at": "2026-11-02T20:38:27Z"
+      "updated_at": "2026-11-03T20:43:09Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1716,6 +1743,11 @@
         {
           "date": "2026-11-02",
           "total_value": 856.57,
+          "cash": -18.63
+        },
+        {
+          "date": "2026-11-03",
+          "total_value": 852.11,
           "cash": -18.63
         }
       ],
@@ -2923,7 +2955,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-02T20:38:27Z"
+      "updated_at": "2026-11-03T20:43:09Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -3497,6 +3529,11 @@
         {
           "date": "2026-11-02",
           "total_value": 943.59,
+          "cash": 3.03
+        },
+        {
+          "date": "2026-11-03",
+          "total_value": 933.94,
           "cash": 3.03
         }
       ],
@@ -4407,7 +4444,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-02T20:38:27Z"
+      "updated_at": "2026-11-03T20:43:09Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -4969,6 +5006,11 @@
         {
           "date": "2026-11-02",
           "total_value": 816.22,
+          "cash": -17.84
+        },
+        {
+          "date": "2026-11-03",
+          "total_value": 816.67,
           "cash": -17.84
         }
       ],
@@ -6110,7 +6152,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-02T20:38:27Z"
+      "updated_at": "2026-11-03T20:43:09Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -6666,6 +6708,11 @@
         {
           "date": "2026-11-02",
           "total_value": 858.36,
+          "cash": -25.98
+        },
+        {
+          "date": "2026-11-03",
+          "total_value": 854.56,
           "cash": -25.98
         }
       ],
@@ -17881,7 +17928,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.21, news:0.11, insider:0.10)"
         }
       ],
-      "updated_at": "2026-11-02T20:38:27Z"
+      "updated_at": "2026-11-03T20:43:09Z"
     }
   }
 }
