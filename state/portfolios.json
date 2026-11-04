@@ -3,26 +3,8 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 425.75896,
+      "cash": 817.524455,
       "holdings": [
-        {
-          "symbol": "AMG",
-          "shares": 0.55441388,
-          "avg_cost": 366.910004,
-          "high_water": 399.019989
-        },
-        {
-          "symbol": "APA",
-          "shares": 3.75409199,
-          "avg_cost": 51.32,
-          "high_water": 52.82
-        },
-        {
-          "symbol": "EOG",
-          "shares": 1.23201551,
-          "avg_cost": 159.860001,
-          "high_water": 165.539993
-        },
         {
           "symbol": "EXPD",
           "shares": 0.79803716,
@@ -30,35 +12,19 @@
           "high_water": 204.800003
         },
         {
+          "symbol": "MO",
+          "shares": 1.64757364,
+          "avg_cost": 77.690002,
+          "high_water": 77.82
+        },
+        {
           "symbol": "VSXY",
           "shares": 1.39463432,
           "avg_cost": 92.440002,
-          "high_water": 100.720001
+          "high_water": 109.480003
         }
       ],
-      "pending_orders": [
-        {
-          "symbol": "DINO",
-          "notional": 145.02,
-          "score": 75.6,
-          "reason": "entry(score=76)",
-          "decided_date": "2026-11-03"
-        },
-        {
-          "symbol": "PBF",
-          "notional": 87.53,
-          "score": 73.6,
-          "reason": "entry(score=74)",
-          "decided_date": "2026-11-03"
-        },
-        {
-          "symbol": "MO",
-          "notional": 128.0,
-          "score": 71.9,
-          "reason": "entry(score=72)",
-          "decided_date": "2026-11-03"
-        }
-      ],
+      "pending_orders": [],
       "history": [
         {
           "date": "2026-06-29",
@@ -504,9 +470,14 @@
           "date": "2026-11-03",
           "total_value": 1303.92,
           "cash": 425.76
+        },
+        {
+          "date": "2026-11-04",
+          "total_value": 1256.23,
+          "cash": 817.52
         }
       ],
-      "last_decision_date": "2026-11-03",
+      "last_decision_date": "2026-11-04",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1191,9 +1162,97 @@
           "price": 223.774994,
           "cost": 1.5,
           "reason": "trailing_stop(-23.8% from high)"
+        },
+        {
+          "date": "2026-11-04",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "DINO",
+          "shares": 1.2858663,
+          "price": 112.779999,
+          "cost": 1.5,
+          "reason": "entry(score=76) [T+1 open]"
+        },
+        {
+          "date": "2026-11-04",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "PBF",
+          "shares": 1.14733253,
+          "price": 76.290001,
+          "cost": 1.5,
+          "reason": "entry(score=74) [T+1 open]"
+        },
+        {
+          "date": "2026-11-04",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "MO",
+          "shares": 1.64757364,
+          "price": 77.690002,
+          "cost": 1.5,
+          "reason": "entry(score=72) [T+1 open]"
+        },
+        {
+          "date": "2026-11-04",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "AMG",
+          "shares": 0.55441388,
+          "price": 365.519989,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-11-04",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "APA",
+          "shares": 3.75409199,
+          "price": 44.099998,
+          "cost": 1.5,
+          "reason": "stop_loss(-14.1%)"
+        },
+        {
+          "date": "2026-11-04",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "EOG",
+          "shares": 1.23201551,
+          "price": 147.085007,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-11-04",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "DINO",
+          "shares": 1.2858663,
+          "price": 103.389999,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-11-04",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "PBF",
+          "shares": 1.14733253,
+          "price": 71.43,
+          "cost": 1.5,
+          "reason": "technical_breakdown(<50DMA)"
         }
       ],
-      "updated_at": "2026-11-03T20:43:09Z"
+      "updated_at": "2026-11-04T20:38:21Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1748,6 +1807,11 @@
         {
           "date": "2026-11-03",
           "total_value": 852.11,
+          "cash": -18.63
+        },
+        {
+          "date": "2026-11-04",
+          "total_value": 844.33,
           "cash": -18.63
         }
       ],
@@ -2955,7 +3019,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-03T20:43:09Z"
+      "updated_at": "2026-11-04T20:38:21Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -3534,6 +3598,11 @@
         {
           "date": "2026-11-03",
           "total_value": 933.94,
+          "cash": 3.03
+        },
+        {
+          "date": "2026-11-04",
+          "total_value": 942.26,
           "cash": 3.03
         }
       ],
@@ -4444,7 +4513,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-03T20:43:09Z"
+      "updated_at": "2026-11-04T20:38:21Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -5011,6 +5080,11 @@
         {
           "date": "2026-11-03",
           "total_value": 816.67,
+          "cash": -17.84
+        },
+        {
+          "date": "2026-11-04",
+          "total_value": 831.27,
           "cash": -17.84
         }
       ],
@@ -6152,7 +6226,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-03T20:43:09Z"
+      "updated_at": "2026-11-04T20:38:21Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -6713,6 +6787,11 @@
         {
           "date": "2026-11-03",
           "total_value": 854.56,
+          "cash": -25.98
+        },
+        {
+          "date": "2026-11-04",
+          "total_value": 853.49,
           "cash": -25.98
         }
       ],
@@ -17928,7 +18007,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.21, news:0.11, insider:0.10)"
         }
       ],
-      "updated_at": "2026-11-03T20:43:09Z"
+      "updated_at": "2026-11-04T20:38:21Z"
     }
   }
 }
