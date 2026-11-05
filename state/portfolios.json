@@ -3,28 +3,24 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 817.524455,
+      "cash": 1113.455825,
       "holdings": [
-        {
-          "symbol": "EXPD",
-          "shares": 0.79803716,
-          "avg_cost": 193.600006,
-          "high_water": 204.800003
-        },
         {
           "symbol": "MO",
           "shares": 1.64757364,
           "avg_cost": 77.690002,
           "high_water": 77.82
-        },
-        {
-          "symbol": "VSXY",
-          "shares": 1.39463432,
-          "avg_cost": 92.440002,
-          "high_water": 109.480003
         }
       ],
-      "pending_orders": [],
+      "pending_orders": [
+        {
+          "symbol": "ETSY",
+          "notional": 92.45,
+          "score": 72.2,
+          "reason": "entry(score=72)",
+          "decided_date": "2026-11-05"
+        }
+      ],
       "history": [
         {
           "date": "2026-06-29",
@@ -475,9 +471,14 @@
           "date": "2026-11-04",
           "total_value": 1256.23,
           "cash": 817.52
+        },
+        {
+          "date": "2026-11-05",
+          "total_value": 1241.46,
+          "cash": 1113.46
         }
       ],
-      "last_decision_date": "2026-11-04",
+      "last_decision_date": "2026-11-05",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1250,9 +1251,31 @@
           "price": 71.43,
           "cost": 1.5,
           "reason": "technical_breakdown(<50DMA)"
+        },
+        {
+          "date": "2026-11-05",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "EXPD",
+          "shares": 0.79803716,
+          "price": 189.130005,
+          "cost": 1.5,
+          "reason": "regime_risk_off_derisk"
+        },
+        {
+          "date": "2026-11-05",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "VSXY",
+          "shares": 1.39463432,
+          "price": 106.120003,
+          "cost": 1.5,
+          "reason": "regime_risk_off_derisk"
         }
       ],
-      "updated_at": "2026-11-04T20:38:21Z"
+      "updated_at": "2026-11-05T20:40:44Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1812,6 +1835,11 @@
         {
           "date": "2026-11-04",
           "total_value": 844.33,
+          "cash": -18.63
+        },
+        {
+          "date": "2026-11-05",
+          "total_value": 817.55,
           "cash": -18.63
         }
       ],
@@ -3019,7 +3047,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-04T20:38:21Z"
+      "updated_at": "2026-11-05T20:40:44Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -3603,6 +3631,11 @@
         {
           "date": "2026-11-04",
           "total_value": 942.26,
+          "cash": 3.03
+        },
+        {
+          "date": "2026-11-05",
+          "total_value": 929.8,
           "cash": 3.03
         }
       ],
@@ -4513,7 +4546,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-04T20:38:21Z"
+      "updated_at": "2026-11-05T20:40:44Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -5085,6 +5118,11 @@
         {
           "date": "2026-11-04",
           "total_value": 831.27,
+          "cash": -17.84
+        },
+        {
+          "date": "2026-11-05",
+          "total_value": 782.58,
           "cash": -17.84
         }
       ],
@@ -6226,7 +6264,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-04T20:38:21Z"
+      "updated_at": "2026-11-05T20:40:44Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -6792,6 +6830,11 @@
         {
           "date": "2026-11-04",
           "total_value": 853.49,
+          "cash": -25.98
+        },
+        {
+          "date": "2026-11-05",
+          "total_value": 810.66,
           "cash": -25.98
         }
       ],
@@ -18007,7 +18050,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.21, news:0.11, insider:0.10)"
         }
       ],
-      "updated_at": "2026-11-04T20:38:21Z"
+      "updated_at": "2026-11-05T20:40:44Z"
     }
   }
 }
