@@ -3,15 +3,29 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 1234.33402,
-      "holdings": [],
-      "pending_orders": [
+      "cash": 1132.67402,
+      "holdings": [
         {
           "symbol": "ABNB",
-          "notional": 100.16,
-          "score": 71.8,
+          "shares": 0.51815829,
+          "avg_cost": 193.300003,
+          "high_water": 193.300003
+        }
+      ],
+      "pending_orders": [
+        {
+          "symbol": "ROKU",
+          "notional": 184.87,
+          "score": 72.3,
           "reason": "entry(score=72)",
-          "decided_date": "2026-11-06"
+          "decided_date": "2026-11-09"
+        },
+        {
+          "symbol": "AIZ",
+          "notional": 184.87,
+          "score": 71.9,
+          "reason": "entry(score=72)",
+          "decided_date": "2026-11-09"
         }
       ],
       "history": [
@@ -474,9 +488,14 @@
           "date": "2026-11-06",
           "total_value": 1234.33,
           "cash": 1234.33
+        },
+        {
+          "date": "2026-11-09",
+          "total_value": 1232.46,
+          "cash": 1132.67
         }
       ],
-      "last_decision_date": "2026-11-06",
+      "last_decision_date": "2026-11-09",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1304,9 +1323,20 @@
           "price": 89.57,
           "cost": 1.5,
           "reason": "regime_risk_off_derisk"
+        },
+        {
+          "date": "2026-11-09",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "ABNB",
+          "shares": 0.51815829,
+          "price": 193.300003,
+          "cost": 1.5,
+          "reason": "entry(score=72) [T+1 open]"
         }
       ],
-      "updated_at": "2026-11-06T20:37:52Z"
+      "updated_at": "2026-11-09T20:39:04Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1876,6 +1906,11 @@
         {
           "date": "2026-11-06",
           "total_value": 819.29,
+          "cash": -18.63
+        },
+        {
+          "date": "2026-11-09",
+          "total_value": 836.84,
           "cash": -18.63
         }
       ],
@@ -3083,7 +3118,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-06T20:37:52Z"
+      "updated_at": "2026-11-09T20:39:04Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -3677,6 +3712,11 @@
         {
           "date": "2026-11-06",
           "total_value": 922.24,
+          "cash": 3.03
+        },
+        {
+          "date": "2026-11-09",
+          "total_value": 921.8,
           "cash": 3.03
         }
       ],
@@ -4587,7 +4627,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-06T20:37:52Z"
+      "updated_at": "2026-11-09T20:39:04Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -5169,6 +5209,11 @@
         {
           "date": "2026-11-06",
           "total_value": 783.93,
+          "cash": -17.84
+        },
+        {
+          "date": "2026-11-09",
+          "total_value": 803.75,
           "cash": -17.84
         }
       ],
@@ -6310,7 +6355,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-06T20:37:52Z"
+      "updated_at": "2026-11-09T20:39:04Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -6886,6 +6931,11 @@
         {
           "date": "2026-11-06",
           "total_value": 815.09,
+          "cash": -25.98
+        },
+        {
+          "date": "2026-11-09",
+          "total_value": 829.14,
           "cash": -25.98
         }
       ],
@@ -18101,7 +18151,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.21, news:0.11, insider:0.10)"
         }
       ],
-      "updated_at": "2026-11-06T20:37:52Z"
+      "updated_at": "2026-11-09T20:39:04Z"
     }
   }
 }
