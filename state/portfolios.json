@@ -3,7 +3,7 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 759.93402,
+      "cash": 455.10402,
       "holdings": [
         {
           "symbol": "ABNB",
@@ -15,7 +15,19 @@
           "symbol": "AIZ",
           "shares": 0.57998431,
           "avg_cost": 318.75,
-          "high_water": 322.089996
+          "high_water": 322.720001
+        },
+        {
+          "symbol": "AMG",
+          "shares": 0.35052498,
+          "avg_cost": 400.970001,
+          "high_water": 400.970001
+        },
+        {
+          "symbol": "EXEL",
+          "shares": 2.28118822,
+          "avg_cost": 70.699997,
+          "high_water": 70.699997
         },
         {
           "symbol": "ROKU",
@@ -26,18 +38,25 @@
       ],
       "pending_orders": [
         {
-          "symbol": "AMG",
-          "notional": 140.55,
-          "score": 74.5,
+          "symbol": "APA",
+          "notional": 120.52,
+          "score": 75.1,
           "reason": "entry(score=75)",
-          "decided_date": "2026-11-10"
+          "decided_date": "2026-11-12"
         },
         {
-          "symbol": "EXEL",
-          "notional": 161.28,
-          "score": 74.0,
-          "reason": "entry(score=74)",
-          "decided_date": "2026-11-10"
+          "symbol": "EXPD",
+          "notional": 182.97,
+          "score": 72.4,
+          "reason": "entry(score=72)",
+          "decided_date": "2026-11-12"
+        },
+        {
+          "symbol": "CHRD",
+          "notional": 90.63,
+          "score": 71.0,
+          "reason": "entry(score=71)",
+          "decided_date": "2026-11-12"
         }
       ],
       "history": [
@@ -510,9 +529,14 @@
           "date": "2026-11-10",
           "total_value": 1228.28,
           "cash": 759.93
+        },
+        {
+          "date": "2026-11-12",
+          "total_value": 1219.78,
+          "cash": 455.1
         }
       ],
-      "last_decision_date": "2026-11-10",
+      "last_decision_date": "2026-11-12",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1373,9 +1397,31 @@
           "price": 318.75,
           "cost": 1.5,
           "reason": "entry(score=72) [T+1 open]"
+        },
+        {
+          "date": "2026-11-12",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "AMG",
+          "shares": 0.35052498,
+          "price": 400.970001,
+          "cost": 1.5,
+          "reason": "entry(score=75) [T+1 open]"
+        },
+        {
+          "date": "2026-11-12",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "EXEL",
+          "shares": 2.28118822,
+          "price": 70.699997,
+          "cost": 1.5,
+          "reason": "entry(score=74) [T+1 open]"
         }
       ],
-      "updated_at": "2026-11-10T20:37:51Z"
+      "updated_at": "2026-11-12T20:36:13Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -1955,6 +2001,11 @@
         {
           "date": "2026-11-10",
           "total_value": 836.72,
+          "cash": -18.63
+        },
+        {
+          "date": "2026-11-12",
+          "total_value": 851.8,
           "cash": -18.63
         }
       ],
@@ -3162,7 +3213,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-10T20:37:51Z"
+      "updated_at": "2026-11-12T20:36:12Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -3766,6 +3817,11 @@
         {
           "date": "2026-11-10",
           "total_value": 928.64,
+          "cash": 3.03
+        },
+        {
+          "date": "2026-11-12",
+          "total_value": 946.35,
           "cash": 3.03
         }
       ],
@@ -4676,7 +4732,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-10T20:37:51Z"
+      "updated_at": "2026-11-12T20:36:13Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -5268,6 +5324,11 @@
         {
           "date": "2026-11-10",
           "total_value": 799.91,
+          "cash": -17.84
+        },
+        {
+          "date": "2026-11-12",
+          "total_value": 816.32,
           "cash": -17.84
         }
       ],
@@ -6409,7 +6470,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-10T20:37:51Z"
+      "updated_at": "2026-11-12T20:36:13Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -6995,6 +7056,11 @@
         {
           "date": "2026-11-10",
           "total_value": 829.87,
+          "cash": -25.98
+        },
+        {
+          "date": "2026-11-12",
+          "total_value": 854.17,
           "cash": -25.98
         }
       ],
@@ -18210,7 +18276,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.21, news:0.11, insider:0.10)"
         }
       ],
-      "updated_at": "2026-11-10T20:37:51Z"
+      "updated_at": "2026-11-12T20:36:13Z"
     }
   }
 }
