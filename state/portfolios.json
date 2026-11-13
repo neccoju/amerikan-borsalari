@@ -3,7 +3,7 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 455.10402,
+      "cash": 270.63402,
       "holdings": [
         {
           "symbol": "ABNB",
@@ -30,35 +30,19 @@
           "high_water": 70.699997
         },
         {
+          "symbol": "EXPD",
+          "shares": 0.93114504,
+          "avg_cost": 196.5,
+          "high_water": 196.5
+        },
+        {
           "symbol": "ROKU",
           "shares": 1.15169446,
           "avg_cost": 160.520004,
           "high_water": 160.520004
         }
       ],
-      "pending_orders": [
-        {
-          "symbol": "APA",
-          "notional": 120.52,
-          "score": 75.1,
-          "reason": "entry(score=75)",
-          "decided_date": "2026-11-12"
-        },
-        {
-          "symbol": "EXPD",
-          "notional": 182.97,
-          "score": 72.4,
-          "reason": "entry(score=72)",
-          "decided_date": "2026-11-12"
-        },
-        {
-          "symbol": "CHRD",
-          "notional": 90.63,
-          "score": 71.0,
-          "reason": "entry(score=71)",
-          "decided_date": "2026-11-12"
-        }
-      ],
+      "pending_orders": [],
       "history": [
         {
           "date": "2026-06-29",
@@ -534,9 +518,14 @@
           "date": "2026-11-12",
           "total_value": 1219.78,
           "cash": 455.1
+        },
+        {
+          "date": "2026-11-13",
+          "total_value": 1216.67,
+          "cash": 270.63
         }
       ],
-      "last_decision_date": "2026-11-12",
+      "last_decision_date": "2026-11-13",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1419,9 +1408,20 @@
           "price": 70.699997,
           "cost": 1.5,
           "reason": "entry(score=74) [T+1 open]"
+        },
+        {
+          "date": "2026-11-13",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "EXPD",
+          "shares": 0.93114504,
+          "price": 196.5,
+          "cost": 1.5,
+          "reason": "entry(score=72) [T+1 open]"
         }
       ],
-      "updated_at": "2026-11-12T20:36:13Z"
+      "updated_at": "2026-11-13T20:39:32Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -2006,6 +2006,11 @@
         {
           "date": "2026-11-12",
           "total_value": 851.8,
+          "cash": -18.63
+        },
+        {
+          "date": "2026-11-13",
+          "total_value": 841.73,
           "cash": -18.63
         }
       ],
@@ -3213,7 +3218,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-12T20:36:12Z"
+      "updated_at": "2026-11-13T20:39:32Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -3822,6 +3827,11 @@
         {
           "date": "2026-11-12",
           "total_value": 946.35,
+          "cash": 3.03
+        },
+        {
+          "date": "2026-11-13",
+          "total_value": 935.99,
           "cash": 3.03
         }
       ],
@@ -4732,7 +4742,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-12T20:36:13Z"
+      "updated_at": "2026-11-13T20:39:32Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -5329,6 +5339,11 @@
         {
           "date": "2026-11-12",
           "total_value": 816.32,
+          "cash": -17.84
+        },
+        {
+          "date": "2026-11-13",
+          "total_value": 821.72,
           "cash": -17.84
         }
       ],
@@ -6470,7 +6485,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-12T20:36:13Z"
+      "updated_at": "2026-11-13T20:39:32Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -7061,6 +7076,11 @@
         {
           "date": "2026-11-12",
           "total_value": 854.17,
+          "cash": -25.98
+        },
+        {
+          "date": "2026-11-13",
+          "total_value": 866.1,
           "cash": -25.98
         }
       ],
@@ -18276,7 +18296,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.21, news:0.11, insider:0.10)"
         }
       ],
-      "updated_at": "2026-11-12T20:36:13Z"
+      "updated_at": "2026-11-13T20:39:32Z"
     }
   }
 }
