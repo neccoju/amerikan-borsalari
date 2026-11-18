@@ -3,45 +3,8 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 270.63402,
-      "holdings": [
-        {
-          "symbol": "ABNB",
-          "shares": 0.51815829,
-          "avg_cost": 193.300003,
-          "high_water": 193.300003
-        },
-        {
-          "symbol": "AIZ",
-          "shares": 0.57998431,
-          "avg_cost": 318.75,
-          "high_water": 322.720001
-        },
-        {
-          "symbol": "AMG",
-          "shares": 0.35052498,
-          "avg_cost": 400.970001,
-          "high_water": 400.970001
-        },
-        {
-          "symbol": "EXEL",
-          "shares": 2.28118822,
-          "avg_cost": 70.699997,
-          "high_water": 70.699997
-        },
-        {
-          "symbol": "EXPD",
-          "shares": 0.93114504,
-          "avg_cost": 196.5,
-          "high_water": 196.5
-        },
-        {
-          "symbol": "ROKU",
-          "shares": 1.15169446,
-          "avg_cost": 160.520004,
-          "high_water": 160.520004
-        }
-      ],
+      "cash": 1195.506252,
+      "holdings": [],
       "pending_orders": [],
       "history": [
         {
@@ -523,9 +486,14 @@
           "date": "2026-11-13",
           "total_value": 1216.67,
           "cash": 270.63
+        },
+        {
+          "date": "2026-11-18",
+          "total_value": 1195.51,
+          "cash": 1195.51
         }
       ],
-      "last_decision_date": "2026-11-13",
+      "last_decision_date": "2026-11-18",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1419,9 +1387,75 @@
           "price": 196.5,
           "cost": 1.5,
           "reason": "entry(score=72) [T+1 open]"
+        },
+        {
+          "date": "2026-11-18",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "ABNB",
+          "shares": 0.51815829,
+          "price": 181.339996,
+          "cost": 1.5,
+          "reason": "regime_risk_off_derisk"
+        },
+        {
+          "date": "2026-11-18",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "AIZ",
+          "shares": 0.57998431,
+          "price": 319.915009,
+          "cost": 1.5,
+          "reason": "regime_risk_off_derisk"
+        },
+        {
+          "date": "2026-11-18",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "AMG",
+          "shares": 0.35052498,
+          "price": 393.140015,
+          "cost": 1.5,
+          "reason": "regime_risk_off_derisk"
+        },
+        {
+          "date": "2026-11-18",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "EXEL",
+          "shares": 2.28118822,
+          "price": 68.605003,
+          "cost": 1.5,
+          "reason": "regime_risk_off_derisk"
+        },
+        {
+          "date": "2026-11-18",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "EXPD",
+          "shares": 0.93114504,
+          "price": 188.141907,
+          "cost": 1.5,
+          "reason": "regime_risk_off_derisk"
+        },
+        {
+          "date": "2026-11-18",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "ROKU",
+          "shares": 1.15169446,
+          "price": 160.520004,
+          "cost": 1.5,
+          "reason": "regime_risk_off_derisk"
         }
       ],
-      "updated_at": "2026-11-13T20:39:32Z"
+      "updated_at": "2026-11-18T20:40:34Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -2011,6 +2045,11 @@
         {
           "date": "2026-11-13",
           "total_value": 841.73,
+          "cash": -18.63
+        },
+        {
+          "date": "2026-11-18",
+          "total_value": 825.99,
           "cash": -18.63
         }
       ],
@@ -3218,12 +3257,12 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-13T20:39:32Z"
+      "updated_at": "2026-11-18T20:40:34Z"
     },
     "Defensive": {
       "ptype": "defensive",
       "starting_capital": 1000.0,
-      "cash": 3.025813,
+      "cash": 3.473942,
       "holdings": [
         {
           "symbol": "ACMR",
@@ -3833,6 +3872,11 @@
           "date": "2026-11-13",
           "total_value": 935.99,
           "cash": 3.03
+        },
+        {
+          "date": "2026-11-18",
+          "total_value": 921.19,
+          "cash": 3.47
         }
       ],
       "last_decision_date": null,
@@ -4740,9 +4784,20 @@
           "price": 52.82,
           "cost": 0.0,
           "reason": "Month-end rebalance"
+        },
+        {
+          "date": "2026-11-18",
+          "sleeve": "Defensive",
+          "type": "dividend",
+          "side": "dividend",
+          "symbol": "CF",
+          "shares": 0.74688099,
+          "price": 0.6,
+          "cost": 0.0,
+          "reason": "dividend $0.6000/sh (ex 2026-11-16)"
         }
       ],
-      "updated_at": "2026-11-13T20:39:32Z"
+      "updated_at": "2026-11-18T20:40:34Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -5344,6 +5399,11 @@
         {
           "date": "2026-11-13",
           "total_value": 821.72,
+          "cash": -17.84
+        },
+        {
+          "date": "2026-11-18",
+          "total_value": 789.22,
           "cash": -17.84
         }
       ],
@@ -6485,7 +6545,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-13T20:39:32Z"
+      "updated_at": "2026-11-18T20:40:34Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -7081,6 +7141,11 @@
         {
           "date": "2026-11-13",
           "total_value": 866.1,
+          "cash": -25.98
+        },
+        {
+          "date": "2026-11-18",
+          "total_value": 823.9,
           "cash": -25.98
         }
       ],
@@ -18296,7 +18361,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.21, news:0.11, insider:0.10)"
         }
       ],
-      "updated_at": "2026-11-13T20:39:32Z"
+      "updated_at": "2026-11-18T20:40:34Z"
     }
   }
 }
