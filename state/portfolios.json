@@ -5,7 +5,22 @@
       "starting_capital": 1600.0,
       "cash": 1195.506252,
       "holdings": [],
-      "pending_orders": [],
+      "pending_orders": [
+        {
+          "symbol": "CPAY",
+          "notional": 151.75,
+          "score": 71.5,
+          "reason": "entry(score=72)",
+          "decided_date": "2026-11-19"
+        },
+        {
+          "symbol": "RS",
+          "notional": 147.13,
+          "score": 71.4,
+          "reason": "entry(score=71)",
+          "decided_date": "2026-11-19"
+        }
+      ],
       "history": [
         {
           "date": "2026-06-29",
@@ -491,9 +506,14 @@
           "date": "2026-11-18",
           "total_value": 1195.51,
           "cash": 1195.51
+        },
+        {
+          "date": "2026-11-19",
+          "total_value": 1195.51,
+          "cash": 1195.51
         }
       ],
-      "last_decision_date": "2026-11-18",
+      "last_decision_date": "2026-11-19",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1455,7 +1475,7 @@
           "reason": "regime_risk_off_derisk"
         }
       ],
-      "updated_at": "2026-11-18T20:40:34Z"
+      "updated_at": "2026-11-19T20:37:44Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -2050,6 +2070,11 @@
         {
           "date": "2026-11-18",
           "total_value": 825.99,
+          "cash": -18.63
+        },
+        {
+          "date": "2026-11-19",
+          "total_value": 813.05,
           "cash": -18.63
         }
       ],
@@ -3257,7 +3282,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-18T20:40:34Z"
+      "updated_at": "2026-11-19T20:37:44Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -3876,6 +3901,11 @@
         {
           "date": "2026-11-18",
           "total_value": 921.19,
+          "cash": 3.47
+        },
+        {
+          "date": "2026-11-19",
+          "total_value": 921.21,
           "cash": 3.47
         }
       ],
@@ -4797,7 +4827,7 @@
           "reason": "dividend $0.6000/sh (ex 2026-11-16)"
         }
       ],
-      "updated_at": "2026-11-18T20:40:34Z"
+      "updated_at": "2026-11-19T20:37:44Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -5404,6 +5434,11 @@
         {
           "date": "2026-11-18",
           "total_value": 789.22,
+          "cash": -17.84
+        },
+        {
+          "date": "2026-11-19",
+          "total_value": 789.45,
           "cash": -17.84
         }
       ],
@@ -6545,7 +6580,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-18T20:40:34Z"
+      "updated_at": "2026-11-19T20:37:44Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -7146,6 +7181,11 @@
         {
           "date": "2026-11-18",
           "total_value": 823.9,
+          "cash": -25.98
+        },
+        {
+          "date": "2026-11-19",
+          "total_value": 818.15,
           "cash": -25.98
         }
       ],
@@ -18361,7 +18401,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.21, news:0.11, insider:0.10)"
         }
       ],
-      "updated_at": "2026-11-18T20:40:34Z"
+      "updated_at": "2026-11-19T20:37:44Z"
     }
   }
 }
