@@ -3,22 +3,15 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 1195.506252,
+      "cash": 1183.976607,
       "holdings": [],
       "pending_orders": [
         {
-          "symbol": "CPAY",
-          "notional": 151.75,
-          "score": 71.5,
-          "reason": "entry(score=72)",
-          "decided_date": "2026-11-19"
-        },
-        {
-          "symbol": "RS",
-          "notional": 147.13,
-          "score": 71.4,
+          "symbol": "HAS",
+          "notional": 178.05,
+          "score": 70.6,
           "reason": "entry(score=71)",
-          "decided_date": "2026-11-19"
+          "decided_date": "2026-11-20"
         }
       ],
       "history": [
@@ -511,9 +504,14 @@
           "date": "2026-11-19",
           "total_value": 1195.51,
           "cash": 1195.51
+        },
+        {
+          "date": "2026-11-20",
+          "total_value": 1183.98,
+          "cash": 1183.98
         }
       ],
-      "last_decision_date": "2026-11-19",
+      "last_decision_date": "2026-11-20",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1473,9 +1471,53 @@
           "price": 160.520004,
           "cost": 1.5,
           "reason": "regime_risk_off_derisk"
+        },
+        {
+          "date": "2026-11-20",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "CPAY",
+          "shares": 0.34742095,
+          "price": 436.790009,
+          "cost": 1.5,
+          "reason": "entry(score=72) [T+1 open]"
+        },
+        {
+          "date": "2026-11-20",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "RS",
+          "shares": 0.3592041,
+          "price": 409.600006,
+          "cost": 1.5,
+          "reason": "entry(score=71) [T+1 open]"
+        },
+        {
+          "date": "2026-11-20",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "CPAY",
+          "shares": 0.34742095,
+          "price": 430.820007,
+          "cost": 1.5,
+          "reason": "regime_risk_off_derisk"
+        },
+        {
+          "date": "2026-11-20",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "RS",
+          "shares": 0.3592041,
+          "price": 399.980011,
+          "cost": 1.5,
+          "reason": "regime_risk_off_derisk"
         }
       ],
-      "updated_at": "2026-11-19T20:37:44Z"
+      "updated_at": "2026-11-20T20:38:30Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -2075,6 +2117,11 @@
         {
           "date": "2026-11-19",
           "total_value": 813.05,
+          "cash": -18.63
+        },
+        {
+          "date": "2026-11-20",
+          "total_value": 782.15,
           "cash": -18.63
         }
       ],
@@ -3282,7 +3329,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-19T20:37:44Z"
+      "updated_at": "2026-11-20T20:38:30Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -3906,6 +3953,11 @@
         {
           "date": "2026-11-19",
           "total_value": 921.21,
+          "cash": 3.47
+        },
+        {
+          "date": "2026-11-20",
+          "total_value": 897.01,
           "cash": 3.47
         }
       ],
@@ -4827,7 +4879,7 @@
           "reason": "dividend $0.6000/sh (ex 2026-11-16)"
         }
       ],
-      "updated_at": "2026-11-19T20:37:44Z"
+      "updated_at": "2026-11-20T20:38:30Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -5439,6 +5491,11 @@
         {
           "date": "2026-11-19",
           "total_value": 789.45,
+          "cash": -17.84
+        },
+        {
+          "date": "2026-11-20",
+          "total_value": 745.34,
           "cash": -17.84
         }
       ],
@@ -6580,7 +6637,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-19T20:37:44Z"
+      "updated_at": "2026-11-20T20:38:30Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -7187,28 +7244,35 @@
           "date": "2026-11-19",
           "total_value": 818.15,
           "cash": -25.98
+        },
+        {
+          "date": "2026-11-20",
+          "total_value": 780.07,
+          "cash": -25.98
         }
       ],
       "last_decision_date": null,
       "last_rebalance_date": "2026-10-30",
       "meta": {
         "factor_weights": {
-          "fundamental": 0.338997,
-          "technical": 0.211331,
-          "news": 0.114619,
-          "institutional": 0.100324,
-          "insider": 0.103457,
-          "earnings": 0.075903,
-          "short_interest": 0.055369
+          "fundamental": 0.324723,
+          "technical": 0.202433,
+          "news": 0.109793,
+          "institutional": 0.0961,
+          "congress": 0.042105,
+          "insider": 0.099101,
+          "earnings": 0.072707,
+          "short_interest": 0.053038
         },
         "static_weights": {
-          "fundamental": 0.310345,
-          "technical": 0.252874,
-          "news": 0.114943,
-          "institutional": 0.103448,
-          "insider": 0.091954,
-          "earnings": 0.068966,
-          "short_interest": 0.057471
+          "fundamental": 0.296703,
+          "technical": 0.241758,
+          "news": 0.10989,
+          "institutional": 0.098901,
+          "congress": 0.043956,
+          "insider": 0.087912,
+          "earnings": 0.065934,
+          "short_interest": 0.054945
         },
         "weight_history": [
           {
@@ -18401,7 +18465,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.21, news:0.11, insider:0.10)"
         }
       ],
-      "updated_at": "2026-11-19T20:37:44Z"
+      "updated_at": "2026-11-20T20:38:30Z"
     }
   }
 }
