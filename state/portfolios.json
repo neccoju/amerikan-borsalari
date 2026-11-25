@@ -3,22 +3,15 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 1177.873836,
+      "cash": 1177.269421,
       "holdings": [],
       "pending_orders": [
         {
           "symbol": "CPAY",
-          "notional": 152.3,
-          "score": 72.1,
+          "notional": 152.55,
+          "score": 72.0,
           "reason": "entry(score=72)",
-          "decided_date": "2026-11-24"
-        },
-        {
-          "symbol": "SN",
-          "notional": 111.17,
-          "score": 70.3,
-          "reason": "entry(score=70)",
-          "decided_date": "2026-11-24"
+          "decided_date": "2026-11-25"
         }
       ],
       "history": [
@@ -526,9 +519,14 @@
           "date": "2026-11-24",
           "total_value": 1177.87,
           "cash": 1177.87
+        },
+        {
+          "date": "2026-11-25",
+          "total_value": 1177.27,
+          "cash": 1177.27
         }
       ],
-      "last_decision_date": "2026-11-24",
+      "last_decision_date": "2026-11-25",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1576,9 +1574,53 @@
           "price": 243.080002,
           "cost": 1.5,
           "reason": "regime_risk_off_derisk"
+        },
+        {
+          "date": "2026-11-25",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "CPAY",
+          "shares": 0.34383112,
+          "price": 442.950012,
+          "cost": 1.5,
+          "reason": "entry(score=72) [T+1 open]"
+        },
+        {
+          "date": "2026-11-25",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "SN",
+          "shares": 0.48468597,
+          "price": 229.365005,
+          "cost": 1.5,
+          "reason": "entry(score=70) [T+1 open]"
+        },
+        {
+          "date": "2026-11-25",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "CPAY",
+          "shares": 0.34383112,
+          "price": 454.040009,
+          "cost": 1.5,
+          "reason": "regime_risk_off_derisk"
+        },
+        {
+          "date": "2026-11-25",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "SN",
+          "shares": 0.48468597,
+          "price": 232.630005,
+          "cost": 1.5,
+          "reason": "regime_risk_off_derisk"
         }
       ],
-      "updated_at": "2026-11-24T20:40:16Z"
+      "updated_at": "2026-11-25T20:37:08Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -2193,6 +2235,11 @@
         {
           "date": "2026-11-24",
           "total_value": 783.79,
+          "cash": -18.63
+        },
+        {
+          "date": "2026-11-25",
+          "total_value": 805.65,
           "cash": -18.63
         }
       ],
@@ -3400,7 +3447,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-24T20:40:16Z"
+      "updated_at": "2026-11-25T20:37:08Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -4039,6 +4086,11 @@
         {
           "date": "2026-11-24",
           "total_value": 928.77,
+          "cash": 3.47
+        },
+        {
+          "date": "2026-11-25",
+          "total_value": 917.31,
           "cash": 3.47
         }
       ],
@@ -4960,7 +5012,7 @@
           "reason": "dividend $0.6000/sh (ex 2026-11-16)"
         }
       ],
-      "updated_at": "2026-11-24T20:40:16Z"
+      "updated_at": "2026-11-25T20:37:08Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -5587,6 +5639,11 @@
         {
           "date": "2026-11-24",
           "total_value": 760.57,
+          "cash": -17.84
+        },
+        {
+          "date": "2026-11-25",
+          "total_value": 749.86,
           "cash": -17.84
         }
       ],
@@ -6728,7 +6785,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-24T20:40:16Z"
+      "updated_at": "2026-11-25T20:37:08Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -7349,6 +7406,11 @@
         {
           "date": "2026-11-24",
           "total_value": 796.52,
+          "cash": -25.98
+        },
+        {
+          "date": "2026-11-25",
+          "total_value": 797.78,
           "cash": -25.98
         }
       ],
@@ -18566,7 +18628,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.21, news:0.11, insider:0.10)"
         }
       ],
-      "updated_at": "2026-11-24T20:40:16Z"
+      "updated_at": "2026-11-25T20:37:08Z"
     }
   }
 }
