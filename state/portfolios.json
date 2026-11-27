@@ -3,15 +3,22 @@
     "Active Entry": {
       "ptype": "active",
       "starting_capital": 1600.0,
-      "cash": 1177.269421,
+      "cash": 1175.038858,
       "holdings": [],
       "pending_orders": [
         {
-          "symbol": "CPAY",
-          "notional": 152.55,
-          "score": 72.0,
-          "reason": "entry(score=72)",
-          "decided_date": "2026-11-25"
+          "symbol": "SN",
+          "notional": 111.14,
+          "score": 71.1,
+          "reason": "entry(score=71)",
+          "decided_date": "2026-11-27"
+        },
+        {
+          "symbol": "RGA",
+          "notional": 176.48,
+          "score": 68.6,
+          "reason": "entry(score=69)",
+          "decided_date": "2026-11-27"
         }
       ],
       "history": [
@@ -524,9 +531,14 @@
           "date": "2026-11-25",
           "total_value": 1177.27,
           "cash": 1177.27
+        },
+        {
+          "date": "2026-11-27",
+          "total_value": 1175.04,
+          "cash": 1175.04
         }
       ],
-      "last_decision_date": "2026-11-25",
+      "last_decision_date": "2026-11-27",
       "last_rebalance_date": null,
       "meta": {},
       "ledger": [
@@ -1618,9 +1630,31 @@
           "price": 232.630005,
           "cost": 1.5,
           "reason": "regime_risk_off_derisk"
+        },
+        {
+          "date": "2026-11-27",
+          "sleeve": "Active Entry",
+          "type": "buy",
+          "side": "buy",
+          "symbol": "CPAY",
+          "shares": 0.33453947,
+          "price": 456.0,
+          "cost": 1.5,
+          "reason": "entry(score=72) [T+1 open]"
+        },
+        {
+          "date": "2026-11-27",
+          "sleeve": "Active Entry",
+          "type": "sell",
+          "side": "sell",
+          "symbol": "CPAY",
+          "shares": 0.33453947,
+          "price": 458.299988,
+          "cost": 1.5,
+          "reason": "regime_risk_off_derisk"
         }
       ],
-      "updated_at": "2026-11-25T20:37:08Z"
+      "updated_at": "2026-11-27T20:40:18Z"
     },
     "Growth": {
       "ptype": "growth",
@@ -2240,6 +2274,11 @@
         {
           "date": "2026-11-25",
           "total_value": 805.65,
+          "cash": -18.63
+        },
+        {
+          "date": "2026-11-27",
+          "total_value": 811.7,
           "cash": -18.63
         }
       ],
@@ -3447,7 +3486,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-25T20:37:08Z"
+      "updated_at": "2026-11-27T20:40:18Z"
     },
     "Defensive": {
       "ptype": "defensive",
@@ -4091,6 +4130,11 @@
         {
           "date": "2026-11-25",
           "total_value": 917.31,
+          "cash": 3.47
+        },
+        {
+          "date": "2026-11-27",
+          "total_value": 928.06,
           "cash": 3.47
         }
       ],
@@ -5012,7 +5056,7 @@
           "reason": "dividend $0.6000/sh (ex 2026-11-16)"
         }
       ],
-      "updated_at": "2026-11-25T20:37:08Z"
+      "updated_at": "2026-11-27T20:40:18Z"
     },
     "Balanced": {
       "ptype": "balanced",
@@ -5644,6 +5688,11 @@
         {
           "date": "2026-11-25",
           "total_value": 749.86,
+          "cash": -17.84
+        },
+        {
+          "date": "2026-11-27",
+          "total_value": 773.54,
           "cash": -17.84
         }
       ],
@@ -6785,7 +6834,7 @@
           "reason": "Month-end rebalance"
         }
       ],
-      "updated_at": "2026-11-25T20:37:08Z"
+      "updated_at": "2026-11-27T20:40:18Z"
     },
     "Self-Learning (paper)": {
       "ptype": "self_learning",
@@ -7411,6 +7460,11 @@
         {
           "date": "2026-11-25",
           "total_value": 797.78,
+          "cash": -25.98
+        },
+        {
+          "date": "2026-11-27",
+          "total_value": 817.43,
           "cash": -25.98
         }
       ],
@@ -18628,7 +18682,7 @@
           "reason": "Paper rebuild (learned weights: fundamental:0.34, technical:0.21, news:0.11, insider:0.10)"
         }
       ],
-      "updated_at": "2026-11-25T20:37:08Z"
+      "updated_at": "2026-11-27T20:40:18Z"
     }
   }
 }
